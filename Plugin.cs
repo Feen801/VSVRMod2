@@ -5,15 +5,17 @@ using BepInEx.Unity.Mono;
 using HarmonyLib;
 using UnityEngine.XR.Management;
 using UnityEngine;
-using VSVRMod2;
 using UnityEngine.XR.OpenXR;
 using UnityEngine.XR;
+using UnityEngine.SceneManagement;
+using System;
 
-namespace VSVR2;
+namespace VSVRMod2;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 public class Plugin : BaseUnityPlugin
 {
+    public const String sessionScene = "SessionScene";
     private void Awake()
     {
         // Plugin startup logic
@@ -27,6 +29,14 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo("Reached end of Plugin.Awake()");
     }
 
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        Logger.LogInfo("A scene was loaded: " + scene.name);
+        if (Equals(scene.name, sessionScene))
+        {
+            VRCamera.SetupCamera();
+        }
+    }
 
     private void InitializeXRRuntime()
     {
