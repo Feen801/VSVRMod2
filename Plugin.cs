@@ -9,32 +9,61 @@ using UnityEngine.XR.OpenXR;
 using UnityEngine.XR;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.UIElements;
+using UnityEngine.Events;
+using BepInEx.Logging;
+using UnityEngineInternal.Input;
 
 namespace VSVRMod2;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
-public class Plugin : BaseUnityPlugin
+public class VSVRMod : BaseUnityPlugin
 {
-    public const String sessionScene = "SessionScene";
+    public const string sessionScene = "ExtraLoadScene";
+    public bool inSession = false;
+    private VRGestureRecognizer vrGestureRecognizer = new VRGestureRecognizer();
+    public static ManualLogSource logger;
+
     private void Awake()
     {
         // Plugin startup logic
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+        logger = Logger;
 
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
         InitializeXRRuntime();
         StartDisplay();
+        SceneManager.sceneLoaded += OnSceneLoaded;
 
         Logger.LogInfo("Reached end of Plugin.Awake()");
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Logger.LogInfo("A scene was loaded: " + scene.name);
         if (Equals(scene.name, sessionScene))
         {
             VRCamera.SetupCamera();
+            VRCamera.CenterCamera();
+            Buttons.SetupChoiceButtons();
+
+            vrGestureRecognizer.Nodded += Buttons.HeadMovementTracker.Nod;
+            vrGestureRecognizer.HeadShaken += Buttons.HeadMovementTracker.Headshake;
+
+            inSession = true;
+        }
+        else
+        {
+            inSession = false;
+        }
+    }
+
+    void Update()
+    {
+        if (inSession)
+        {
+            vrGestureRecognizer.Update();
+            Keyboard.HandleKeyboardInput();
         }
     }
 

@@ -36,7 +36,7 @@ public class VRGestureRecognizer
 
     public void Update()
     {
-        var orientation = InputTracking.GetLocalRotation(XRNode.Head);
+        InputDevices.GetDeviceAtXRNode(XRNode.Head).TryGetFeatureValue(CommonUsages.deviceRotation, out var orientation);
 
         // Record orientation
         PoseSamples.Enqueue(new PoseSample(Time.time, orientation));
@@ -44,6 +44,8 @@ public class VRGestureRecognizer
         {
             PoseSamples.Dequeue();
         }
+
+        VSVRMod.logger.LogInfo(orientation);
 
         // Recognize gestures
         RecognizeNod();
@@ -65,6 +67,7 @@ public class VRGestureRecognizer
 
             if (!(maxPitch - averagePitch > 10f) || !(Mathf.Abs(pitch - averagePitch) < 5f)) return;
             if (!(prevGestureTime < Time.time - recognitionInterval)) return;
+            VSVRMod.logger.LogInfo("Nod...");
 
             prevGestureTime = Time.time;
             Nodded?.Invoke();
@@ -86,6 +89,7 @@ public class VRGestureRecognizer
 
             if ((!(maxYaw - averageYaw > 10f) && !(averageYaw - minYaw > 10f)) || !(Mathf.Abs(yaw - averageYaw) < 5f)) return;
             if (!(prevGestureTime < Time.time - recognitionInterval)) return;
+            VSVRMod.logger.LogInfo("Headshake...");
 
             prevGestureTime = Time.time;
             HeadShaken?.Invoke();

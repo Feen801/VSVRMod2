@@ -7,12 +7,35 @@ using UnityEngine.SpatialTracking;
 namespace VSVRMod2;
 public class VRCamera
 {
+    static GameObject vrCamera;
+    static GameObject vrCameraParent;
     public static void SetupCamera()
     {
         GameObject worldCamDefault = GameObject.Find("WorldCamDefault");
-        GameObject vrCamera = new GameObject("VRCamera");
+        VSVRMod.logger.LogInfo("Creating VR camera...");
+        vrCamera = new GameObject("VRCamera");
+        vrCameraParent = new GameObject("VRCameraParent");
+        VSVRMod.logger.LogInfo("Adding components to VR camera...");
         vrCamera.AddComponent<Camera>();
         vrCamera.AddComponent<TrackedPoseDriver>();
-        vrCamera.transform.SetParent(worldCamDefault.transform);
+        VSVRMod.logger.LogInfo("Reparenting VR camera...");
+        vrCamera.transform.SetParent(vrCameraParent.transform);
+        vrCameraParent.transform.SetParent(worldCamDefault.transform);
+    }
+
+    public static void SetupUI()
+    {
+
+    }
+
+    public static void CenterCamera()
+    {
+        if (vrCamera == null)
+        {
+            return;
+        }
+        vrCameraParent.transform.position = vrCamera.transform.position;
+        vrCameraParent.transform.localPosition = -vrCamera.transform.localPosition;
+        vrCameraParent.transform.rotation = new Quaternion(0, 0, 0, 0);
     }
 }
