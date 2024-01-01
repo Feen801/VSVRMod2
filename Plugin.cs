@@ -33,6 +33,7 @@ public class VSVRMod : BaseUnityPlugin
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
         InitializeXRRuntime();
         StartDisplay();
+        Controller.SetupControllers();
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         Logger.LogInfo("Reached end of Plugin.Awake()");
@@ -44,6 +45,7 @@ public class VSVRMod : BaseUnityPlugin
         if (Equals(scene.name, sessionScene))
         {
             VRCamera.SetupCamera();
+            VRCamera.SetupUI();
             VRCamera.CenterCamera();
             Buttons.SetupChoiceButtons();
 

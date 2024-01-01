@@ -6,6 +6,10 @@ using System.Linq;
 
 namespace VSVRMod2;
 
+/**
+ * From https://github.com/korinVR/VRGestureRecognizer (Public Domain)
+ */
+
 public struct PoseSample
 {
     public readonly float Timestamp;

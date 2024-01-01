@@ -2,6 +2,10 @@
 
 namespace VSVRMod2;
 
+/**
+ * From https://github.com/korinVR/VRGestureRecognizer (Public Domain)
+ */
+
 public static class MathHelper
 {
     public static float LinearMap(float value, float s0, float s1, float d0, float d1)

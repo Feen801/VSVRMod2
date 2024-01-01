@@ -9,9 +9,17 @@ class Keyboard
 {
     public static void HandleKeyboardInput()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        if (Input.GetKeyDown(KeyCode.Comma))
         {
             VRCamera.CenterCamera();
+        }
+        if (Input.GetKeyDown(KeyCode.Period))
+        {
+            Controller.SetupControllers();
+        }
+        if (Input.GetKeyDown(KeyCode.Slash))
+        {
+            VRCamera.ToggleUIVR();
         }
     }
 }
