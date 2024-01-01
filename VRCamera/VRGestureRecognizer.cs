@@ -49,8 +49,6 @@ public class VRGestureRecognizer
             PoseSamples.Dequeue();
         }
 
-        VSVRMod.logger.LogInfo(orientation);
-
         // Recognize gestures
         RecognizeNod();
         RecognizeHeadshake();

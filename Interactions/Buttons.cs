@@ -123,10 +123,18 @@ public class Buttons
         static int nods;
         static int headshakes;
 
+        static long lastNodTime;
+        static long lastHeadshakeTime;
+
         public static void Nod()
         {
             headshakes = 0;
+            if (MathHelper.CurrentTimeMillis() - lastNodTime > 1000)
+            {
+                nods = 0;
+            }
             nods++;
+            lastNodTime = MathHelper.CurrentTimeMillis();
             VSVRMod.logger.LogInfo("Partial Nod");
             if (nods >= 2) 
             {
@@ -137,7 +145,12 @@ public class Buttons
         public static void Headshake()
         {
             nods = 0;
+            if(MathHelper.CurrentTimeMillis() - lastHeadshakeTime > 1000)
+            {
+                headshakes = 0;
+            }
             headshakes++;
+            lastHeadshakeTime = MathHelper.CurrentTimeMillis();
             VSVRMod.logger.LogInfo("Partial Headshake");
             if (headshakes >= 2)
             {
