@@ -13,6 +13,7 @@ using UnityEngine.UIElements;
 using UnityEngine.Events;
 using BepInEx.Logging;
 using UnityEngineInternal.Input;
+using BepInEx.Configuration;
 
 namespace VSVRMod2;
 
@@ -23,14 +24,17 @@ public class VSVRMod : BaseUnityPlugin
     public bool inSession = false;
     private VRGestureRecognizer vrGestureRecognizer = new VRGestureRecognizer();
     public static ManualLogSource logger;
+    public static ConfigFile config;
 
     private void Awake()
     {
         // Plugin startup logic
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
         logger = Logger;
+        config = Config;
 
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+        VRConfig.SetupConfig();
         InitializeXRRuntime();
         StartDisplay();
         Controller.SetupControllers();
