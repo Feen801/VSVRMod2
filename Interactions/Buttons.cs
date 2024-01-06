@@ -12,6 +12,7 @@ namespace VSVRMod2;
 
 public struct VSButtonComponents
 {
+    public GameObject collider;
     public PlayMakerFSM buttonFsm;
     public GameObject buttonObject;
     public GameObject highlight;
@@ -111,16 +112,12 @@ public class Buttons
         //so much fun doing all these
         circle = new VSGenericButton();
         circle.name = "Radial Circle";
-        circle.components.buttonObject = GameObject.Find("NewButtons/Center/Circle");
-        circle.components.buttonFsm = GameObject.Find("NewButtons/Center/Circle/Collider").GetComponent<PlayMakerFSM>();
-        circle.components.highlight = GameObject.Find("NewButtons/Center/Circle/Collider/ButtonReact");
+        PrepareButtonComponents(circle, "NewButtons/Center/Circle");
         CheckButtonComponents(circle);
 
         level2Arrow = new VSGenericButton();
         level2Arrow.name = "Level 2 Arrow";
-        level2Arrow.components.buttonObject = GameObject.Find("NewButtons/Center/Level1/OtherButtons/Grow");
-        level2Arrow.components.buttonFsm = GameObject.Find("NewButtons/Center/Level1/OtherButtons/Grow/Collider").GetComponent<PlayMakerFSM>();
-        level2Arrow.components.highlight = GameObject.Find("NewButtons/Center/Level1/OtherButtons/Grow/Collider/ButtonReact");
+        PrepareButtonComponents(level2Arrow, "NewButtons/Center/Level1/OtherButtons/Grow");
         CheckButtonComponents(level2Arrow);
 
         VSRadialButton tribute = new VSRadialButton();
@@ -129,9 +126,7 @@ public class Buttons
         tribute.maxMagnitude = 1;
         tribute.minDegrees = 60;
         tribute.maxDegrees = 120;
-        tribute.components.buttonObject = GameObject.Find("NewButtons/Center/Level1/OtherButtons/TributeBG");
-        tribute.components.buttonFsm = GameObject.Find("NewButtons/Center/Level1/OtherButtons/TributeBG/Collider").GetComponent<PlayMakerFSM>();
-        tribute.components.highlight = GameObject.Find("NewButtons/Center/Level1/OtherButtons/TributeBG/Collider/ButtonReact");
+        PrepareButtonComponents(tribute, "NewButtons/Center/Level1/OtherButtons/TributeBG");
 
         VSRadialButton mercy = new VSRadialButton();
         mercy.name = "Mercy";
@@ -139,9 +134,7 @@ public class Buttons
         mercy.maxMagnitude = 1;
         mercy.minDegrees = 120;
         mercy.maxDegrees = 180;
-        mercy.components.buttonObject = GameObject.Find("NewButtons/Center/Level1/OtherButtons/MercyBG");
-        mercy.components.buttonFsm = GameObject.Find("NewButtons/Center/Level1/OtherButtons/MercyBG/Collider").GetComponent<PlayMakerFSM>();
-        mercy.components.highlight = GameObject.Find("NewButtons/Center/Level1/OtherButtons/MercyBG/Collider/ButtonReact");
+        PrepareButtonComponents(mercy, "NewButtons/Center/Level1/OtherButtons/MercyBG");
 
         VSRadialButton edge = new VSRadialButton();
         edge.name = "Edge";
@@ -149,9 +142,7 @@ public class Buttons
         edge.maxMagnitude = 0.9;
         edge.minDegrees = 60;
         edge.maxDegrees = 120;
-        edge.components.buttonObject = GameObject.Find("NewButtons/Center/Level1/OtherButtons/EdgeBG");
-        edge.components.buttonFsm = GameObject.Find("NewButtons/Center/Level1/OtherButtons/EdgeBG/Collider").GetComponent<PlayMakerFSM>();
-        edge.components.highlight = GameObject.Find("NewButtons/Center/Level1/OtherButtons/EdgeBG/Collider/ButtonReact");
+        PrepareButtonComponents(edge, "NewButtons/Center/Level1/OtherButtons/EdgeBG");
 
         VSRadialButton good = new VSRadialButton();
         good.name = "Good";
@@ -159,9 +150,7 @@ public class Buttons
         good.maxMagnitude = 0.9;
         good.minDegrees = 60;
         good.maxDegrees = 120;
-        good.components.buttonObject = GameObject.Find("NewButtons/Center/Level1/OtherButtons/KeepGoingBG");
-        good.components.buttonFsm = GameObject.Find("NewButtons/Center/Level1/OtherButtons/KeepGoingBG/Collider").GetComponent<PlayMakerFSM>();
-        good.components.highlight = GameObject.Find("NewButtons/Center/Level1/OtherButtons/KeepGoingBG/Collider/ButtonReact");
+        PrepareButtonComponents(good, "NewButtons/Center/Level1/OtherButtons/KeepGoingBG");
 
         VSRadialButton taunt = new VSRadialButton();
         taunt.name = "Taunt";
@@ -169,9 +158,7 @@ public class Buttons
         taunt.maxMagnitude = 1;
         taunt.minDegrees = 120;
         taunt.maxDegrees = 180;
-        taunt.components.buttonObject = GameObject.Find("NewButtons/Center/Level1/OtherButtons/TauntBG");
-        taunt.components.buttonFsm = GameObject.Find("NewButtons/Center/Level1/OtherButtons/TauntBG/Collider").GetComponent<PlayMakerFSM>();
-        taunt.components.highlight = GameObject.Find("NewButtons/Center/Level1/OtherButtons/TauntBG/Collider/ButtonReact");
+        PrepareButtonComponents(taunt, "NewButtons/Center/Level1/OtherButtons/TauntBG");
 
         VSRadialButton hideui = new VSRadialButton();
         hideui.name = "Hide UI";
@@ -179,9 +166,7 @@ public class Buttons
         hideui.maxMagnitude = 1;
         hideui.minDegrees = 135;
         hideui.maxDegrees = 180;
-        hideui.components.buttonObject = GameObject.Find("NewButtons/Center/Level2/GameObject/Hide UI");
-        hideui.components.buttonFsm = GameObject.Find("NewButtons/Center/Level2/GameObject/Hide UI/Collider").GetComponent<PlayMakerFSM>();
-        hideui.components.highlight = GameObject.Find("NewButtons/Center/Level2/GameObject/Hide UI/Collider/ButtonReact");
+        PrepareButtonComponents(hideui, "NewButtons/Center/Level2/GameObject/Hide UI");
 
         VSRadialButton timeout = new VSRadialButton();
         timeout.name = "Timeout";
@@ -189,9 +174,17 @@ public class Buttons
         timeout.maxMagnitude = 0.9;
         timeout.minDegrees = 90;
         timeout.maxDegrees = 135;
-        timeout.components.buttonObject = GameObject.Find("NewButtons/Center/Level2/GameObject/Timeout");
-        timeout.components.buttonFsm = GameObject.Find("NewButtons/Center/Level2/GameObject/Timeout/Collider (1)").GetComponent<PlayMakerFSM>();
-        timeout.components.highlight = GameObject.Find("NewButtons/Center/Level2/GameObject/Timeout/Collider (1)/ButtonReact");
+        //super extra special button has collider named "Collider (1)" instead of just "Collider"
+        timeout.components.buttonObject = GameObject.Find("NewButtons/Center/Level2/GameObject/Time Out");
+        timeout.components.collider = GameObject.Find("NewButtons/Center/Level2/GameObject/Time Out/Collider (1)");
+        if (timeout.components.collider == null)
+        {
+            VSVRMod.logger.LogError(timeout.name + " had null collider");
+        }
+        Assert.IsNotNull(timeout.components.collider);
+        timeout.components.buttonFsm = timeout.components.collider.GetComponent<PlayMakerFSM>();
+        timeout.components.highlight = GameObject.Find("NewButtons/Center/Level2/GameObject/Time Out/Collider (1)/ButtonReact");
+
 
         VSRadialButton safeword = new VSRadialButton();
         safeword.name = "Safeword";
@@ -199,9 +192,7 @@ public class Buttons
         safeword.maxMagnitude = 0.9;
         safeword.minDegrees = 45;
         safeword.maxDegrees = 90;
-        safeword.components.buttonObject = GameObject.Find("NewButtons/Center/Level2/GameObject (1)/Safeword");
-        safeword.components.buttonFsm = GameObject.Find("NewButtons/Center/Level2/GameObject (1)/Safeword/Collider").GetComponent<PlayMakerFSM>();
-        safeword.components.highlight = GameObject.Find("NewButtons/Center/Level2/GameObject (1)/Safeword/Collider/ButtonReact");
+        PrepareButtonComponents(safeword, "NewButtons/Center/Level2/GameObject (1)/Safe Word");
 
         VSRadialButton oops = new VSRadialButton();
         oops.name = "Oops";
@@ -209,9 +200,7 @@ public class Buttons
         oops.maxMagnitude = 1;
         oops.minDegrees = 0;
         oops.maxDegrees = 45;
-        oops.components.buttonObject = GameObject.Find("NewButtons/Center/Level2/GameObject (1)/Oops");
-        oops.components.buttonFsm = GameObject.Find("NewButtons/Center/Level2/GameObject (1)/Oops/Collider").GetComponent<PlayMakerFSM>();
-        oops.components.highlight = GameObject.Find("NewButtons/Center/Level2/GameObject (1)/Oops/Collider/ButtonReact");
+        PrepareButtonComponents(oops, "NewButtons/Center/Level2/GameObject (1)/Oops");
 
         VSRadialButton plus = new VSRadialButton();
         plus.name = "Plus";
@@ -219,9 +208,7 @@ public class Buttons
         plus.maxMagnitude = 1;
         plus.minDegrees = 180;
         plus.maxDegrees = 270;
-        plus.components.buttonObject = GameObject.Find("NewButtons/Center/Level1/ArousalMeter/Overlays/Plus");
-        plus.components.buttonFsm = GameObject.Find("NewButtons/Center/Level1/ArousalMeter/Overlays/Plus/Collider").GetComponent<PlayMakerFSM>();
-        plus.components.highlight = GameObject.Find("NewButtons/Center/Level1/ArousalMeter/Overlays/Plus/Collider/ButtonReact");
+        PrepareButtonComponents(plus, "NewButtons/Center/Level1/ArousalMeter/Overlays/Plus");
 
         VSRadialButton minus = new VSRadialButton();
         minus.name = "Minus";
@@ -229,9 +216,7 @@ public class Buttons
         minus.maxMagnitude = 1;
         minus.minDegrees = 270;
         minus.maxDegrees = 360;
-        minus.components.buttonObject = GameObject.Find("NewButtons/Center/Level1/ArousalMeter/Overlays/Minus");
-        minus.components.buttonFsm = GameObject.Find("NewButtons/Center/Level1/ArousalMeter/Overlays/Minus/Collider").GetComponent<PlayMakerFSM>();
-        minus.components.highlight = GameObject.Find("NewButtons/Center/Level1/ArousalMeter/Overlays/Minus/Collider/ButtonReact");
+        PrepareButtonComponents(minus, "NewButtons/Center/Level1/ArousalMeter/Overlays/Minus");
 
         vsRadialButtons.Add(tribute);
         vsRadialButtons.Add(mercy);
@@ -251,10 +236,40 @@ public class Buttons
         }
     }
 
+    private static void PrepareButtonComponents(VSGenericButton button, string basePath)
+    {
+        button.components.buttonObject = GameObject.Find(basePath);
+        button.components.collider = GameObject.Find(basePath + "/Collider");
+        button.components.highlight = GameObject.Find(basePath + "/Collider/ButtonReact");
+        if (button.components.collider == null)
+        {
+            VSVRMod.logger.LogError(button.name + " had null collider");
+        }
+        Assert.IsNotNull(button.components.collider);
+        button.components.buttonFsm = button.components.collider.GetComponent<PlayMakerFSM>();
+    }
+
     private static void CheckButtonComponents(VSGenericButton button)
     {
         VSVRMod.logger.LogInfo("Verifying button: " + button.name);
+        if (button.components.buttonObject == null )
+        {
+            VSVRMod.logger.LogError(button.name + " had null buttonObject");
+        }
+        if (button.components.collider == null)
+        {
+            VSVRMod.logger.LogError(button.name + " had null collider");
+        }
+        if (button.components.buttonFsm == null)
+        {
+            VSVRMod.logger.LogError(button.name + " had null buttonFsm");
+        }
+        if (button.components.highlight == null)
+        {
+            VSVRMod.logger.LogError(button.name + " had null highlight");
+        }
         Assert.IsNotNull(button.components.buttonObject);
+        Assert.IsNotNull(button.components.collider);
         Assert.IsNotNull(button.components.buttonFsm);
         Assert.IsNotNull(button.components.highlight);
     }
@@ -264,9 +279,9 @@ public class Buttons
         button.components.buttonFsm.SendEvent("Click");
     }
 
-    private VSRadialButton.RadialLevel currentRadialLevel = VSRadialButton.RadialLevel.None;
+    private static VSRadialButton.RadialLevel currentRadialLevel = VSRadialButton.RadialLevel.None;
 
-    public void RadialMenuInteract()
+    public static void RadialMenuInteract()
     {
         bool stickClick = Controller.WasAStickClicked(777);
         bool triggerClick = Controller.WasATriggerClicked(777);
@@ -275,20 +290,35 @@ public class Buttons
 
         if (!level1.activeSelf)
         {
-            if (stickClick) ClickButton(circle);
-            currentRadialLevel = VSRadialButton.RadialLevel.Level1;
+            currentRadialLevel = VSRadialButton.RadialLevel.None;
         }
-        else if (!level2.activeSelf) 
+        else if (!level2.activeSelf)
         {
-            currentRadialLevel = VSRadialButton.RadialLevel.Level2;
-            if (stickClick) ClickButton(level2Arrow);
+            currentRadialLevel = VSRadialButton.RadialLevel.Level1;
         }
         else
         {
-            currentRadialLevel = VSRadialButton.RadialLevel.None;
-            if (stickClick) ClickButton(circle);
+            currentRadialLevel = VSRadialButton.RadialLevel.Level2;
         }
-        
+
+        if (stickClick)
+        {
+            switch (currentRadialLevel)
+            {
+                case VSRadialButton.RadialLevel.None:
+                    ClickButton(circle);
+                    break;
+                case VSRadialButton.RadialLevel.Level1:
+                    ClickButton(level2Arrow); 
+                    break;
+                case VSRadialButton.RadialLevel.Level2:
+                    ClickButton(circle);
+                    break;
+                default:
+                    VSVRMod.logger.LogError("Unexpected Radial State");
+                    break;
+            }
+        }
 
         if (stickMagnitude > 0.3) { 
             List<VSRadialButton> candidateButtons = new List<VSRadialButton>();

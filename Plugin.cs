@@ -14,6 +14,10 @@ using UnityEngine.Events;
 using BepInEx.Logging;
 using UnityEngineInternal.Input;
 using BepInEx.Configuration;
+using UnityEngine.XR.OpenXR.Features.Interactions;
+using UnityEngine.InputSystem.Layouts;
+using Unity.XR.Oculus.Input;
+using UnityEngine.Analytics;
 
 namespace VSVRMod2;
 
@@ -34,24 +38,35 @@ public class VSVRMod : BaseUnityPlugin
         config = Config;
 
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+        
         VRConfig.SetupConfig();
+        Controller.EnableControllerProfiles();
         InitializeXRRuntime();
         StartDisplay();
-        Controller.SetupControllers();
+
+        InputDevices.deviceConnected += DevConnect;
+
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         Logger.LogInfo("Reached end of Plugin.Awake()");
     }
 
+    void DevConnect(InputDevice dev)
+    {
+        Logger.LogInfo("Device Connected: " + dev);
+    }
+
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        Controller.SetupControllers();
         Logger.LogInfo("A scene was loaded: " + scene.name);
         if (Equals(scene.name, sessionScene))
         {
             VRCamera.SetupCamera();
             VRCamera.SetupUI();
-            VRCamera.CenterCamera();
             Buttons.SetupChoiceButtons();
+            Buttons.SetupRadialButtons();
+            VRCamera.CenterCamera();
 
             vrGestureRecognizer.Nodded += Buttons.HeadMovementTracker.Nod;
             vrGestureRecognizer.HeadShaken += Buttons.HeadMovementTracker.Headshake;
@@ -70,6 +85,8 @@ public class VSVRMod : BaseUnityPlugin
         {
             vrGestureRecognizer.Update();
             Keyboard.HandleKeyboardInput();
+            Buttons.RadialMenuInteract();
+            VRCamera.ProcessHeadMovement();
         }
     }
 
@@ -98,7 +115,9 @@ public class VSVRMod : BaseUnityPlugin
     {
         var displays = new List<XRDisplaySubsystem>();
 
+#pragma warning disable CS0618 // Type or member is obsolete
         SubsystemManager.GetInstances(displays);
+#pragma warning restore CS0618 // Type or member is obsolete
 
         if (displays.Count < 1)
         {

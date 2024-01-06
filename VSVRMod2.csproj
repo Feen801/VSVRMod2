@@ -31,6 +31,9 @@
     <Reference Include="PlayMaker">
       <HintPath>Libs\Managed\PlayMaker.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.InputSystem">
+      <HintPath>Libs\Managed\Unity.InputSystem.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.XR.CoreUtils">
       <HintPath>Libs\Managed\Unity.XR.CoreUtils.dll</HintPath>
     </Reference>
@@ -54,6 +57,9 @@
     </Reference>
     <Reference Include="Unity.XR.OpenXR.Features.RuntimeDebugger">
       <HintPath>Libs\Managed\Unity.XR.OpenXR.Features.RuntimeDebugger.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>Libs\Managed\UnityEngine.InputLegacyModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.InputModule">
       <HintPath>Libs\Managed\UnityEngine.InputModule.dll</HintPath>
