@@ -103,9 +103,12 @@ public class Buttons
 
     private static VSGenericButton circle;
     private static VSGenericButton level2Arrow;
+    private static GameObject exitButtonRadial;
 
     public static void SetupRadialButtons()
     {
+        exitButtonRadial = GameObject.Find("GeneralCanvas/EventManager/NewButtons/Center/Level1/Exit/Collider");
+
         level1 = GameObject.Find("NewButtons/Center/Level1");
         level2 = GameObject.Find("NewButtons/Center/Level2");
 
@@ -156,8 +159,8 @@ public class Buttons
         taunt.name = "Taunt";
         taunt.radialLevel = VSRadialButton.RadialLevel.Level1;
         taunt.maxMagnitude = 1;
-        taunt.minDegrees = 120;
-        taunt.maxDegrees = 180;
+        taunt.minDegrees = 0;
+        taunt.maxDegrees = 60;
         PrepareButtonComponents(taunt, "NewButtons/Center/Level1/OtherButtons/TauntBG");
 
         VSRadialButton hideui = new VSRadialButton();
@@ -206,16 +209,16 @@ public class Buttons
         plus.name = "Plus";
         plus.radialLevel = VSRadialButton.RadialLevel.Both;
         plus.maxMagnitude = 1;
-        plus.minDegrees = 180;
-        plus.maxDegrees = 270;
+        plus.minDegrees = 270;
+        plus.maxDegrees = 360;
         PrepareButtonComponents(plus, "NewButtons/Center/Level1/ArousalMeter/Overlays/Plus");
 
         VSRadialButton minus = new VSRadialButton();
         minus.name = "Minus";
         minus.radialLevel = VSRadialButton.RadialLevel.Both;
         minus.maxMagnitude = 1;
-        minus.minDegrees = 270;
-        minus.maxDegrees = 360;
+        minus.minDegrees = 180;
+        minus.maxDegrees = 270;
         PrepareButtonComponents(minus, "NewButtons/Center/Level1/ArousalMeter/Overlays/Minus");
 
         vsRadialButtons.Add(tribute);
@@ -312,7 +315,7 @@ public class Buttons
                     ClickButton(level2Arrow); 
                     break;
                 case VSRadialButton.RadialLevel.Level2:
-                    ClickButton(circle);
+                    exitButtonRadial.GetComponent<PlayMakerFSM>().SendEvent("Click");
                     break;
                 default:
                     VSVRMod.logger.LogError("Unexpected Radial State");
@@ -335,6 +338,10 @@ public class Buttons
                         button.components.highlight.SetActive(false);
                     }
                 }
+                else
+                {
+                    button.components.highlight.SetActive(false);
+                }
             }
 
             VSRadialButton trueButton = null;
@@ -343,7 +350,10 @@ public class Buttons
             {
                 if (trueButton == null || (button.maxMagnitude < trueButton.maxMagnitude && button.maxMagnitude > stickMagnitude))
                 {
-                    trueButton.components.highlight.SetActive(false);
+                    if (trueButton != null)
+                    {
+                        trueButton.components.highlight.SetActive(false);
+                    }
                     trueButton = button;
                 }
                 else

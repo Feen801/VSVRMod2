@@ -25,12 +25,11 @@ class Controller
     {
         var inputDevices = new List<UnityEngine.XR.InputDevice>();
         InputDevices.GetDevices(inputDevices);
-        InputSystem.devices.Do(device => VSVRMod.logger.LogInfo($"Input Device: {device.displayName}"));
         if (inputDevices.Count > 0)
         {
             foreach (var device in inputDevices)
             {
-                VSVRMod.logger.LogInfo("Found controller: " + device.name + "Characteristics: " + device.characteristics);
+                VSVRMod.logger.LogInfo("Found controller: " + device.name + " Characteristics: " + device.characteristics);
             }
         }
         else
