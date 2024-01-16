@@ -34,6 +34,9 @@
     <Reference Include="Unity.InputSystem">
       <HintPath>Libs\Managed\Unity.InputSystem.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>Libs\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.XR.CoreUtils">
       <HintPath>Libs\Managed\Unity.XR.CoreUtils.dll</HintPath>
     </Reference>
@@ -66,6 +69,9 @@
     </Reference>
     <Reference Include="UnityEngine.SpatialTracking">
       <HintPath>Libs\Managed\UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>Libs\Managed\UnityEngine.UI.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.XR.LegacyInputHelpers">
       <HintPath>Libs\Managed\UnityEngine.XR.LegacyInputHelpers.dll</HintPath>

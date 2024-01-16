@@ -252,7 +252,15 @@ public class Buttons
         button.components.buttonFsm = button.components.collider.GetComponent<PlayMakerFSM>();
     }
 
-    private static void CheckButtonComponents(VSGenericButton button)
+    public static void CheckButtonComponentsCollider(VSGenericButton button)
+    {
+        if (button.components.collider == null)
+        {
+            VSVRMod.logger.LogError(button.name + " had null collider");
+        }
+    }
+
+    public static void CheckButtonComponents(VSGenericButton button)
     {
         VSVRMod.logger.LogInfo("Verifying button: " + button.name);
         if (button.components.buttonObject == null )

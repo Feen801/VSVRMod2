@@ -81,10 +81,11 @@ public class VSVRMod : BaseUnityPlugin
 
     void Update()
     {
+        Keyboard.HandleKeyboardInput();
         if (inSession)
         {
             vrGestureRecognizer.Update();
-            Keyboard.HandleKeyboardInput();
+            Keyboard.HandleKeyboardInputSession();
             Buttons.RadialMenuInteract();
             VRCamera.ProcessHeadMovement();
         }
