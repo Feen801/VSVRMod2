@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
@@ -112,14 +111,14 @@ class Menus
             "Choice Left",
             "ChoiceUI/Choice1",
             "ChoiceUI/Choice1/Collider",
-            "ChoiceUI/Choice1/Image (1)/Borders/LightBorder"
+            "ChoiceUI/Choice1/Image (1)/Borders/DarkBorder"
             );
 
         choiceMenu.right = PrepareUnusualButtonComponents(
             "Choice Right",
             "ChoiceUI/Choice2",
             "ChoiceUI/Choice2/Collider",
-            "ChoiceUI/Choice2/Image (1)/Borders/LightBorder"
+            "ChoiceUI/Choice2/Image (1)/Borders/DarkBorder"
             );
 
         //StakesUI-------------------
@@ -133,19 +132,19 @@ class Menus
             "Stakes Top",
             "StakesUI/BG1",
             "StakesUI/BG1/Collider",
-            "StakesUI/BG1/Borders/LightBorder"
+            "StakesUI/BG1/Borders/DarkBorder"
             );
         stakesMenu.middle = PrepareUnusualButtonComponents(
             "Stakes Middle",
             "StakesUI/BG2",
             "StakesUI/BG2/Collider",
-            "StakesUI/BG2/Borders/LightBorder"
+            "StakesUI/BG2/Borders/DarkBorder"
             );
         stakesMenu.bottom = PrepareUnusualButtonComponents(
             "Stakes Bottom",
             "StakesUI/BG3",
             "StakesUI/BG3/Collider",
-            "StakesUI/BG3/Borders/LightBorder"
+            "StakesUI/BG3/Borders/DarkBorder"
             );
 
         //Safeword-------------------
@@ -255,9 +254,201 @@ class Menus
         return button;
     }
 
-    //How to do stuff for later
-    //text.SetText("100");
-    //Slider.maxValue;
-    //Slider.minValue;
-    //Slider.value;
+    public static bool ChoiceMenuInteract()
+    {
+        if(choiceMenu.representative.activeSelf)
+        {
+            double angle = Controller.GetMaximalJoystickAngle();
+            double magnitude = Controller.GetMaximalJoystickMagnitude();
+            choiceMenu.left.Highlight(false);
+            choiceMenu.favorite.Highlight(false);
+            choiceMenu.right.Highlight(false);
+            VSGenericButton theButton = null;
+            if (magnitude > 0.3) { 
+                if (angle > 0 && angle < 60)
+                {
+                    theButton = choiceMenu.right;
+                }
+                else if (angle > 60 && angle < 120)
+                {
+                    if (choiceMenu.favorite.components.buttonObject.activeSelf)
+                    {
+                        theButton = choiceMenu.favorite;
+                    }
+                }
+                else if(angle > 120 && angle < 180)
+                {
+                    theButton = choiceMenu.left;
+                }
+            }
+            if (theButton != null) {
+                theButton.Highlight(true);
+                if(Controller.WasATriggerClicked(101))
+                {
+                    theButton.Click();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool StakesMenuInteract()
+    {
+        if (stakesMenu.representative.activeSelf)
+        {
+            double y = Controller.GetMaximalJoystickValue().y;
+            stakesMenu.top.Highlight(false);
+            stakesMenu.middle.Highlight(false);
+            stakesMenu.bottom.Highlight(false);
+            VSGenericButton theButton = null;
+            if (y > 0.1 && y < 0.4)
+            {
+                theButton = stakesMenu.bottom;
+            }
+            if (y > 0.4 && y < 0.7)
+            {
+                theButton = stakesMenu.middle;
+            }
+            if (y > 0.7)
+            {
+                theButton = stakesMenu.top;
+            }
+            if (theButton != null)
+            {
+                theButton.Highlight(true);
+                if (Controller.WasATriggerClicked(102))
+                {
+                    theButton.Click();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool SafewordMenuInteract()
+    {
+        if (safewordMenu.representative.activeSelf)
+        {
+            double angle = Controller.GetMaximalJoystickAngle();
+            double magnitude = Controller.GetMaximalJoystickMagnitude();
+            safewordMenu.goEasy.Highlight(false);
+            safewordMenu.continueSession.Highlight(false);
+            safewordMenu.endSession.Highlight(false);
+            VSGenericButton theButton = null;
+            if (magnitude > 0.3)
+            {
+                if (angle > 0 && angle < 60)
+                {
+                    theButton = safewordMenu.endSession;
+                }
+                else if (angle > 60 && angle < 120)
+                {
+                    theButton = safewordMenu.continueSession;
+                }
+                else if (angle > 120 && angle < 180)
+                {
+                    theButton = safewordMenu.goEasy;
+                }
+            }
+            if (theButton != null)
+            {
+                theButton.Highlight(true);
+                if (Controller.WasATriggerClicked(103))
+                {
+                    theButton.Click();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static float intInputInteractionNext = 0;
+    public static bool IntInputInteract()
+    {
+        if (intInput.representative.activeSelf)
+        {
+            Vector2 vector2 = Controller.GetMaximalJoystickValue();
+            double x = vector2.x;
+            double y = vector2.y;
+            double magnitude = Controller.GetMaximalJoystickMagnitude();
+            if (y > -0.5 && magnitude > 0.05)
+            {
+                if (intInputInteractionNext < Time.time)
+                {
+                    string current = intInput.text.text;
+                    int currentInt = 0;
+                    int.TryParse(current, out currentInt);
+                    currentInt += (int)Math.Round(x) * 4;
+                    intInputInteractionNext = Time.time + 0.4f;
+                    intInput.text.SetText(currentInt.ToString());
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static float findomInputInteractionNext = 0;
+    //false = controlling buttons, true = controlling slider
+    private static bool findomInputInteractState = false;
+    public static bool FindomInputInteract()
+    {
+        if (findomInput.representative.activeSelf)
+        {
+            Vector2 vector2 = Controller.GetMaximalJoystickValue();
+            double x = vector2.x;
+            double y = vector2.y;
+            double magnitude = Controller.GetMaximalJoystickMagnitude();
+            if (findomInputInteractState)
+            {
+                if(magnitude > 0.05)
+                {
+                    if (findomInputInteractionNext < Time.time)
+                    {
+                        int currentInt = (int)findomInput.slider.value;
+                        currentInt += (int)Math.Round(x) * 4;
+                        findomInputInteractionNext = Time.time + 0.4f;
+                        currentInt = Math.Clamp(currentInt, (int)findomInput.slider.minValue, (int)findomInput.slider.maxValue);
+                        findomInput.slider.value = currentInt;
+                    }
+                }
+            }
+            else
+            {
+                findomInput.cancel.Highlight(false);
+                List<VSFindomButton> activeFindomButtons = new List<VSFindomButton>();
+                foreach (VSFindomButton button in findomInput.sendOptions)
+                {
+                    if (button.buttonObject.activeSelf)
+                    {
+                        activeFindomButtons.Add(button);
+                        button.Highlight(false);
+                    }
+                }
+                double sectionSize = 2.0 / (activeFindomButtons.Count + 1);
+                VSFindomButton theButton = findomInput.cancel;
+                if(x > -1.0 + sectionSize)
+                {
+                    theButton = activeFindomButtons[(int)Math.Floor((x + 1.0) / sectionSize) - 1];
+                }
+                if (theButton != null)
+                {
+                    theButton.Highlight(true);
+                    if (Controller.WasATriggerClicked(106))
+                    {
+                        theButton.Click();
+                    }
+                    return true;
+                }
+            }
+            if (Controller.WasAStickClicked(106))
+            {
+                findomInputInteractState = !findomInputInteractState;
+            }
+        }
+        return false;
+    }
 }

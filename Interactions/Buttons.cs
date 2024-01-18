@@ -62,6 +62,11 @@ public class VSGenericButton
     {
         this.components.buttonFsm.SendEvent("Click");
     }
+
+    public void Highlight(bool status)
+    {
+        this.components.highlight.SetActive(status);
+    }
 }
 
 public class VSChoiceButton : VSGenericButton
