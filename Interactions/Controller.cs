@@ -166,6 +166,49 @@ class Controller
         return right || left;
     }
 
+    private static Dictionary<int, bool> facePresses = new Dictionary<int, bool>();
+    public static bool WasAFaceButtonClicked(int duplicateID)
+    {
+        bool clicked = false;
+        bool pressed = IsAFaceButtonPressed();
+        if (pressed && !facePresses.Get(duplicateID))
+        {
+            clicked = true;
+            if (outputControllerDebug >= 1)
+            {
+                VSVRMod.logger.LogInfo("Face click!");
+            }
+        }
+        facePresses[duplicateID] = pressed;
+        return clicked;
+    }
+
+    public static bool IsAFaceButtonPressed()
+    {
+        bool left1 = false;
+        bool left2 = false;
+        bool right1 = false;
+        bool right2 = false;
+
+        if (leftController != null)
+        {
+            leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out left1);
+            leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out left2);
+        }
+        if (rightController != null)
+        {
+            rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out right1);
+            rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out right2);
+        }
+
+        if (outputControllerDebug >= 2)
+        {
+            VSVRMod.logger.LogInfo("Face Button: Left: " + (left1 || left2) + " Right: " + (right1 || right2));
+        }
+
+        return left1 || left2 || right1 || right2;
+    }
+
     public static Vector2 GetMaximalJoystickValue()
     {
         Vector2 leftJoystickValue = Vector2.zeroVector;
@@ -213,5 +256,42 @@ class Controller
         }
 
         return maximal.magnitude;
+    }
+
+    public static void ControllerInteract()
+    {
+        //Ordered by priority
+        if (Menus.SafewordMenuInteract())
+        {
+            return;
+        }
+        if (Buttons.TemporaryButtonInteract())
+        {
+            return;
+        }
+        if (Menus.FindomInputInteract())
+        {
+            return;
+        }
+        if (Buttons.RadialMenuInteract())
+        {
+            return;
+        }
+        if (Menus.StakesMenuInteract())
+        {
+            return;
+        }
+        if (Menus.ChoiceMenuInteract())
+        {
+            return;
+        }
+        if (Menus.IntInputInteract())
+        {
+            return;
+        }
+        if (Buttons.ChoiceButtonInteract())
+        {
+            return;
+        }
     }
 }

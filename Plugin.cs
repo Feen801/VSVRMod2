@@ -65,7 +65,9 @@ public class VSVRMod : BaseUnityPlugin
             VRCamera.SetupCamera();
             VRCamera.SetupUI();
             Buttons.SetupChoiceButtons();
+            Buttons.SetupOtherButtons();
             Buttons.SetupRadialButtons();
+            Menus.SetupMenus();
             VRCamera.CenterCamera();
 
             vrGestureRecognizer.Nodded += Buttons.HeadMovementTracker.Nod;
@@ -86,7 +88,7 @@ public class VSVRMod : BaseUnityPlugin
         {
             vrGestureRecognizer.Update();
             Keyboard.HandleKeyboardInputSession();
-            Buttons.RadialMenuInteract();
+            Controller.ControllerInteract();
             VRCamera.ProcessHeadMovement();
         }
     }

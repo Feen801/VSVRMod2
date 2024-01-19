@@ -17,9 +17,9 @@ public class VRCamera
     public static void SetupCamera()
     {
         //root = GameObject.Find("Root");
-        primaryCamera = GameObject.Find("PrimaryCamera");
+        primaryCamera = GetGameObjectCheckFound("PrimaryCamera");
 
-        GameObject worldCamDefault = GameObject.Find("WorldCamDefault");
+        GameObject worldCamDefault = GetGameObjectCheckFound("WorldCamDefault");
         VSVRMod.logger.LogInfo("Creating VR camera...");
         vrCamera = new GameObject("VRCamera");
         vrCameraParent = new GameObject("VRCameraParent");
@@ -30,7 +30,7 @@ public class VRCamera
         vrCamera.transform.SetParent(vrCameraParent.transform);
         vrCameraParent.transform.SetParent(worldCamDefault.transform);
 
-        headFollower = GameObject.Find("HeadTargetFollower");
+        headFollower = GetGameObjectCheckFound("HeadTargetFollower");
         headFollower.transform.SetParent(vrCamera.transform);
         PlayMakerFSM headResetter = headFollower.GetComponent<PlayMakerFSM>();
         headResetter.enabled = false;
@@ -99,11 +99,37 @@ public class VRCamera
     public static void SetupUI()
     {
         uiInVR = true;
-        GameObject ui = GameObject.Find("GeneralCanvas");
+        GameObject ui = GetGameObjectCheckFound("GeneralCanvas");
         Canvas uiCanvas = ui.GetComponent<Canvas>();
         uiCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         uiCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         uiCanvas.planeDistance = 0.5f;
+
+        GameObject overlay = GetGameObjectCheckFound("OverlayCanvas");
+        Canvas overlayCanvas = overlay.GetComponent<Canvas>();
+        overlayCanvas.worldCamera = vrCamera.GetComponent<Camera>();
+        overlayCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+        overlayCanvas.planeDistance = 0.2f;
+
+        GameObject currentAdjust = GetGameObjectCheckFound("OverlayCanvas/TributeMenu");
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(1700, 820, 0);
+        currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.5f, 0.5f, 0.5f);
+
+        currentAdjust = GetGameObjectCheckFound("GeneralCanvas/SpinWheelUI");
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1000, 0);
+        currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(1f, 1f, 1f);
+
+        currentAdjust = GetGameObjectCheckFound("GeneralCanvas/ToyChecklist");
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 480, 0);
+        currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.2f, 0.2f, 0.2f);
+
+        currentAdjust = GetGameObjectCheckFound("GeneralCanvas/TradeOfferUI");
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1240, 0);
+        currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
+
+        currentAdjust = GetGameObjectCheckFound("GeneralCanvas/Urges");
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 100, 0);
+        currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(1f, 1f, 1f);
 
         GameObject uiEvent = GameObject.Find("GeneralCanvas/EventManager");
         uiEvent.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
@@ -111,19 +137,35 @@ public class VRCamera
         vrCamera.SetActive(true);
     }
 
+    private static GameObject GetGameObjectCheckFound(string path)
+    {
+        GameObject go = GameObject.Find(path);
+        if (go == null)
+        {
+            VSVRMod.logger.LogError(path + " gameobject not found");
+        }
+        return go;
+    }
+
     public static void RevertUI()
     {
         uiInVR = false;
-        GameObject ui = GameObject.Find("GeneralCanvas");
+        GameObject ui = GetGameObjectCheckFound("GeneralCanvas");
         Canvas uiCanvas = ui.GetComponent<Canvas>();
         uiCanvas.worldCamera = primaryCamera.GetComponent<Camera>();
         uiCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         uiCanvas.planeDistance = 0.2f;
 
-        GameObject uiEvent = GameObject.Find("GeneralCanvas/EventManager");
-        uiEvent.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 100, 0);
-        uiEvent.GetComponent<RectTransform>().localScale = new Vector3(0.9f, 0.9f, 0.9f);
-        vrCamera.SetActive(false);
+        GameObject overlay = GetGameObjectCheckFound("OverlayCanvas");
+        Canvas overlayCanvas = overlay.GetComponent<Canvas>();
+        overlayCanvas.worldCamera = primaryCamera.GetComponent<Camera>();
+        overlayCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+        overlayCanvas.planeDistance = 0.2f;
+
+        //GameObject uiEvent = GameObject.Find("GeneralCanvas/EventManager");
+        //uiEvent.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 100, 0);
+        //uiEvent.GetComponent<RectTransform>().localScale = new Vector3(0.9f, 0.9f, 0.9f);
+        //vrCamera.SetActive(false);
     }
 
     public static void CenterCamera()

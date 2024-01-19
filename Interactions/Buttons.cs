@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.Assertions;
-using static UnityEngine.ParticleSystem;
-using static UnityEngine.Tilemaps.Tilemap;
 
 namespace VSVRMod2;
 
@@ -23,12 +20,15 @@ public class VSGenericButton
     public string name;
     public VSButtonComponents components = new VSButtonComponents();
 
+    public static string colliderPath = "DoneBG/DoneText/Collider";
+    public static string highlightPath = "DoneBG/DoneText/Collider/ButtonPressReact1";
+
     public void Populate(string name, string path)
     {
         this.name = name;
         this.components.buttonObject = GameObject.Find(path);
-        this.components.collider = GameObject.Find(path + "/Collider");
-        this.components.highlight = GameObject.Find(path + "/Collider/ButtonReact");
+        this.components.collider = GameObject.Find(path + colliderPath);
+        this.components.highlight = GameObject.Find(path + highlightPath);
         if (this.components.collider == null)
         {
             VSVRMod.logger.LogError(this.name + " had null collider");
@@ -71,9 +71,6 @@ public class VSGenericButton
 
 public class VSChoiceButton : VSGenericButton
 {
-    public static string colliderPath = "DoneBG/DoneText/Collider";
-    public static string highlightPath = "DoneBG/DoneText/Collider/ButtonPressReact1";
-
     public enum ButtonType
     {
         Positive,
@@ -85,6 +82,9 @@ public class VSChoiceButton : VSGenericButton
 
 public class VSRadialButton : VSGenericButton
 {
+    public static string colliderPath = "/Collider";
+    public static string highlightPath = "/Collider/ButtonReact";
+
     public double minDegrees;
     public double maxDegrees;
     public double maxMagnitude = 1;
@@ -107,6 +107,9 @@ public class Buttons
     public static List<VSRadialButton> vsRadialButtons = new List<VSRadialButton>();
     public static List<VSRadialButton> vsStakesButtons = new List<VSRadialButton>();
     public static List<VSRadialButton> vsClothesButtons = new List<VSRadialButton>();
+
+    public static List<VSGenericButton> vsOpportinityButtons = new List<VSGenericButton>();
+    public static VSGenericButton giveInButton = new VSGenericButton();
 
     public static void SetupChoiceButtons()
     {
@@ -141,6 +144,72 @@ public class Buttons
             negativeChoiceButton.components.highlight = negativeButton.Find(VSChoiceButton.highlightPath).gameObject;
             vsChoiceButtons.Add(negativeChoiceButton);
         }
+    }
+
+    public static bool ChoiceButtonInteract()
+    {
+        bool triggerClick = Controller.WasATriggerClicked(776);
+        double x = Controller.GetMaximalJoystickValue().x;
+        foreach (VSChoiceButton button in vsChoiceButtons)
+        {
+            if (button.components.buttonObject.activeSelf)
+            {
+                button.Highlight(false);
+                if (x < -0.3 && button.type == VSChoiceButton.ButtonType.Positive)
+                {
+                    button.Highlight(true);
+                    if(triggerClick)
+                    {
+                        button.Click();
+                        return true;
+                    }
+                }
+                if (x > 0.3 && button.type == VSChoiceButton.ButtonType.Negative)
+                {
+                    button.Highlight(true);
+                    if (triggerClick)
+                    {
+                        button.Click();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static void SetupOtherButtons()
+    {
+        giveInButton.Populate("Give In", "GiveIn/GiveInButton");
+
+        VSGenericButton opportunityProvoke = new VSGenericButton();
+        VSGenericButton opportunityTaunt = new VSGenericButton();
+        VSGenericButton opportunityEntice = new VSGenericButton();
+        VSGenericButton opportunityPraise = new VSGenericButton();
+
+        opportunityProvoke.Populate("Provoke", "Buttons/OpportunityProvoke");
+        opportunityTaunt.Populate("Taunt", "Buttons/OpportunityTaunt");
+        opportunityEntice.Populate("Entice", "Buttons/OpportunityEntice");
+        opportunityPraise.Populate("Praise", "Buttons/OpportunityPraise");
+    }
+
+    public static bool TemporaryButtonInteract()
+    {
+        bool faceButtonClicked = Controller.WasAFaceButtonClicked(775);
+        if (giveInButton.components.buttonObject.activeSelf && faceButtonClicked)
+        {
+            giveInButton.Click();
+            return true;
+        }
+        foreach (VSGenericButton button in vsOpportinityButtons)
+        {
+            if (button.components.buttonObject.activeSelf && faceButtonClicked)
+            {
+                button.Click();
+                return true;
+            }
+        }
+        return false;
     }
 
     private static GameObject level1;
@@ -279,7 +348,7 @@ public class Buttons
 
     private static VSRadialButton.RadialLevel currentRadialLevel = VSRadialButton.RadialLevel.None;
 
-    public static void RadialMenuInteract()
+    public static bool RadialMenuInteract()
     {
         bool stickClick = Controller.WasAStickClicked(777);
         bool triggerClick = Controller.WasATriggerClicked(777);
@@ -318,7 +387,7 @@ public class Buttons
             }
         }
 
-        if (stickMagnitude > 0.3) { 
+        if (stickMagnitude > 0.3 && currentRadialLevel != VSRadialButton.RadialLevel.None) { 
             List<VSRadialButton> candidateButtons = new List<VSRadialButton>();
 
             foreach (VSRadialButton button in vsRadialButtons)
@@ -364,8 +433,10 @@ public class Buttons
                 {
                     trueButton.Click();
                 }
+                return true;
             }
         }
+        return false;
     }
 
     public static void PostiveAction() 
@@ -433,6 +504,4 @@ public class Buttons
             }
         }
     }
-
-    
 }
