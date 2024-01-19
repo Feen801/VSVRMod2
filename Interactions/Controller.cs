@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.XR.Interaction;
-using UnityEngine.UIElements;
 using UnityEngine.UIElements.Collections;
-using UnityEngine.InputSystem;
 using UnityEngine.XR;
-using static UnityEngine.ParticleSystem.PlaybackState;
-using HarmonyLib;
 using System.Reflection;
 using UnityEngine.XR.OpenXR.Features.Interactions;
 using UnityEngine.XR.OpenXR.Features;
