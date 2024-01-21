@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.XR.Interaction;
-using UnityEngine.UIElements;
 using UnityEngine.UIElements.Collections;
-using UnityEngine.InputSystem;
 using UnityEngine.XR;
-using static UnityEngine.ParticleSystem.PlaybackState;
-using HarmonyLib;
 using System.Reflection;
 using UnityEngine.XR.OpenXR.Features.Interactions;
 using UnityEngine.XR.OpenXR.Features;
 using UnityEngine.XR.OpenXR;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace VSVRMod2;
 
@@ -21,7 +15,34 @@ class Controller
     public static int outputControllerDebug = 0;
     private static UnityEngine.XR.InputDevice leftController;
     private static UnityEngine.XR.InputDevice rightController;
-    public static void SetupControllers()
+    //public static void SetupControllers()
+    //{
+    //    var inputDevices = new List<UnityEngine.XR.InputDevice>();
+    //    InputDevices.GetDevices(inputDevices);
+    //    if (inputDevices.Count > 0)
+    //    {
+    //        foreach (var device in inputDevices)
+    //        {
+    //            VSVRMod.logger.LogInfo("Found controller: " + device.name + " Characteristics: " + device.characteristics);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        VSVRMod.logger.LogInfo("Could not find any controllers.");
+    //    }
+    //    InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Left, inputDevices);
+    //    if (inputDevices.Count > 0)
+    //    {
+    //        leftController = inputDevices[0];
+    //    }
+    //    InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Right, inputDevices);
+    //    if (inputDevices.Count > 0)
+    //    {
+    //        rightController = inputDevices[0];
+    //    }
+    //}
+
+    public static void CheckControllers()
     {
         var inputDevices = new List<UnityEngine.XR.InputDevice>();
         InputDevices.GetDevices(inputDevices);
@@ -32,22 +53,28 @@ class Controller
                 VSVRMod.logger.LogInfo("Found controller: " + device.name + " Characteristics: " + device.characteristics);
             }
         }
-        else
+        VSVRMod.logger.LogInfo("Current Left Controller: " + leftController.name);
+        VSVRMod.logger.LogInfo("Current Right Controller: " + rightController.name);
+    }
+
+    public static void DeviceConnect(InputDevice device)
+    {
+        VSVRMod.logger.LogInfo("Device Connected: " + device.name);
+        if (device.characteristics.HasFlag(InputDeviceCharacteristics.Left))
         {
-            VSVRMod.logger.LogInfo("Could not find any controllers.");
+            leftController = device;
+            VSVRMod.logger.LogInfo("Left Controller!");
         }
-        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Left, inputDevices);
-        if (inputDevices.Count > 0)
+        if (device.characteristics.HasFlag(InputDeviceCharacteristics.Right))
         {
-            leftController = inputDevices[0];
-        }
-        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Right, inputDevices);
-        if (inputDevices.Count > 0)
-        {
-            rightController = inputDevices[0];
+            rightController = device;
+            VSVRMod.logger.LogInfo("Right Controller!");
         }
     }
 
+    /**
+    * From https://github.com/DaXcess/LCVR (GPL-3.0 license)
+    */
     public static void EnableControllerProfiles()
     {
         var valveIndex = ScriptableObject.CreateInstance<ValveIndexControllerProfile>();
@@ -100,8 +127,6 @@ class Controller
         }
         triggerPresses[duplicateID] = pressed;
 
-        
-
         return clicked;
     }
 
@@ -110,15 +135,16 @@ class Controller
         float left = 0f;
         float right = 0f;
 
-        if (leftController != null) {
+        if (leftController != null)
+        {
             leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.trigger, out left);
         }
         if (rightController != null)
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.trigger, out right);
         }
-        
-        if(outputControllerDebug >= 2)
+
+        if (outputControllerDebug >= 2)
         {
             VSVRMod.logger.LogInfo("Trigger: Left: " + left + " Right: " + right);
         }
@@ -141,6 +167,7 @@ class Controller
             }
         }
         stickPresses[duplicateID] = pressed;
+
         return clicked;
     }
 
@@ -164,6 +191,65 @@ class Controller
         }
 
         return right || left;
+    }
+
+    private static Dictionary<int, bool> facePresses = new Dictionary<int, bool>();
+    public static bool WasAFaceButtonClicked(int duplicateID)
+    {
+        bool clicked = false;
+        bool pressed = IsAFaceButtonPressed();
+        if (pressed && !facePresses.Get(duplicateID))
+        {
+            clicked = true;
+            if (outputControllerDebug >= 1)
+            {
+                VSVRMod.logger.LogInfo("Face click!");
+            }
+        }
+        facePresses[duplicateID] = pressed;
+        return clicked;
+    }
+
+    public static bool AreBothGripsPressed() 
+    {
+        bool left = false;
+        bool right = false;
+        if (leftController != null)
+        {
+            leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.gripButton, out left);
+        }
+        if (rightController != null)
+        {
+            rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.gripButton, out right);
+        }
+
+        return left && right;
+    }
+
+    public static bool IsAFaceButtonPressed()
+    {
+        bool left1 = false;
+        bool left2 = false;
+        bool right1 = false;
+        bool right2 = false;
+
+        if (leftController != null)
+        {
+            leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out left1);
+            leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out left2);
+        }
+        if (rightController != null)
+        {
+            rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out right1);
+            rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out right2);
+        }
+
+        if (outputControllerDebug >= 2)
+        {
+            VSVRMod.logger.LogInfo("Face Button: Left: " + (left1 || left2) + " Right: " + (right1 || right2));
+        }
+
+        return left1 || left2 || right1 || right2;
     }
 
     public static Vector2 GetMaximalJoystickValue()
@@ -213,5 +299,42 @@ class Controller
         }
 
         return maximal.magnitude;
+    }
+
+    public static void ControllerInteract()
+    {
+        //Ordered by priority
+        if (Menus.SafewordMenuInteract())
+        {
+            return;
+        }
+        if (Buttons.TemporaryButtonInteract())
+        {
+            return;
+        }
+        if (Menus.FindomInputInteract())
+        {
+            return;
+        }
+        if (Buttons.RadialMenuInteract())
+        {
+            return;
+        }
+        if (Menus.StakesMenuInteract())
+        {
+            return;
+        }
+        if (Menus.ChoiceMenuInteract())
+        {
+            return;
+        }
+        if (Menus.IntInputInteract())
+        {
+            return;
+        }
+        if (Buttons.ChoiceButtonInteract())
+        {
+            return;
+        }
     }
 }
