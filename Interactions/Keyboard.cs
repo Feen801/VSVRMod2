@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace VSVRMod2;
 
@@ -18,12 +15,6 @@ class Keyboard
         {
             VRCamera.ToggleUIVR();
         }
-        if (Input.GetKeyDown(KeyCode.Quote))
-        {
-            Controller.outputControllerDebug = (Controller.outputControllerDebug + 1) % 5;
-            VSVRMod.logger.LogInfo("Controller debug level is now " + Controller.outputControllerDebug);
-        }
-
         //VSVRMod.logger.LogInfo(Gamepad.current.aButton);
     }
 
