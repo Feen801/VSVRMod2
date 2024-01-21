@@ -106,31 +106,83 @@ public class VRCamera
         Canvas overlayCanvas = overlay.GetComponent<Canvas>();
         overlayCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         overlayCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        overlayCanvas.planeDistance = 0.2f;
+        overlayCanvas.planeDistance = 0.45f;
+        overlayCanvas.GetComponent<Canvas>().sortingOrder = 9;
 
-        GameObject currentAdjust = GetGameObjectCheckFound("OverlayCanvas/TributeMenu");
-        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(1700, 820, 0);
+        Transform hypnoSpinPlayer = overlay.transform.Find("HypnoSpinPlayer");
+        hypnoSpinPlayer.rotation = new Quaternion(0, 0, 0, 0);
+
+        GameObject currentAdjust = overlay.transform.Find("TributeMenu").gameObject;
+        if(currentAdjust == null)
+        {
+            VSVRMod.logger.LogError("TributeMenu not found");
+        }
+        else
+        {
+            VSVRMod.logger.LogInfo("TributeMenu found");
+        }
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 300, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.5f, 0.5f, 0.5f);
 
-        currentAdjust = GetGameObjectCheckFound("GeneralCanvas/SpinWheelUI");
+        currentAdjust = ui.transform.Find("EventManager/SpinWheelUI").gameObject;
+        if (currentAdjust == null)
+        {
+            VSVRMod.logger.LogError("SpinWheelUI not found");
+        }
+        else
+        {
+            VSVRMod.logger.LogInfo("SpinWheelUI found");
+        }
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1000, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(1f, 1f, 1f);
 
-        currentAdjust = GetGameObjectCheckFound("GeneralCanvas/ToyChecklist");
+        currentAdjust = ui.transform.Find("EventManager/ToyChecklist").gameObject;
+        if (currentAdjust == null)
+        {
+            VSVRMod.logger.LogError("ToyChecklist not found");
+        }
+        else
+        {
+            VSVRMod.logger.LogInfo("ToyChecklist found");
+        }
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 480, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.2f, 0.2f, 0.2f);
 
-        currentAdjust = GetGameObjectCheckFound("GeneralCanvas/TradeOfferUI");
+        currentAdjust = ui.transform.Find("EventManager/TradeOfferUI").gameObject;
+        if (currentAdjust == null)
+        {
+            VSVRMod.logger.LogError("TradeOfferUI not found");
+        }
+        else
+        {
+            VSVRMod.logger.LogInfo("TradeOfferUI found");
+        }
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1240, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
 
-        currentAdjust = GetGameObjectCheckFound("GeneralCanvas/Urges");
-        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 100, 0);
+        currentAdjust = ui.transform.Find("EventManager/Urges").gameObject;
+        if (currentAdjust == null)
+        {
+            VSVRMod.logger.LogError("Urges not found");
+        }
+        else
+        {
+            VSVRMod.logger.LogInfo("Urges found");
+        }
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1000, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(1f, 1f, 1f);
 
-        GameObject uiEvent = GameObject.Find("GeneralCanvas/EventManager");
-        uiEvent.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
-        uiEvent.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
+        currentAdjust = ui.transform.Find("EventManager").gameObject;
+        if (currentAdjust == null)
+        {
+            VSVRMod.logger.LogError("EventManager not found");
+        }
+        else
+        {
+            VSVRMod.logger.LogInfo("EventManager found");
+        }
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
+        currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
         vrCamera.SetActive(true);
     }
 
@@ -162,7 +214,7 @@ public class VRCamera
         //GameObject uiEvent = GameObject.Find("GeneralCanvas/EventManager");
         //uiEvent.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 100, 0);
         //uiEvent.GetComponent<RectTransform>().localScale = new Vector3(0.9f, 0.9f, 0.9f);
-        //vrCamera.SetActive(false);
+        vrCamera.SetActive(false);
     }
 
     public static void CenterCamera()

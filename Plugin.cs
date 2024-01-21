@@ -22,7 +22,9 @@ using UnityEngine.Analytics;
 namespace VSVRMod2;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
+#pragma warning disable BepInEx002 // Classes with BepInPlugin attribute must inherit from BaseUnityPlugin
 public class VSVRMod : BaseUnityPlugin
+#pragma warning restore BepInEx002 // Classes with BepInPlugin attribute must inherit from BaseUnityPlugin
 {
     public const string sessionScene = "ExtraLoadScene";
     public bool inSession = false;
@@ -44,21 +46,15 @@ public class VSVRMod : BaseUnityPlugin
         InitializeXRRuntime();
         StartDisplay();
 
-        InputDevices.deviceConnected += DevConnect;
+        InputDevices.deviceConnected += Controller.DeviceConnect;
 
         SceneManager.sceneLoaded += OnSceneLoaded;
 
         Logger.LogInfo("Reached end of Plugin.Awake()");
     }
 
-    void DevConnect(InputDevice dev)
-    {
-        Logger.LogInfo("Device Connected: " + dev);
-    }
-
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        Controller.SetupControllers();
         Logger.LogInfo("A scene was loaded: " + scene.name);
         if (Equals(scene.name, sessionScene))
         {
@@ -92,9 +88,16 @@ public class VSVRMod : BaseUnityPlugin
             Keyboard.HandleKeyboardInputSession();
             Controller.ControllerInteract();
             VRCamera.ProcessHeadMovement();
+            if(Controller.AreBothGripsPressed())
+            {
+                VRCamera.CenterCamera();
+            }
         }
     }
 
+    /**
+    * From https://github.com/DaXcess/LCVR (GPL-3.0 license)
+    */
     private void InitializeXRRuntime()
     {
         // Set up the OpenXR loader
@@ -116,6 +119,9 @@ public class VSVRMod : BaseUnityPlugin
         Logger.LogInfo("Initialized OpenXR Runtime");
     }
 
+    /**
+    * From https://github.com/DaXcess/LCVR (GPL-3.0 license)
+    */
     private bool StartDisplay()
     {
         var displays = new List<XRDisplaySubsystem>();

@@ -36,7 +36,7 @@ class Keyboard
         }
         if (Input.GetKeyDown(KeyCode.Period))
         {
-            Controller.SetupControllers();
+            Controller.CheckControllers();
         }
     }
 }

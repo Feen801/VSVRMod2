@@ -17,42 +17,46 @@ public class VSGenericButton
     public string name;
     public VSButtonComponents components = new VSButtonComponents();
 
-    public static string colliderPath = "DoneBG/DoneText/Collider";
-    public static string highlightPath = "DoneBG/DoneText/Collider/ButtonPressReact1";
+    public static string colliderPath = "/DoneBG/DoneText/Collider";
+    public static string highlightPath = "/DoneBG/DoneText/Collider/ButtonPressReact1";
 
-    public void Populate(string name, string path)
+    public void Populate(Transform knownParent, string name, string path)
     {
+        this.Populate(knownParent, name, path, colliderPath, highlightPath);
+    }
+
+    public void Populate(Transform knownParent, string name, string path, string colliderPath, string highlightPath)
+    {
+        VSVRMod.logger.LogInfo("Populating button: " + name);
+        if (knownParent == null)
+        {
+            VSVRMod.logger.LogError(this.name + " had null PARENT?");
+        }
         this.name = name;
-        this.components.buttonObject = GameObject.Find(path);
-        this.components.collider = GameObject.Find(path + colliderPath);
-        this.components.highlight = GameObject.Find(path + highlightPath);
-        if (this.components.collider == null)
+        Transform buttonObject = knownParent.Find(path);
+        Transform collider = knownParent.Find(path + colliderPath);
+        Transform highlight = knownParent.Find(path + highlightPath);
+        if (collider == null)
         {
             VSVRMod.logger.LogError(this.name + " had null collider");
         }
-        Assert.IsNotNull(this.components.collider);
+        this.components.collider = collider.gameObject;
         this.components.buttonFsm = this.components.collider.GetComponent<PlayMakerFSM>();
-        VSVRMod.logger.LogInfo("Verifying button: " + this.name);
-        if (this.components.buttonObject == null)
+        if (buttonObject == null)
         {
             VSVRMod.logger.LogError(this.name + " had null buttonObject");
-        }
-        if (this.components.collider == null)
-        {
-            VSVRMod.logger.LogError(this.name + " had null collider");
         }
         if (this.components.buttonFsm == null)
         {
             VSVRMod.logger.LogError(this.name + " had null buttonFsm");
         }
-        if (this.components.highlight == null)
+        if (highlight == null)
         {
             VSVRMod.logger.LogError(this.name + " had null highlight");
         }
-        Assert.IsNotNull(this.components.buttonObject);
-        Assert.IsNotNull(this.components.collider);
-        Assert.IsNotNull(this.components.buttonFsm);
-        Assert.IsNotNull(this.components.highlight);
+        this.components.buttonObject = buttonObject.gameObject;
+        this.components.highlight = highlight.gameObject;
+        VSVRMod.logger.LogInfo("Verified button: " + this.name);
     }
 
     public void Click()
@@ -79,8 +83,12 @@ public class VSChoiceButton : VSGenericButton
 
 public class VSRadialButton : VSGenericButton
 {
-    public static string colliderPath = "/Collider";
-    public static string highlightPath = "/Collider/ButtonReact";
+    public static new string colliderPath = "/Collider";
+    public static new string highlightPath = "/Collider/ButtonReact";
+    public new void Populate(Transform knownParent, string name, string path)
+    {
+        this.Populate(knownParent, name, path, colliderPath, highlightPath);
+    }
 
     public double minDegrees;
     public double maxDegrees;
@@ -124,9 +132,9 @@ public class Buttons
                 //?????? what is this button succudev?
                 continue;
             }
-            positiveChoiceButton.components.buttonFsm = positiveButton.Find(VSChoiceButton.colliderPath).GetComponent<PlayMakerFSM>();
+            positiveChoiceButton.components.buttonFsm = positiveButton.Find(VSChoiceButton.colliderPath.TrimStart('/')).GetComponent<PlayMakerFSM>();
             positiveChoiceButton.components.buttonObject = positiveButton.gameObject;
-            positiveChoiceButton.components.highlight = positiveButton.Find(VSChoiceButton.highlightPath).gameObject;
+            positiveChoiceButton.components.highlight = positiveButton.Find(VSChoiceButton.highlightPath.TrimStart('/')).gameObject;
             vsChoiceButtons.Add(positiveChoiceButton);
         }
 
@@ -136,9 +144,9 @@ public class Buttons
             negativeChoiceButton.type = VSChoiceButton.ButtonType.Negative;
             negativeChoiceButton.name = negativeButton.name;
             VSVRMod.logger.LogInfo("Found neg choice button: " + negativeChoiceButton.name);
-            negativeChoiceButton.components.buttonFsm = negativeButton.Find(VSChoiceButton.colliderPath).GetComponent<PlayMakerFSM>();
+            negativeChoiceButton.components.buttonFsm = negativeButton.Find(VSChoiceButton.colliderPath.TrimStart('/')).GetComponent<PlayMakerFSM>();
             negativeChoiceButton.components.buttonObject = negativeButton.gameObject;
-            negativeChoiceButton.components.highlight = negativeButton.Find(VSChoiceButton.highlightPath).gameObject;
+            negativeChoiceButton.components.highlight = negativeButton.Find(VSChoiceButton.highlightPath.TrimStart('/')).gameObject;
             vsChoiceButtons.Add(negativeChoiceButton);
         }
     }
@@ -177,17 +185,19 @@ public class Buttons
 
     public static void SetupOtherButtons()
     {
-        giveInButton.Populate("Give In", "GiveIn/GiveInButton");
+        Transform parent = GameObject.Find("GeneralCanvas/EventManager").transform;
+        giveInButton.Populate(parent, "Give In", "Urges/ActionTextContainer/GiveIn/GiveInButton");
 
         VSGenericButton opportunityProvoke = new VSGenericButton();
         VSGenericButton opportunityTaunt = new VSGenericButton();
         VSGenericButton opportunityEntice = new VSGenericButton();
         VSGenericButton opportunityPraise = new VSGenericButton();
 
-        opportunityProvoke.Populate("Provoke", "Buttons/OpportunityProvoke");
-        opportunityTaunt.Populate("Taunt", "Buttons/OpportunityTaunt");
-        opportunityEntice.Populate("Entice", "Buttons/OpportunityEntice");
-        opportunityPraise.Populate("Praise", "Buttons/OpportunityPraise");
+        opportunityProvoke.Populate(parent,"Provoke", "Buttons/OpportunityProvoke");
+        opportunityTaunt.Populate(parent,"Taunt", "Buttons/OpportunityTaunt");
+        opportunityEntice.Populate(parent,"Entice", "Buttons/OpportunityEntice");
+        opportunityPraise.Populate(parent, "Praise", "Buttons/OpportunityPraise");
+        VSVRMod.logger.LogInfo("Finished setting up other buttons");
     }
 
     public static bool TemporaryButtonInteract()
@@ -218,55 +228,78 @@ public class Buttons
 
     public static void SetupRadialButtons()
     {
-        exitButtonRadial = GameObject.Find("GeneralCanvas/EventManager/NewButtons/Center/Level1/Exit/Collider");
+        GameObject centerGameObject = GameObject.Find("NewButtons/Center");
+        if (centerGameObject == null)
+        {
+            VSVRMod.logger.LogError("centerGameObject not found.");
+        }
+        Transform center = centerGameObject.transform;
 
-        level1 = GameObject.Find("NewButtons/Center/Level1");
-        level2 = GameObject.Find("NewButtons/Center/Level2");
+        Transform exitButtonRadialTransform = center.Find("Level1/Exit");
+        if (exitButtonRadialTransform == null)
+        {
+            VSVRMod.logger.LogError("Radial exit not found.");
+        }
+        exitButtonRadial = exitButtonRadialTransform.gameObject;
+
+        Transform level1Transform = center.Find("Level1");
+        if (level1Transform == null)
+        {
+            VSVRMod.logger.LogError("level1Transform not found.");
+        }
+        level1 = center.Find("Level1").gameObject;
+
+        Transform level2Transform = center.Find("Level2");
+        if (level2Transform == null)
+        {
+            VSVRMod.logger.LogError("level2Transform not found.");
+        }
+        level2 = level2Transform.gameObject;
 
         //so much fun doing all these
         circle = new VSGenericButton();
-        circle.Populate("Radial Circle", "NewButtons/Center/Circle");
+        circle.Populate(center, "Radial Circle", "Circle", "/Collider", "/Collider/ButtonReact");
 
         level2Arrow = new VSGenericButton();
-        level2Arrow.Populate("Level 2 Arrow", "NewButtons/Center/Level1/OtherButtons/Grow");
+        level2Arrow.Populate(center, "Level 2 Arrow", "Level1/OtherButtons/Grow", "/Collider", "/Collider/ButtonReact");
 
         VSRadialButton tribute = new VSRadialButton();
-        tribute.Populate("Tribute", "NewButtons/Center/Level1/OtherButtons/TributeBG");
+        tribute.Populate(center, "Tribute", "Level1/OtherButtons/TributeBG");
         tribute.radialLevel = VSRadialButton.RadialLevel.Both;
         tribute.maxMagnitude = 1;
         tribute.minDegrees = 60;
         tribute.maxDegrees = 120;
 
         VSRadialButton mercy = new VSRadialButton();
-        mercy.Populate("Mercy", "NewButtons/Center/Level1/OtherButtons/MercyBG");
+        mercy.Populate(center, "Mercy", "Level1/OtherButtons/MercyBG");
         mercy.radialLevel = VSRadialButton.RadialLevel.Level1;
         mercy.maxMagnitude = 1;
         mercy.minDegrees = 120;
         mercy.maxDegrees = 180;
 
         VSRadialButton edge = new VSRadialButton();
-        edge.Populate("Edge", "NewButtons/Center/Level1/OtherButtons/EdgeBG");
+        edge.Populate(center, "Edge", "Level1/OtherButtons/EdgeBG");
         edge.radialLevel = VSRadialButton.RadialLevel.Level1;
         edge.maxMagnitude = 0.9;
         edge.minDegrees = 60;
         edge.maxDegrees = 120;
 
         VSRadialButton good = new VSRadialButton();
-        good.Populate("Good", "NewButtons/Center/Level1/OtherButtons/KeepGoingBG");
+        good.Populate(center, "Good", "Level1/OtherButtons/KeepGoingBG");
         good.radialLevel = VSRadialButton.RadialLevel.Level1;
         good.maxMagnitude = 0.9;
         good.minDegrees = 60;
         good.maxDegrees = 120;
 
         VSRadialButton taunt = new VSRadialButton();
-        taunt.Populate("Taunt", "NewButtons/Center/Level1/OtherButtons/TauntBG");
+        taunt.Populate(center, "Taunt", "Level1/OtherButtons/TauntBG");
         taunt.radialLevel = VSRadialButton.RadialLevel.Level1;
         taunt.maxMagnitude = 1;
         taunt.minDegrees = 0;
         taunt.maxDegrees = 60;
 
         VSRadialButton hideui = new VSRadialButton();
-        hideui.Populate("Hide UI", "NewButtons/Center/Level2/GameObject/Hide UI");
+        hideui.Populate(center, "Hide UI", "Level2/GameObject/Hide UI");
         hideui.radialLevel = VSRadialButton.RadialLevel.Level2;
         hideui.maxMagnitude = 1;
         hideui.minDegrees = 135;
@@ -303,28 +336,28 @@ public class Buttons
 
 
         VSRadialButton safeword = new VSRadialButton();
-        safeword.Populate("Safeword", "NewButtons/Center/Level2/GameObject (1)/Safe Word");
+        safeword.Populate(center, "Safeword", "Level2/GameObject (1)/Safe Word");
         safeword.radialLevel = VSRadialButton.RadialLevel.Level2;
         safeword.maxMagnitude = 0.9;
         safeword.minDegrees = 45;
         safeword.maxDegrees = 90;
 
         VSRadialButton oops = new VSRadialButton();
-        oops.Populate("Oops", "NewButtons/Center/Level2/GameObject (1)/Oops");
+        oops.Populate(center, "Oops", "Level2/GameObject (1)/Oops");
         oops.radialLevel = VSRadialButton.RadialLevel.Level2;
         oops.maxMagnitude = 1;
         oops.minDegrees = 0;
         oops.maxDegrees = 45;
 
         VSRadialButton plus = new VSRadialButton();
-        oops.Populate("Plus", "NewButtons/Center/Level1/ArousalMeter/Overlays/Plus");
+        plus.Populate(center, "Plus", "Level1/ArousalMeter/Overlays/Plus");
         plus.radialLevel = VSRadialButton.RadialLevel.Both;
         plus.maxMagnitude = 1;
         plus.minDegrees = 270;
         plus.maxDegrees = 360;
 
         VSRadialButton minus = new VSRadialButton();
-        minus.Populate("Minus", "NewButtons/Center/Level1/ArousalMeter/Overlays/Minus");
+        minus.Populate(center, "Minus", "Level1/ArousalMeter/Overlays/Minus");
         minus.radialLevel = VSRadialButton.RadialLevel.Both;
         minus.maxMagnitude = 1;
         minus.minDegrees = 180;
@@ -341,6 +374,8 @@ public class Buttons
         vsRadialButtons.Add(oops);
         vsRadialButtons.Add(plus);
         vsRadialButtons.Add(minus);
+
+        VSVRMod.logger.LogInfo("Finished setting up radial buttons");
     }
 
     private static VSRadialButton.RadialLevel currentRadialLevel = VSRadialButton.RadialLevel.None;
@@ -386,7 +421,6 @@ public class Buttons
 
         if (stickMagnitude > 0.3 && currentRadialLevel != VSRadialButton.RadialLevel.None) { 
             List<VSRadialButton> candidateButtons = new List<VSRadialButton>();
-
             foreach (VSRadialButton button in vsRadialButtons)
             {
                 if (button.minDegrees < stickDirection && button.maxDegrees > stickDirection && button.components.buttonObject.activeSelf) {

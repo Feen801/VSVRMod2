@@ -18,14 +18,15 @@ public class VSFindomButton
         highlight.color = status ? Color.white : darkGrey;
     }
 
-    public void Populate(string name, string path)
+    public void Populate(Transform knownParent, string name, string path)
     {
         this.name = name;
-        this.buttonObject = GameObject.Find(path);
-        if (this.buttonObject == null)
+        Transform buttonObject = knownParent.Find(path);
+        if (buttonObject == null)
         {
             VSVRMod.logger.LogError(this.name + " had null button object");
         }
+        this.buttonObject = buttonObject.gameObject;
         this.button = buttonObject.GetComponent<Button>();
         if (this.button == null)
         {
@@ -36,6 +37,7 @@ public class VSFindomButton
         {
             VSVRMod.logger.LogError(this.name + " had null image");
         }
+        VSVRMod.logger.LogInfo("Verified findom button: " + this.name);
     }
 
     public void Click() 
@@ -76,8 +78,7 @@ class Menus
     private struct IntInput
     {
         public GameObject representative;
-        public GameObject inputField;
-        public TextMeshProUGUI text;
+        public TMP_InputField text;
     }
     static IntInput intInput = new IntInput();
 
@@ -93,106 +94,121 @@ class Menus
 
     public static void SetupMenus()
     {
+        Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
+        Transform overlayCanvas = GameObject.Find("Root/OverlayCanvas").transform;
+
         //ChoiceUI-------------------
-        choiceMenu.representative = GameObject.Find("ChoiceUI");
+        choiceMenu.representative = eventManager.Find("ChoiceUI").gameObject;
         if (choiceMenu.representative == null)
         {
             VSVRMod.logger.LogError("ChoiceUI had null representative");
         }
-
-        choiceMenu.favorite = PrepareUnusualButtonComponents(
+        choiceMenu.favorite = new();
+        choiceMenu.favorite.Populate(
+            eventManager.Find("Buttons"),
             "Favorite Heart",
             "FavoriteHeart",
-            "FavoriteHeart/DoneBG/DoneText/Collider",
-            "FavoriteHeart/DoneBG/DoneText/Collider/ButtonPressReact"
+            "/DoneBG/DoneText/Collider",
+            "/DoneBG/DoneText/Collider/ButtonPressReact1"
             );
-
-        choiceMenu.left = PrepareUnusualButtonComponents(
+        choiceMenu.left = new();
+        choiceMenu.left.Populate(
+            eventManager.Find("ChoiceUI"),
             "Choice Left",
-            "ChoiceUI/Choice1",
-            "ChoiceUI/Choice1/Collider",
-            "ChoiceUI/Choice1/Image (1)/Borders/DarkBorder"
+            "Choice1",
+            "/Collider",
+            "/Image (1)/Borders/DarkBorder"
             );
-
-        choiceMenu.right = PrepareUnusualButtonComponents(
+        choiceMenu.right = new();
+        choiceMenu.right.Populate(
+            eventManager.Find("ChoiceUI"),
             "Choice Right",
-            "ChoiceUI/Choice2",
-            "ChoiceUI/Choice2/Collider",
-            "ChoiceUI/Choice2/Image (1)/Borders/DarkBorder"
+            "Choice2",
+            "/Collider",
+            "/Image (1)/Borders/DarkBorder"
             );
+        VSVRMod.logger.LogInfo("Setup ChoiceUI");
 
         //StakesUI-------------------
-        stakesMenu.representative = GameObject.Find("StakesUI");
+        stakesMenu.representative = eventManager.Find("StakesUI").gameObject;
         if (stakesMenu.representative == null)
         {
             VSVRMod.logger.LogError("StakesUI had null representative");
         }
-
-        stakesMenu.top = PrepareUnusualButtonComponents(
+        stakesMenu.top = new();
+        stakesMenu.top.Populate(
+            eventManager.Find("StakesUI"),
             "Stakes Top",
-            "StakesUI/BG1",
-            "StakesUI/BG1/Collider",
-            "StakesUI/BG1/Borders/DarkBorder"
+            "BG1",
+            "/Collider",
+            "/Borders/DarkBorder"
             );
-        stakesMenu.middle = PrepareUnusualButtonComponents(
+        stakesMenu.middle = new();
+        stakesMenu.middle.Populate(
+            eventManager.Find("StakesUI"),
             "Stakes Middle",
-            "StakesUI/BG2",
-            "StakesUI/BG2/Collider",
-            "StakesUI/BG2/Borders/DarkBorder"
+            "BG2",
+            "/Collider",
+            "/Borders/DarkBorder"
             );
-        stakesMenu.bottom = PrepareUnusualButtonComponents(
+        stakesMenu.bottom = new();
+        stakesMenu.bottom.Populate(
+            eventManager.Find("StakesUI"),
             "Stakes Bottom",
-            "StakesUI/BG3",
-            "StakesUI/BG3/Collider",
-            "StakesUI/BG3/Borders/DarkBorder"
+            "BG3",
+            "/Collider",
+            "/Borders/DarkBorder"
             );
+        VSVRMod.logger.LogInfo("Setup StakesUI");
 
         //Safeword-------------------
-        safewordMenu.representative = GameObject.Find("Buttons/EndSession");
+        safewordMenu.representative = eventManager.Find("Buttons/EndSession").gameObject;
         if (safewordMenu.representative == null)
         {
             VSVRMod.logger.LogError("Safeword had null representative");
         }
-
-        safewordMenu.goEasy = PrepareUnusualButtonComponents(
+        safewordMenu.goEasy = new();
+        safewordMenu.goEasy.Populate(
+            eventManager.Find("Buttons"),
             "Safeword Go Easy",
-            "Buttons/GoEasy",
-            "Buttons/GoEasy/DoneBG/DoneText/Collider",
-            "Buttons/GoEasy/DoneBG/DoneText/Collider/ButtonPressReact"
+            "GoEasy",
+            "/DoneBG/DoneText/Collider",
+            "/DoneBG/DoneText/Collider/ButtonPressReact1"
             );
-        safewordMenu.continueSession = PrepareUnusualButtonComponents(
+        safewordMenu.continueSession = new();
+        safewordMenu.continueSession.Populate(
+            eventManager.Find("Buttons"),
             "Safeword Continue",
-            "Buttons/ContinueSession",
-            "Buttons/ContinueSession/DoneBG/DoneText/Collider",
-            "Buttons/ContinueSession/DoneBG/DoneText/Collider/ButtonPressReact"
+            "ContinueSession",
+            "/DoneBG/DoneText/Collider",
+            "/DoneBG/DoneText/Collider/ButtonPressReact1"
             );
-        safewordMenu.endSession = PrepareUnusualButtonComponents(
+        safewordMenu.endSession = new();
+        safewordMenu.endSession.Populate(
+            eventManager.Find("Buttons"),
             "Safeword End Session",
-            "Buttons/EndSession",
-            "Buttons/EndSession/DoneBG/DoneText/Collider",
-            "Buttons/EndSession/DoneBG/DoneText/Collider/ButtonPressReact"
+            "EndSession",
+            "/DoneBG/DoneText/Collider",
+            "/DoneBG/DoneText/Collider/ButtonPressReact1"
             );
+        VSVRMod.logger.LogInfo("Setup Safeword");
 
         //Count Input-------------------
-        intInput.representative = GameObject.Find("EventManager/IntInputField");
+        intInput.representative = eventManager.Find("IntInputField").gameObject;
         if (intInput.representative == null)
         {
             VSVRMod.logger.LogError("Int input had null representative");
         }
 
-        intInput.inputField = GameObject.Find("EventManager/IntInputField/Text Area/IntInputFieldText");
-        if (intInput.inputField == null)
-        {
-            VSVRMod.logger.LogError("Int input field was null");
-        }
-        intInput.text = intInput.inputField.GetComponent<TextMeshProUGUI>();
+        intInput.text = intInput.representative.GetComponent<TMP_InputField>();
         if (intInput.text == null)
         {
             VSVRMod.logger.LogError("Int input text was null");
         }
+        VSVRMod.logger.LogInfo("Setup Count Input");
 
         //Tribute Menu
-        findomInput.representative = GameObject.Find("OverlayCanvas/TributeMenu");
+        findomInput.representative = overlayCanvas.Find("TributeMenu").gameObject;
         if (findomInput.representative == null)
         {
             VSVRMod.logger.LogError("Tribute Menu had null representative");
@@ -200,8 +216,8 @@ class Menus
 
         findomInput.sendOptions = new List<VSFindomButton>();
         findomInput.cancel = new VSFindomButton();
-        findomInput.cancel.Populate("Tribute Cancel", "TributeMenu/Cancel");
-        findomInput.sliderObject = GameObject.Find("OverlayCanvas/TributeMenu/Slider - Standard (Value)");
+        findomInput.cancel.Populate(overlayCanvas, "Tribute Cancel", "TributeMenu/Cancel");
+        findomInput.sliderObject = overlayCanvas.Find("TributeMenu/Slider - Standard (Value)").gameObject;
         if (findomInput.sliderObject == null)
         {
             VSVRMod.logger.LogError("Tribute Menu had null slider object");
@@ -216,42 +232,18 @@ class Menus
         VSFindomButton placateButton = new VSFindomButton();
         VSFindomButton comfortButton = new VSFindomButton();
 
-        tributeButton.Populate("Tribute Button", "TributeMenu/Options/Group/Text (TMP) (7)");
-        bribeButton.Populate("Bribe Button", "TributeMenu/Options/Group/Text (TMP) (6)");
-        placateButton.Populate("Placate Button", "TributeMenu/Options/Group/Text (TMP) (8)");
-        comfortButton.Populate("Comfort Button", "TributeMenu/Options/Group/Text (TMP) (9)");
+        tributeButton.Populate(overlayCanvas, "Tribute Button", "TributeMenu/Options/Group/Text (TMP) (7)/Button");
+        bribeButton.Populate(overlayCanvas, "Bribe Button", "TributeMenu/Options/Group/Text (TMP) (6)/Button");
+        placateButton.Populate(overlayCanvas, "Placate Button", "TributeMenu/Options/Group/Text (TMP) (8)/Button");
+        comfortButton.Populate(overlayCanvas, "Comfort Button", "TributeMenu/Options/Group/Text (TMP) (9)/Button");
 
-        findomInput.sendOptions.Add(tributeButton);
-        findomInput.sendOptions.Add(bribeButton);
-        findomInput.sendOptions.Add(placateButton);
+        //From bottom to top
         findomInput.sendOptions.Add(comfortButton);
-    }
+        findomInput.sendOptions.Add(placateButton);
+        findomInput.sendOptions.Add(bribeButton);
+        findomInput.sendOptions.Add(tributeButton);
 
-    private static VSGenericButton PrepareUnusualButtonComponents(string name, string buttonObjectPath, string colliderPath, string highlightPath)
-    {
-        VSGenericButton button = new VSGenericButton();
-        button.name = name;
-        button.components.buttonObject = GameObject.Find(buttonObjectPath);
-        button.components.collider = GameObject.Find(colliderPath);
-        if(button.components.buttonObject == null)
-        {
-            VSVRMod.logger.LogError(button.name + " had null button object");
-        }
-        if (button.components.collider == null)
-        {
-            VSVRMod.logger.LogError(button.name + " had null button collider");
-        }
-        button.components.buttonFsm = choiceMenu.favorite.components.collider.GetComponent<PlayMakerFSM>();
-        if (button.components.buttonFsm == null)
-        {
-            VSVRMod.logger.LogError(button.name + " had null button buttonFsm");
-        }
-        button.components.highlight = GameObject.Find(highlightPath);
-        if (button.components.highlight == null)
-        {
-            VSVRMod.logger.LogError(button.name + " had null button highlight");
-        }
-        return button;
+        VSVRMod.logger.LogInfo("Setup Tribute Menu");
     }
 
     public static bool ChoiceMenuInteract()
@@ -283,7 +275,7 @@ class Menus
             }
             if (theButton != null) {
                 theButton.Highlight(true);
-                if(Controller.WasATriggerClicked(101))
+                if(Controller.WasATriggerClicked(105))
                 {
                     theButton.Click();
                 }
@@ -317,7 +309,7 @@ class Menus
             if (theButton != null)
             {
                 theButton.Highlight(true);
-                if (Controller.WasATriggerClicked(102))
+                if (Controller.WasATriggerClicked(105))
                 {
                     theButton.Click();
                 }
@@ -355,7 +347,7 @@ class Menus
             if (theButton != null)
             {
                 theButton.Highlight(true);
-                if (Controller.WasATriggerClicked(103))
+                if (Controller.WasATriggerClicked(106))
                 {
                     theButton.Click();
                 }
@@ -366,6 +358,7 @@ class Menus
     }
 
     private static float intInputInteractionNext = 0;
+    private static float intInputInteractionAccel = 0.4f;
     public static bool IntInputInteract()
     {
         if (intInput.representative.activeSelf)
@@ -376,22 +369,30 @@ class Menus
             double magnitude = Controller.GetMaximalJoystickMagnitude();
             if (y > -0.5 && magnitude > 0.05)
             {
+                VSVRMod.logger.LogWarning("CJ ");
                 if (intInputInteractionNext < Time.time)
                 {
                     string current = intInput.text.text;
-                    int currentInt = 0;
-                    int.TryParse(current, out currentInt);
-                    currentInt += (int)Math.Round(x) * 4;
-                    intInputInteractionNext = Time.time + 0.4f;
-                    intInput.text.SetText(currentInt.ToString());
+                    VSVRMod.logger.LogWarning("C " + current);
+                    int.TryParse(current, out int currentInt);
+                    currentInt += (int)Math.Round(x * 4);
+                    VSVRMod.logger.LogWarning("CI " + currentInt);
+                    intInputInteractionNext = Time.time + intInputInteractionAccel;
+                    intInputInteractionAccel = Math.Clamp(intInputInteractionAccel - 0.04f, 0.04f, float.PositiveInfinity);
+                    intInput.text.text = currentInt.ToString();
                 }
                 return true;
+            }
+            else
+            {
+                intInputInteractionAccel = 0.4f;
             }
         }
         return false;
     }
 
     private static float findomInputInteractionNext = 0;
+    private static float findomInputInteractionAccel = 0.4f;
     //false = controlling buttons, true = controlling slider
     private static bool findomInputInteractState = false;
     public static bool FindomInputInteract()
@@ -402,6 +403,11 @@ class Menus
             double x = vector2.x;
             double y = vector2.y;
             double magnitude = Controller.GetMaximalJoystickMagnitude();
+            if (Controller.WasAStickClicked(106))
+            {
+                findomInputInteractState = !findomInputInteractState;
+                return true;
+            }
             if (findomInputInteractState)
             {
                 if(magnitude > 0.05)
@@ -409,12 +415,18 @@ class Menus
                     if (findomInputInteractionNext < Time.time)
                     {
                         int currentInt = (int)findomInput.slider.value;
-                        currentInt += (int)Math.Round(x) * 4;
-                        findomInputInteractionNext = Time.time + 0.4f;
+                        currentInt += (int)Math.Round(x * 4);
+                        findomInputInteractionNext = Time.time + findomInputInteractionAccel;
+                        findomInputInteractionAccel = Math.Clamp(findomInputInteractionAccel - 0.04f, 0.04f, float.PositiveInfinity);
                         currentInt = Math.Clamp(currentInt, (int)findomInput.slider.minValue, (int)findomInput.slider.maxValue);
                         findomInput.slider.value = currentInt;
                     }
                 }
+                else
+                {
+                    findomInputInteractionAccel = 0.4f;
+                }
+                return true;
             }
             else
             {
@@ -422,7 +434,7 @@ class Menus
                 List<VSFindomButton> activeFindomButtons = new List<VSFindomButton>();
                 foreach (VSFindomButton button in findomInput.sendOptions)
                 {
-                    if (button.buttonObject.activeSelf)
+                    if (button.buttonObject.transform.parent.gameObject.activeSelf)
                     {
                         activeFindomButtons.Add(button);
                         button.Highlight(false);
@@ -430,23 +442,19 @@ class Menus
                 }
                 double sectionSize = 2.0 / (activeFindomButtons.Count + 1);
                 VSFindomButton theButton = findomInput.cancel;
-                if(x > -1.0 + sectionSize)
+                if(y > -1.0 + sectionSize)
                 {
-                    theButton = activeFindomButtons[(int)Math.Floor((x + 1.0) / sectionSize) - 1];
+                    theButton = activeFindomButtons[(int)Math.Floor((y + 1.0) / sectionSize) - 1];
                 }
                 if (theButton != null)
                 {
                     theButton.Highlight(true);
-                    if (Controller.WasATriggerClicked(106))
+                    if (Controller.WasATriggerClicked(777))
                     {
                         theButton.Click();
                     }
                     return true;
                 }
-            }
-            if (Controller.WasAStickClicked(106))
-            {
-                findomInputInteractState = !findomInputInteractState;
             }
         }
         return false;
