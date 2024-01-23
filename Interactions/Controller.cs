@@ -6,8 +6,9 @@ using System.Reflection;
 using UnityEngine.XR.OpenXR.Features.Interactions;
 using UnityEngine.XR.OpenXR.Features;
 using UnityEngine.XR.OpenXR;
-using static UnityEngine.ParticleSystem.PlaybackState;
-
+using UnityEngine.InputSystem;
+using System;
+     
 namespace VSVRMod2;
 
 class Controller
@@ -57,7 +58,7 @@ class Controller
         VSVRMod.logger.LogInfo("Current Right Controller: " + rightController.name);
     }
 
-    public static void DeviceConnect(InputDevice device)
+    public static void DeviceConnect(UnityEngine.XR.InputDevice device)
     {
         VSVRMod.logger.LogInfo("Device Connected: " + device.name);
         if (device.characteristics.HasFlag(InputDeviceCharacteristics.Left))
@@ -134,6 +135,7 @@ class Controller
     {
         float left = 0f;
         float right = 0f;
+        bool joystick = false;
 
         if (leftController != null)
         {
@@ -143,13 +145,14 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.trigger, out right);
         }
+        joystick = Input.GetAxis("Fire1") > 0.5f;
 
         if (outputControllerDebug >= 2)
         {
             VSVRMod.logger.LogInfo("Trigger: Left: " + left + " Right: " + right);
         }
 
-        return right > 0.5 || left > 0.5;
+        return right > 0.5 || left > 0.5 || joystick;
     }
 
     private static Dictionary<int, bool> stickPresses = new Dictionary<int, bool>();
@@ -175,6 +178,7 @@ class Controller
     {
         bool left = false;
         bool right = false;
+        bool joystick = false;
 
         if (leftController != null)
         {
@@ -184,13 +188,14 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxisClick, out right);
         }
+        joystick = Input.GetAxis("Fire2") > 0.5f;
 
         if (outputControllerDebug >= 2)
         {
             VSVRMod.logger.LogInfo("Stick: Left: " + left + " Right: " + right);
         }
 
-        return right || left;
+        return right || left || joystick;
     }
 
     private static Dictionary<int, bool> facePresses = new Dictionary<int, bool>();
@@ -210,10 +215,11 @@ class Controller
         return clicked;
     }
 
-    public static bool AreBothGripsPressed() 
+    public static int CountGripsPressed() 
     {
         bool left = false;
         bool right = false;
+        bool joystick = false;
         if (leftController != null)
         {
             leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.gripButton, out left);
@@ -222,8 +228,9 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.gripButton, out right);
         }
+        joystick = Input.GetAxis("Fire3") > 0.5f;
 
-        return left && right;
+        return Math.Clamp(Convert.ToInt32(left) + Convert.ToInt32(right) + Convert.ToInt32(joystick), 0, 2);
     }
 
     public static bool IsAFaceButtonPressed()
@@ -232,6 +239,7 @@ class Controller
         bool left2 = false;
         bool right1 = false;
         bool right2 = false;
+        bool joystick = false;
 
         if (leftController != null)
         {
@@ -243,13 +251,14 @@ class Controller
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out right1);
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out right2);
         }
+        joystick = Input.GetAxis("Jump") > 0.5f;
 
         if (outputControllerDebug >= 2)
         {
             VSVRMod.logger.LogInfo("Face Button: Left: " + (left1 || left2) + " Right: " + (right1 || right2));
         }
 
-        return left1 || left2 || right1 || right2;
+        return left1 || left2 || right1 || right2 || joystick;
     }
 
     public static Vector2 GetMaximalJoystickValue()
@@ -265,6 +274,8 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxis, out rightJoystickValue);
         }
+        Vector2 joystick = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        leftJoystickValue = leftJoystickValue.magnitude > joystick.magnitude ? leftJoystickValue : joystick;
 
         if (outputControllerDebug >= 3)
         {

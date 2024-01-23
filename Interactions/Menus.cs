@@ -92,6 +92,13 @@ class Menus
     }
     static FindomInput findomInput = new FindomInput();
 
+    private struct Scoreboard
+    {
+        public GameObject representative;
+        public VSFindomButton mainMenu;
+    }
+    static Scoreboard scoreboard = new Scoreboard();
+
     public static void SetupMenus()
     {
         Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
@@ -244,6 +251,12 @@ class Menus
         findomInput.sendOptions.Add(tributeButton);
 
         VSVRMod.logger.LogInfo("Setup Tribute Menu");
+
+        Transform scoreCanvas = GameObject.Find("ScoreCanvas").transform;
+        scoreboard.representative = scoreCanvas.Find("Scoreboard").gameObject;
+        scoreboard.mainMenu = new VSFindomButton();
+        scoreboard.mainMenu.Populate(scoreCanvas, "Main Menu", "Scoreboard/Finish/Button");
+        VSVRMod.logger.LogInfo("Setup Scoreboard");
     }
 
     public static bool ChoiceMenuInteract()
@@ -458,5 +471,18 @@ class Menus
             }
         }
         return false;
+    }
+    
+    public static bool ScoreboardInteract()
+    {
+        if(!scoreboard.representative.activeSelf)
+        {
+            return false;
+        }
+        if(Controller.WasAFaceButtonClicked(200) || Controller.WasAStickClicked(200) || Controller.WasATriggerClicked(200))
+        {
+            scoreboard.mainMenu.Click();
+        }
+        return true;
     }
 }
