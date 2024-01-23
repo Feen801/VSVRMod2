@@ -80,6 +80,10 @@ public class VSVRMod : BaseUnityPlugin
     void Update()
     {
         Keyboard.HandleKeyboardInput();
+        //logger.LogInfo("X:" + Input.GetAxis("Horizontal") + " Y: " + Input.GetAxis("Vertical")
+        //    + "A" + Input.GetAxis("Fire1")
+        //    + "B" + Input.GetAxis("Fire2")
+        //    + "C" + Input.GetAxis("Fire3"));
         if (inSession)
         {
             if (VRConfig.useHeadMovement.Value) {
@@ -88,9 +92,18 @@ public class VSVRMod : BaseUnityPlugin
             Keyboard.HandleKeyboardInputSession();
             Controller.ControllerInteract();
             VRCamera.ProcessHeadMovement();
-            if(Controller.AreBothGripsPressed())
+            int gripCount = Controller.CountGripsPressed();
+            if (gripCount == 2)
             {
                 VRCamera.CenterCamera();
+            }
+            else if (gripCount == 1)
+            {
+                VRCamera.MakeUIClose(true);
+            }
+            else
+            {
+                VRCamera.MakeUIClose(false);
             }
         }
     }
