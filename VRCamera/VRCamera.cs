@@ -14,6 +14,7 @@ public class VRCamera
     private static Canvas uiCanvas;
     private static Canvas overlayCanvas;
     private static Canvas scoreCanvas;
+    private static Canvas fadeCanvas;
 
     public static void SetupCamera()
     {
@@ -75,12 +76,14 @@ public class VRCamera
             uiCanvas.planeDistance = 0.2f;
             overlayCanvas.planeDistance = 0.18f;
             scoreCanvas.planeDistance = 0.16f;
+            fadeCanvas.planeDistance = 0.1f;
         }
         else
         {
             uiCanvas.planeDistance = 0.5f;
             overlayCanvas.planeDistance = 0.45f;
             scoreCanvas.planeDistance = 0.4f;
+            fadeCanvas.planeDistance = 0.1f;
         }
     }
 
@@ -131,20 +134,24 @@ public class VRCamera
         uiCanvas = ui.GetComponent<Canvas>();
         uiCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         uiCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        uiCanvas.planeDistance = 0.5f;
 
         GameObject overlay = GetGameObjectCheckFound("OverlayCanvas");
         overlayCanvas = overlay.GetComponent<Canvas>();
         overlayCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         overlayCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        overlayCanvas.planeDistance = 0.45f;
         overlayCanvas.GetComponent<Canvas>().sortingOrder = 9;
 
         GameObject score = GetGameObjectCheckFound("ScoreCanvas");
         scoreCanvas = score.GetComponent<Canvas>();
         scoreCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         scoreCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        scoreCanvas.planeDistance = 0.4f;
+
+        GameObject fade = GetGameObjectCheckFound("FadeCanvas");
+        fadeCanvas = score.GetComponent<Canvas>();
+        fadeCanvas.worldCamera = vrCamera.GetComponent<Camera>();
+        fadeCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+
+        MakeUIClose(false);
 
         Transform hypnoSpinPlayer = overlay.transform.Find("HypnoSpinPlayer");
         hypnoSpinPlayer.rotation = new Quaternion(0, 0, 0, 0);
@@ -246,6 +253,9 @@ public class VRCamera
         overlayCanvas.planeDistance = 0.2f;
 
         scoreCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+        fadeCanvas.worldCamera = null;
+        fadeCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
         //GameObject uiEvent = GameObject.Find("GeneralCanvas/EventManager");
         //uiEvent.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 100, 0);
