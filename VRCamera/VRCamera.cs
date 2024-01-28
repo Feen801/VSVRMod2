@@ -18,22 +18,10 @@ public class VRCamera
 
     public static void SetupCamera()
     {
-        //root = GameObject.Find("Root");
         GameObject worldCamDefault = GetGameObjectCheckFound("WorldCamDefault");
         primaryCamera = GetGameObjectCheckFound("PrimaryCamera");
         vrCameraParent = new GameObject("VRCameraParent");
         vrCameraParent.transform.SetParent(worldCamDefault.transform);
-
-        //VSVRMod.logger.LogInfo("Creating VR UI camera...");
-        //vrUICamera = new GameObject("VRUICamera");
-        //VSVRMod.logger.LogInfo("VR UI Camera Setup");
-        //vrUICamera.AddComponent<Camera>().nearClipPlane = 0.01f;
-        //vrUICamera.GetComponent<Camera>().depth = 50;
-        //vrUICamera.GetComponent<Camera>().cullingMask = 1591;
-        //vrUICamera.GetComponent<Camera>().clearFlags = CameraClearFlags.Depth;
-        //vrUICamera.AddComponent<TrackedPoseDriver>();
-        //VSVRMod.logger.LogInfo("Reparenting VR UI camera...");
-        //vrUICamera.transform.SetParent(vrCameraParent.transform);
         
         VSVRMod.logger.LogInfo("Creating VR camera...");
         vrCamera = new GameObject("VRCamera");
@@ -87,29 +75,12 @@ public class VRCamera
         }
     }
 
-    public static void ProcessHeadMovement()
-    {
-        //Tried to make eyes also follow the vr camera, but it is complicated. May revist
-        //eyeFollower.transform.SetPositionAndRotation(new Vector3(vrCamera.transform.position.x, vrCamera.transform.position.y, 0), new Quaternion(0, 0, 0, 0));
-        //we multiply by 10 here because... that just makes it work properly idk
-        //eyeFollower.transform.localPosition = (vrCamera.transform.position - headFollower.transform.position) * 10.0f;
-        //if (Vector3.Distance(vrCamera.transform.position, headFollower.transform.position) > 1)
-        //{
-        //    headFollower.transform.SetPositionAndRotation(vrCamera.transform.position, new Quaternion(0, 0, 0, 0));
-        //}
-    }
-
-    // Function to project a point onto a plane
-    //Tried to make eyes also follow the vr camera, but it is complicated. May revist
     private static Vector3 ProjectPointOntoPlane(Vector3 point, Vector3 planeNormal, Vector3 planePoint)
     {
-        // Calculate the vector from a point on the plane to the given point
         Vector3 vectorToProject = point - planePoint;
 
-        // Calculate the distance along the normal vector from the plane point to the point
         float distance = Vector3.Dot(vectorToProject, planeNormal) / planeNormal.sqrMagnitude;
 
-        // Project the point onto the plane
         Vector3 projectedPoint = point - distance * planeNormal;
 
         return projectedPoint;
@@ -147,7 +118,7 @@ public class VRCamera
         scoreCanvas.renderMode = RenderMode.ScreenSpaceCamera;
 
         GameObject fade = GetGameObjectCheckFound("FadeCanvas");
-        fadeCanvas = score.GetComponent<Canvas>();
+        fadeCanvas = fade.GetComponent<Canvas>();
         fadeCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         fadeCanvas.renderMode = RenderMode.ScreenSpaceCamera;
 
@@ -228,7 +199,6 @@ public class VRCamera
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
         vrCamera.SetActive(true);
-        //vrUICamera.SetActive(true);
     }
 
     private static GameObject GetGameObjectCheckFound(string path)
@@ -257,12 +227,7 @@ public class VRCamera
         fadeCanvas.worldCamera = null;
         fadeCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-        //GameObject uiEvent = GameObject.Find("GeneralCanvas/EventManager");
-        //uiEvent.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 100, 0);
-        //uiEvent.GetComponent<RectTransform>().localScale = new Vector3(0.9f, 0.9f, 0.9f);
-
         vrCamera.SetActive(false);
-        //vrUICamera.SetActive(false);
     }
 
     public static void CenterCamera()

@@ -60,14 +60,14 @@ public class VSVRMod : BaseUnityPlugin
         {
             VRCamera.SetupCamera();
             VRCamera.SetupUI();
-            Buttons.SetupChoiceButtons();
-            Buttons.SetupOtherButtons();
-            Buttons.SetupRadialButtons();
-            Menus.SetupMenus();
+            BasicUI.SetupChoiceButtons();
+            BasicUI.SetupOtherButtons();
+            BasicUI.SetupRadialButtons();
+            SpecialUI.SetupMenus();
             VRCamera.CenterCamera();
 
-            vrGestureRecognizer.Nodded += Buttons.HeadMovementTracker.Nod;
-            vrGestureRecognizer.HeadShaken += Buttons.HeadMovementTracker.Headshake;
+            vrGestureRecognizer.Nodded += BasicUI.HeadMovementTracker.Nod;
+            vrGestureRecognizer.HeadShaken += BasicUI.HeadMovementTracker.Headshake;
 
             inSession = true;
         }

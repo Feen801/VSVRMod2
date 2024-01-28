@@ -15,7 +15,6 @@ class Keyboard
         {
             VRCamera.ToggleUIVR();
         }
-        //VSVRMod.logger.LogInfo(Gamepad.current.aButton);
     }
 
     public static void HandleKeyboardInput()

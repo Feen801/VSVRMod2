@@ -5,48 +5,8 @@ using TMPro;
 using UnityEngine.UI;
 
 namespace VSVRMod2;
-public class VSFindomButton
-{
-    static Color darkGrey = new Color(0.15f, 0.15f, 0.15f, 1);
-    public string name;
-    public Button button;
-    public GameObject buttonObject;
-    public Image highlight;
 
-    public void Highlight(bool status)
-    {
-        highlight.color = status ? Color.white : darkGrey;
-    }
-
-    public void Populate(Transform knownParent, string name, string path)
-    {
-        this.name = name;
-        Transform buttonObject = knownParent.Find(path);
-        if (buttonObject == null)
-        {
-            VSVRMod.logger.LogError(this.name + " had null button object");
-        }
-        this.buttonObject = buttonObject.gameObject;
-        this.button = buttonObject.GetComponent<Button>();
-        if (this.button == null)
-        {
-            VSVRMod.logger.LogError(this.name + " had null button");
-        }
-        highlight = this.buttonObject.GetComponent<Image>();
-        if (this.highlight == null)
-        {
-            VSVRMod.logger.LogError(this.name + " had null image");
-        }
-        VSVRMod.logger.LogInfo("Verified findom button: " + this.name);
-    }
-
-    public void Click() 
-    {
-        this.button.OnSubmit(null);
-    }
-}
-
-class Menus
+class SpecialUI
 {
     private struct ChoiceMenu
     {
@@ -110,25 +70,19 @@ class Menus
         {
             VSVRMod.logger.LogError("ChoiceUI had null representative");
         }
-        choiceMenu.favorite = new();
-        choiceMenu.favorite.Populate(
-            eventManager.Find("Buttons"),
+        choiceMenu.favorite = new(eventManager.Find("Buttons"),
             "Favorite Heart",
             "FavoriteHeart",
             "/DoneBG/DoneText/Collider",
             "/DoneBG/DoneText/Collider/ButtonPressReact1"
             );
-        choiceMenu.left = new();
-        choiceMenu.left.Populate(
-            eventManager.Find("ChoiceUI"),
+        choiceMenu.left = new(eventManager.Find("ChoiceUI"),
             "Choice Left",
             "Choice1",
             "/Collider",
             "/Image (1)/Borders/DarkBorder"
             );
-        choiceMenu.right = new();
-        choiceMenu.right.Populate(
-            eventManager.Find("ChoiceUI"),
+        choiceMenu.right = new(eventManager.Find("ChoiceUI"),
             "Choice Right",
             "Choice2",
             "/Collider",
@@ -142,25 +96,19 @@ class Menus
         {
             VSVRMod.logger.LogError("StakesUI had null representative");
         }
-        stakesMenu.top = new();
-        stakesMenu.top.Populate(
-            eventManager.Find("StakesUI"),
+        stakesMenu.top = new(eventManager.Find("StakesUI"),
             "Stakes Top",
             "BG1",
             "/Collider",
             "/Borders/DarkBorder"
             );
-        stakesMenu.middle = new();
-        stakesMenu.middle.Populate(
-            eventManager.Find("StakesUI"),
+        stakesMenu.middle = new(eventManager.Find("StakesUI"),
             "Stakes Middle",
             "BG2",
             "/Collider",
             "/Borders/DarkBorder"
             );
-        stakesMenu.bottom = new();
-        stakesMenu.bottom.Populate(
-            eventManager.Find("StakesUI"),
+        stakesMenu.bottom = new(eventManager.Find("StakesUI"),
             "Stakes Bottom",
             "BG3",
             "/Collider",
@@ -174,25 +122,19 @@ class Menus
         {
             VSVRMod.logger.LogError("Safeword had null representative");
         }
-        safewordMenu.goEasy = new();
-        safewordMenu.goEasy.Populate(
-            eventManager.Find("Buttons"),
+        safewordMenu.goEasy = new(eventManager.Find("Buttons"),
             "Safeword Go Easy",
             "GoEasy",
             "/DoneBG/DoneText/Collider",
             "/DoneBG/DoneText/Collider/ButtonPressReact1"
             );
-        safewordMenu.continueSession = new();
-        safewordMenu.continueSession.Populate(
-            eventManager.Find("Buttons"),
+        safewordMenu.continueSession = new(eventManager.Find("Buttons"),
             "Safeword Continue",
             "ContinueSession",
             "/DoneBG/DoneText/Collider",
             "/DoneBG/DoneText/Collider/ButtonPressReact1"
             );
-        safewordMenu.endSession = new();
-        safewordMenu.endSession.Populate(
-            eventManager.Find("Buttons"),
+        safewordMenu.endSession = new(eventManager.Find("Buttons"),
             "Safeword End Session",
             "EndSession",
             "/DoneBG/DoneText/Collider",
@@ -222,8 +164,7 @@ class Menus
         }
 
         findomInput.sendOptions = new List<VSFindomButton>();
-        findomInput.cancel = new VSFindomButton();
-        findomInput.cancel.Populate(overlayCanvas, "Tribute Cancel", "TributeMenu/Cancel");
+        findomInput.cancel = new(overlayCanvas, "Tribute Cancel", "TributeMenu/Cancel");
         findomInput.sliderObject = overlayCanvas.Find("TributeMenu/Slider - Standard (Value)").gameObject;
         if (findomInput.sliderObject == null)
         {
@@ -234,15 +175,10 @@ class Menus
         {
             VSVRMod.logger.LogError("Tribute Menu had null slider");
         }
-        VSFindomButton tributeButton = new VSFindomButton();
-        VSFindomButton bribeButton = new VSFindomButton();
-        VSFindomButton placateButton = new VSFindomButton();
-        VSFindomButton comfortButton = new VSFindomButton();
-
-        tributeButton.Populate(overlayCanvas, "Tribute Button", "TributeMenu/Options/Group/Text (TMP) (7)/Button");
-        bribeButton.Populate(overlayCanvas, "Bribe Button", "TributeMenu/Options/Group/Text (TMP) (6)/Button");
-        placateButton.Populate(overlayCanvas, "Placate Button", "TributeMenu/Options/Group/Text (TMP) (8)/Button");
-        comfortButton.Populate(overlayCanvas, "Comfort Button", "TributeMenu/Options/Group/Text (TMP) (9)/Button");
+        VSFindomButton tributeButton = new(overlayCanvas, "Tribute Button", "TributeMenu/Options/Group/Text (TMP) (7)/Button");
+        VSFindomButton bribeButton = new(overlayCanvas, "Bribe Button", "TributeMenu/Options/Group/Text (TMP) (6)/Button");
+        VSFindomButton placateButton = new(overlayCanvas, "Placate Button", "TributeMenu/Options/Group/Text (TMP) (8)/Button");
+        VSFindomButton comfortButton = new(overlayCanvas, "Comfort Button", "TributeMenu/Options/Group/Text (TMP) (9)/Button");
 
         //From bottom to top
         findomInput.sendOptions.Add(comfortButton);
@@ -254,8 +190,7 @@ class Menus
 
         Transform scoreCanvas = GameObject.Find("ScoreCanvas").transform;
         scoreboard.representative = scoreCanvas.Find("Scoreboard").gameObject;
-        scoreboard.mainMenu = new VSFindomButton();
-        scoreboard.mainMenu.Populate(scoreCanvas, "Main Menu", "Scoreboard/Finish/Button");
+        scoreboard.mainMenu = new(scoreCanvas, "Main Menu", "Scoreboard/Finish/Button");
         VSVRMod.logger.LogInfo("Setup Scoreboard");
     }
 

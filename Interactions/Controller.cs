@@ -16,32 +16,6 @@ class Controller
     public static int outputControllerDebug = 0;
     private static UnityEngine.XR.InputDevice leftController;
     private static UnityEngine.XR.InputDevice rightController;
-    //public static void SetupControllers()
-    //{
-    //    var inputDevices = new List<UnityEngine.XR.InputDevice>();
-    //    InputDevices.GetDevices(inputDevices);
-    //    if (inputDevices.Count > 0)
-    //    {
-    //        foreach (var device in inputDevices)
-    //        {
-    //            VSVRMod.logger.LogInfo("Found controller: " + device.name + " Characteristics: " + device.characteristics);
-    //        }
-    //    }
-    //    else
-    //    {
-    //        VSVRMod.logger.LogInfo("Could not find any controllers.");
-    //    }
-    //    InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Left, inputDevices);
-    //    if (inputDevices.Count > 0)
-    //    {
-    //        leftController = inputDevices[0];
-    //    }
-    //    InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Right, inputDevices);
-    //    if (inputDevices.Count > 0)
-    //    {
-    //        rightController = inputDevices[0];
-    //    }
-    //}
 
     public static void CheckControllers()
     {
@@ -315,35 +289,35 @@ class Controller
     public static void ControllerInteract()
     {
         //Ordered by priority
-        if (Menus.SafewordMenuInteract())
+        if (SpecialUI.SafewordMenuInteract())
         {
             return;
         }
-        if (Buttons.TemporaryButtonInteract())
+        if (BasicUI.TemporaryButtonInteract())
         {
             return;
         }
-        if (Menus.FindomInputInteract())
+        if (SpecialUI.FindomInputInteract())
         {
             return;
         }
-        if (Buttons.RadialMenuInteract())
+        if (BasicUI.RadialMenuInteract())
         {
             return;
         }
-        if (Menus.StakesMenuInteract())
+        if (SpecialUI.StakesMenuInteract())
         {
             return;
         }
-        if (Menus.ChoiceMenuInteract())
+        if (SpecialUI.ChoiceMenuInteract())
         {
             return;
         }
-        if (Menus.IntInputInteract())
+        if (SpecialUI.IntInputInteract())
         {
             return;
         }
-        if (Buttons.ChoiceButtonInteract())
+        if (BasicUI.ChoiceButtonInteract())
         {
             return;
         }
