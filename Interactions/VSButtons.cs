@@ -126,6 +126,11 @@ public class VSRadialButton : VSGenericButton
         Level2 = 0xF0
     }
 
+    public bool IsOnRadialLevel(RadialLevel radialLevel)
+    {
+        return (this.radialLevel & radialLevel) != 0x00;
+    }
+
     public RadialLevel radialLevel;
 }
 

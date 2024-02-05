@@ -234,7 +234,7 @@ public class BasicUI
             foreach (VSRadialButton button in vsRadialButtons)
             {
                 if (button.minDegrees < stickDirection && button.maxDegrees > stickDirection && button.components.buttonObject.activeSelf) {
-                    if ((button.radialLevel & currentRadialLevel) != 0x00)
+                    if (button.IsOnRadialLevel(currentRadialLevel))
                     {
                         candidateButtons.Add(button);
                     }
