@@ -50,7 +50,9 @@ public class VSVRMod : BaseUnityPlugin
 
         SceneManager.sceneLoaded += OnSceneLoaded;
 
-        Logger.LogInfo("Reached end of Plugin.Awake()");
+        VSVRAssets.LoadAssets();
+
+        logger.LogInfo("Reached end of Plugin.Awake()");
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -60,14 +62,15 @@ public class VSVRMod : BaseUnityPlugin
         {
             VRCamera.SetupCamera();
             VRCamera.SetupUI();
-            Buttons.SetupChoiceButtons();
-            Buttons.SetupOtherButtons();
-            Buttons.SetupRadialButtons();
-            Menus.SetupMenus();
+            BasicUI.SetupChoiceButtons();
+            BasicUI.SetupOtherButtons();
+            BasicUI.SetupRadialButtons();
+            SpecialUI.SetupMenus();
             VRCamera.CenterCamera();
+            VSVRAssets.ApplyUIShader();
 
-            vrGestureRecognizer.Nodded += Buttons.HeadMovementTracker.Nod;
-            vrGestureRecognizer.HeadShaken += Buttons.HeadMovementTracker.Headshake;
+            vrGestureRecognizer.Nodded += BasicUI.HeadMovementTracker.Nod;
+            vrGestureRecognizer.HeadShaken += BasicUI.HeadMovementTracker.Headshake;
 
             inSession = true;
         }
@@ -80,10 +83,6 @@ public class VSVRMod : BaseUnityPlugin
     void Update()
     {
         Keyboard.HandleKeyboardInput();
-        //logger.LogInfo("X:" + Input.GetAxis("Horizontal") + " Y: " + Input.GetAxis("Vertical")
-        //    + "A" + Input.GetAxis("Fire1")
-        //    + "B" + Input.GetAxis("Fire2")
-        //    + "C" + Input.GetAxis("Fire3"));
         if (inSession)
         {
             if (VRConfig.useHeadMovement.Value) {
@@ -91,7 +90,6 @@ public class VSVRMod : BaseUnityPlugin
             }
             Keyboard.HandleKeyboardInputSession();
             Controller.ControllerInteract();
-            VRCamera.ProcessHeadMovement();
             int gripCount = Controller.CountGripsPressed();
             if (gripCount == 2)
             {
@@ -129,7 +127,7 @@ public class VSVRMod : BaseUnityPlugin
         typeof(XRGeneralSettings).GetMethod("InitXRSDK", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(generalSettings, []);
         typeof(XRGeneralSettings).GetMethod("Start", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(generalSettings, []);
 
-        Logger.LogInfo("Initialized OpenXR Runtime");
+        logger.LogInfo("Initialized OpenXR Runtime");
     }
 
     /**
@@ -150,7 +148,7 @@ public class VSVRMod : BaseUnityPlugin
 
         displays[0].Start();
 
-        Logger.LogInfo("Started XR Display subsystem, welcome to VR!");
+        logger.LogInfo("Started XR Display subsystem, welcome to VR!");
 
         return true;
     }

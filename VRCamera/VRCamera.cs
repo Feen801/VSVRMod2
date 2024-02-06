@@ -14,25 +14,14 @@ public class VRCamera
     private static Canvas uiCanvas;
     private static Canvas overlayCanvas;
     private static Canvas scoreCanvas;
+    private static Canvas fadeCanvas;
 
     public static void SetupCamera()
     {
-        //root = GameObject.Find("Root");
-        GameObject worldCamDefault = GetGameObjectCheckFound("WorldCamDefault");
-        primaryCamera = GetGameObjectCheckFound("PrimaryCamera");
+        GameObject worldCamDefault = GameObjectHelper.GetGameObjectCheckFound("WorldCamDefault");
+        primaryCamera = GameObjectHelper.GetGameObjectCheckFound("PrimaryCamera");
         vrCameraParent = new GameObject("VRCameraParent");
         vrCameraParent.transform.SetParent(worldCamDefault.transform);
-
-        //VSVRMod.logger.LogInfo("Creating VR UI camera...");
-        //vrUICamera = new GameObject("VRUICamera");
-        //VSVRMod.logger.LogInfo("VR UI Camera Setup");
-        //vrUICamera.AddComponent<Camera>().nearClipPlane = 0.01f;
-        //vrUICamera.GetComponent<Camera>().depth = 50;
-        //vrUICamera.GetComponent<Camera>().cullingMask = 1591;
-        //vrUICamera.GetComponent<Camera>().clearFlags = CameraClearFlags.Depth;
-        //vrUICamera.AddComponent<TrackedPoseDriver>();
-        //VSVRMod.logger.LogInfo("Reparenting VR UI camera...");
-        //vrUICamera.transform.SetParent(vrCameraParent.transform);
         
         VSVRMod.logger.LogInfo("Creating VR camera...");
         vrCamera = new GameObject("VRCamera");
@@ -44,7 +33,7 @@ public class VRCamera
         VSVRMod.logger.LogInfo("Reparenting VR camera...");
         vrCamera.transform.SetParent(vrCameraParent.transform);
 
-        headFollower = GetGameObjectCheckFound("HeadTargetFollower");
+        headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
         headFollower.transform.SetParent(vrCamera.transform);
         PlayMakerFSM headResetter = headFollower.GetComponent<PlayMakerFSM>();
         headResetter.enabled = false;
@@ -75,38 +64,23 @@ public class VRCamera
             uiCanvas.planeDistance = 0.2f;
             overlayCanvas.planeDistance = 0.18f;
             scoreCanvas.planeDistance = 0.16f;
+            fadeCanvas.planeDistance = 0.6f;
         }
         else
         {
             uiCanvas.planeDistance = 0.5f;
             overlayCanvas.planeDistance = 0.45f;
             scoreCanvas.planeDistance = 0.4f;
+            fadeCanvas.planeDistance = 0.6f;
         }
     }
 
-    public static void ProcessHeadMovement()
-    {
-        //Tried to make eyes also follow the vr camera, but it is complicated. May revist
-        //eyeFollower.transform.SetPositionAndRotation(new Vector3(vrCamera.transform.position.x, vrCamera.transform.position.y, 0), new Quaternion(0, 0, 0, 0));
-        //we multiply by 10 here because... that just makes it work properly idk
-        //eyeFollower.transform.localPosition = (vrCamera.transform.position - headFollower.transform.position) * 10.0f;
-        //if (Vector3.Distance(vrCamera.transform.position, headFollower.transform.position) > 1)
-        //{
-        //    headFollower.transform.SetPositionAndRotation(vrCamera.transform.position, new Quaternion(0, 0, 0, 0));
-        //}
-    }
-
-    // Function to project a point onto a plane
-    //Tried to make eyes also follow the vr camera, but it is complicated. May revist
     private static Vector3 ProjectPointOntoPlane(Vector3 point, Vector3 planeNormal, Vector3 planePoint)
     {
-        // Calculate the vector from a point on the plane to the given point
         Vector3 vectorToProject = point - planePoint;
 
-        // Calculate the distance along the normal vector from the plane point to the point
         float distance = Vector3.Dot(vectorToProject, planeNormal) / planeNormal.sqrMagnitude;
 
-        // Project the point onto the plane
         Vector3 projectedPoint = point - distance * planeNormal;
 
         return projectedPoint;
@@ -127,24 +101,30 @@ public class VRCamera
     public static void SetupUI()
     {
         uiInVR = true;
-        GameObject ui = GetGameObjectCheckFound("GeneralCanvas");
+        GameObject ui = GameObjectHelper.GetGameObjectCheckFound("GeneralCanvas");
         uiCanvas = ui.GetComponent<Canvas>();
+        uiCanvas.sortingOrder = 400;
         uiCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         uiCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        uiCanvas.planeDistance = 0.5f;
 
-        GameObject overlay = GetGameObjectCheckFound("OverlayCanvas");
+        GameObject overlay = GameObjectHelper.GetGameObjectCheckFound("OverlayCanvas");
         overlayCanvas = overlay.GetComponent<Canvas>();
         overlayCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         overlayCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        overlayCanvas.planeDistance = 0.45f;
-        overlayCanvas.GetComponent<Canvas>().sortingOrder = 9;
+        overlayCanvas.GetComponent<Canvas>().sortingOrder = 401;
 
-        GameObject score = GetGameObjectCheckFound("ScoreCanvas");
+        GameObject score = GameObjectHelper.GetGameObjectCheckFound("ScoreCanvas");
         scoreCanvas = score.GetComponent<Canvas>();
         scoreCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         scoreCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        scoreCanvas.planeDistance = 0.4f;
+
+        GameObject fade = GameObjectHelper.GetGameObjectCheckFound("FadeCanvas");
+        fadeCanvas = fade.GetComponent<Canvas>();
+        fadeCanvas.sortingOrder = 399;
+        fadeCanvas.worldCamera = vrCamera.GetComponent<Camera>();
+        fadeCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+
+        MakeUIClose(false);
 
         Transform hypnoSpinPlayer = overlay.transform.Find("HypnoSpinPlayer");
         hypnoSpinPlayer.rotation = new Quaternion(0, 0, 0, 0);
@@ -221,17 +201,6 @@ public class VRCamera
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
         vrCamera.SetActive(true);
-        //vrUICamera.SetActive(true);
-    }
-
-    private static GameObject GetGameObjectCheckFound(string path)
-    {
-        GameObject go = GameObject.Find(path);
-        if (go == null)
-        {
-            VSVRMod.logger.LogError(path + " gameobject not found");
-        }
-        return go;
     }
 
     public static void RevertUI()
@@ -247,12 +216,10 @@ public class VRCamera
 
         scoreCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
-        //GameObject uiEvent = GameObject.Find("GeneralCanvas/EventManager");
-        //uiEvent.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 100, 0);
-        //uiEvent.GetComponent<RectTransform>().localScale = new Vector3(0.9f, 0.9f, 0.9f);
+        fadeCanvas.worldCamera = null;
+        fadeCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
         vrCamera.SetActive(false);
-        //vrUICamera.SetActive(false);
     }
 
     public static void CenterCamera()

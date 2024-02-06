@@ -41,7 +41,7 @@
       <HintPath>Libs\Managed\Unity.XR.CoreUtils.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.Management">
-      <HintPath>Libs\Stripped\Unity.XR.Management.dll</HintPath>
+      <HintPath>Libs\Managed\Unity.XR.Management.dll</HintPath>
     </Reference>
     <Reference Include="Unity.XR.OpenXR">
       <HintPath>Libs\Managed\Unity.XR.OpenXR.dll</HintPath>
