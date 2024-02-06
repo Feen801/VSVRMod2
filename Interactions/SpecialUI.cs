@@ -315,7 +315,7 @@ class SpecialUI
             double x = vector2.x;
             double y = vector2.y;
             double magnitude = Controller.GetMaximalJoystickMagnitude();
-            if (y > -0.5 && magnitude > 0.05)
+            if (y > -0.1 && magnitude > 0.05)
             {
                 VSVRMod.logger.LogWarning("CJ ");
                 if (intInputInteractionNext < Time.time)

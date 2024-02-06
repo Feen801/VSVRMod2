@@ -28,10 +28,10 @@ public class VSVRAssets
             VSVRMod.logger.LogError("Failed to load VR UI Shader " + "UIIgnoreDepth");
         }
 
-        textShader = vsvrAssets.LoadAsset<Shader>("TMP_SDF Overlay");
+        textShader = vsvrAssets.LoadAsset<Shader>("TMP_SDF");
         if (textShader == null)
         {
-            VSVRMod.logger.LogError("Failed to load VR text Shader " + "TMP_SDF Overlay");
+            VSVRMod.logger.LogError("Failed to load VR text Shader " + "TMP_SDF");
         }
     }
 

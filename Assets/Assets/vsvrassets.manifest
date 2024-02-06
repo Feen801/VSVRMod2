@@ -1,21 +1,21 @@
 ManifestFileVersion: 0
-CRC: 4205470035
+CRC: 1803373237
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 1ccb1f7589f74129530b66de982429de
+    Hash: 09443e1eea01ad94acd5347ce556641b
   TypeTreeHash:
     serializedVersion: 2
     Hash: 0df1dec30b5d061d422d3e6493d27647
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: 1ccb1f7589f74129530b66de982429de
+    Hash: 09443e1eea01ad94acd5347ce556641b
 HashAppended: 0
 ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/TextMesh Pro/Shaders/TMP_SDF Overlay.shader
-- Assets/UIIgnoreDepth.shader
+- Assets/vsvr/UIIgnoreDepth.shader
+- Assets/vsvr/TMP_SDF.shader
 Dependencies: []

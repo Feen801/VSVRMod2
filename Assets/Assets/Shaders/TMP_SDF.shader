@@ -1,4 +1,4 @@
-Shader "TextMeshPro/Distance Field Overlay" {
+Shader "TextMeshPro/Distance Field" {
 
 Properties {
 	_FaceTex			("Face Texture", 2D) = "white" {}
@@ -43,7 +43,7 @@ Properties {
 	_UnderlayDilate		("Border Dilate", Range(-1,1)) = 0
 	_UnderlaySoftness	("Border Softness", Range(0,1)) = 0
 
-	[HDR]_GlowColor		("Color", Color) = (0, 1, 0, 0.5)
+	[HDR]_GlowColor			("Color", Color) = (0, 1, 0, 0.5)
 	_GlowOffset			("Offset", Range(-1,1)) = 0
 	_GlowInner			("Inner", Range(0,1)) = 0.05
 	_GlowOuter			("Outer", Range(0,1)) = 0.05
@@ -87,8 +87,8 @@ Properties {
 SubShader {
 
 	Tags
-  {
-		"Queue"="Overlay"
+	{
+		"Queue"="Transparent"
 		"IgnoreProjector"="True"
 		"RenderType"="Transparent"
 	}
@@ -186,7 +186,7 @@ SubShader {
 
 			float bias =(.5 - weight) + (.5 / scale);
 
-			float alphaClip = (1.0 - _OutlineWidth*_ScaleRatioA - _OutlineSoftness*_ScaleRatioA);
+			float alphaClip = (1.0 - _OutlineWidth * _ScaleRatioA - _OutlineSoftness * _ScaleRatioA);
 
 		#if GLOW_ON
 			alphaClip = min(alphaClip, 1.0 - _GlowOffset * _ScaleRatioB - _GlowOuter * _ScaleRatioB);
@@ -305,7 +305,7 @@ SubShader {
 			clip(faceColor.a - 0.001);
 		#endif
 
-			return faceColor * input.color.a;
+  		return faceColor * input.color.a;
 		}
 
 		ENDCG

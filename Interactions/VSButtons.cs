@@ -109,7 +109,7 @@ public class VSRadialButton : VSGenericButton
         this.radialLevel = radialLevel;
     }
 
-    public VSRadialButton(Transform knownParent, string name, string path, double maxMagnitude, double minDegrees, double maxDegrees, RadialLevel radialLevel) : this(knownParent, name, path, colliderPath, highlightPath, maxMagnitude, minDegrees, minDegrees, radialLevel)
+    public VSRadialButton(Transform knownParent, string name, string path, double maxMagnitude, double minDegrees, double maxDegrees, RadialLevel radialLevel) : this(knownParent, name, path, colliderPath, highlightPath, maxMagnitude, minDegrees, maxDegrees, radialLevel)
     {
 
     }

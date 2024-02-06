@@ -229,11 +229,12 @@ public class BasicUI
             }
         }
 
-        if (stickMagnitude > 0.3 && currentRadialLevel != VSRadialButton.RadialLevel.None) { 
+        if (stickMagnitude > 0.3 && currentRadialLevel != VSRadialButton.RadialLevel.None) {
             List<VSRadialButton> candidateButtons = [];
             foreach (VSRadialButton button in vsRadialButtons)
             {
-                if (button.minDegrees < stickDirection && button.maxDegrees > stickDirection && button.components.buttonObject.activeSelf) {
+                if (button.minDegrees < stickDirection && button.maxDegrees > stickDirection && button.components.buttonObject.activeSelf)
+                {
                     if (button.IsOnRadialLevel(currentRadialLevel))
                     {
                         candidateButtons.Add(button);
