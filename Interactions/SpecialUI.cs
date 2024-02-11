@@ -317,14 +317,11 @@ class SpecialUI
             double magnitude = Controller.GetMaximalJoystickMagnitude();
             if (y > -0.1 && magnitude > 0.05)
             {
-                VSVRMod.logger.LogWarning("CJ ");
                 if (intInputInteractionNext < Time.time)
                 {
                     string current = intInput.text.text;
-                    VSVRMod.logger.LogWarning("C " + current);
                     int.TryParse(current, out int currentInt);
                     currentInt += (int)Math.Round(x * 4);
-                    VSVRMod.logger.LogWarning("CI " + currentInt);
                     intInputInteractionNext = Time.time + intInputInteractionAccel;
                     intInputInteractionAccel = Math.Clamp(intInputInteractionAccel - 0.04f, 0.04f, float.PositiveInfinity);
                     intInput.text.text = currentInt.ToString();
