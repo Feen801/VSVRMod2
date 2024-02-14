@@ -1,19 +1,48 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace VSVRMod2;
-public class BasicUI
+public class BasicUIManager
 {
-    public static List<VSChoiceButton> vsChoiceButtons = [];
+    private List<VSChoiceButton> vsChoiceButtons = [];
 
-    public static List<VSRadialButton> vsRadialButtons = [];
-    public static List<VSRadialButton> vsStakesButtons = [];
-    public static List<VSRadialButton> vsClothesButtons = [];
+    private List<VSRadialButton> vsRadialButtons = [];
+    private List<VSRadialButton> vsStakesButtons = [];
+    private List<VSRadialButton> vsClothesButtons = [];
 
-    public static List<VSGenericButton> vsOpportunityButtons = [];
-    public static VSGenericButton giveInButton = null;
+    private List<VSGenericButton> vsOpportunityButtons = [];
+    private VSGenericButton giveInButton = null;
 
-    public static void SetupChoiceButtons()
+    private HeadMovementTracker headMovementTracker;
+
+    public BasicUIManager(Scene scene)
+    {
+        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
+        {
+            SetupChoiceButtons();
+            SetupOtherButtons();
+            SetupRadialButtons();
+            headMovementTracker = new HeadMovementTracker(this);
+        }
+        else
+        {
+            throw new ArgumentException("Session scene is incorrect or not yet loaded");
+        }
+    }
+
+    public void SendNod()
+    {
+        headMovementTracker.Nod();
+    }
+
+    public void SendHeadshake()
+    {
+        headMovementTracker.Headshake();
+    }
+
+    private void SetupChoiceButtons()
     {
         //Reference each postive (left) and negative (right) button by looping through the childern of each parent
         GameObject positiveButtonParent = GameObject.Find("GeneralCanvas/EventManager/Buttons/Positives ------------");
@@ -39,7 +68,7 @@ public class BasicUI
         }
     }
 
-    public static bool ChoiceButtonInteract()
+    public bool ChoiceButtonInteract()
     {
         bool triggerClick = Controller.WasATriggerClicked(776);
         double x = Controller.GetMaximalJoystickValue().x;
@@ -71,7 +100,7 @@ public class BasicUI
         return false;
     }
 
-    public static void SetupOtherButtons()
+    private void SetupOtherButtons()
     {
         Transform parent = GameObject.Find("GeneralCanvas/EventManager").transform;
         giveInButton= new VSGenericButton(parent, "Give In", "Urges/ActionTextContainer/GiveIn/GiveInButton");
@@ -89,7 +118,7 @@ public class BasicUI
         VSVRMod.logger.LogInfo("Finished setting up other buttons");
     }
 
-    public static bool TemporaryButtonInteract()
+    public bool TemporaryButtonInteract()
     {
         bool faceButtonClicked = Controller.WasAFaceButtonClicked(775);
         if (giveInButton.components.buttonObject.activeSelf && faceButtonClicked)
@@ -108,14 +137,14 @@ public class BasicUI
         return false;
     }
 
-    private static GameObject level1;
-    private static GameObject level2;
+    private GameObject level1;
+    private GameObject level2;
 
-    private static VSGenericButton circle;
-    private static VSGenericButton level2Arrow;
-    private static GameObject exitButtonRadial;
+    private VSGenericButton circle;
+    private VSGenericButton level2Arrow;
+    private GameObject exitButtonRadial;
 
-    public static void SetupRadialButtons()
+    private void SetupRadialButtons()
     {
         GameObject centerGameObject = GameObject.Find("NewButtons/Center");
         if (centerGameObject == null)
@@ -188,9 +217,9 @@ public class BasicUI
         VSVRMod.logger.LogInfo("Finished setting up radial buttons");
     }
 
-    private static VSRadialButton.RadialLevel currentRadialLevel = VSRadialButton.RadialLevel.None;
+    private VSRadialButton.RadialLevel currentRadialLevel = VSRadialButton.RadialLevel.None;
 
-    public static bool RadialMenuInteract()
+    public bool RadialMenuInteract()
     {
         bool stickClick = Controller.WasAStickClicked(777);
         bool triggerClick = Controller.WasATriggerClicked(777);
@@ -281,7 +310,7 @@ public class BasicUI
         return false;
     }
 
-    public static void PostiveAction() 
+    private void PostiveAction() 
     {
         foreach (VSChoiceButton button in vsChoiceButtons)
         {
@@ -293,7 +322,7 @@ public class BasicUI
         }
     }
 
-    public static void NegativeAction()
+    private void NegativeAction()
     {
         foreach (VSChoiceButton button in vsChoiceButtons)
         {
@@ -307,13 +336,20 @@ public class BasicUI
 
     public class HeadMovementTracker
     {
-        static int nods;
-        static int headshakes;
+        int nods;
+        int headshakes;
 
-        static long lastNodTime;
-        static long lastHeadshakeTime;
+        long lastNodTime;
+        long lastHeadshakeTime;
 
-        public static void Nod()
+        BasicUIManager basicUIManager;
+
+        public HeadMovementTracker(BasicUIManager basicUIManager)
+        {
+            this.basicUIManager = basicUIManager;
+        }
+
+        public void Nod()
         {
             headshakes = 0;
             if (MathHelper.CurrentTimeMillis() - lastNodTime > 1000)
@@ -326,10 +362,10 @@ public class BasicUI
             if (nods >= 2) 
             {
                 VSVRMod.logger.LogInfo("Full Nod");
-                PostiveAction();
+                basicUIManager.PostiveAction();
             }
         }
-        public static void Headshake()
+        public void Headshake()
         {
             nods = 0;
             if(MathHelper.CurrentTimeMillis() - lastHeadshakeTime > 1000)
@@ -342,7 +378,7 @@ public class BasicUI
             if (headshakes >= 2)
             {
                 VSVRMod.logger.LogInfo("Full Headshake");
-                NegativeAction();
+                basicUIManager.NegativeAction();
             }
         }
     }

@@ -286,38 +286,42 @@ class Controller
         return maximal.magnitude;
     }
 
-    public static void ControllerInteract()
+    public static void ControllerInteract(BasicUIManager basicUIManager, SpecialUIManager specialUIManager)
     {
         //Ordered by priority
-        if (SpecialUI.SafewordMenuInteract())
+        if (specialUIManager.ScoreboardInteract())
         {
             return;
         }
-        if (BasicUI.TemporaryButtonInteract())
+        if (specialUIManager.SafewordMenuInteract())
         {
             return;
         }
-        if (SpecialUI.FindomInputInteract())
+        if (basicUIManager.TemporaryButtonInteract())
         {
             return;
         }
-        if (BasicUI.RadialMenuInteract())
+        if (specialUIManager.FindomInputInteract())
         {
             return;
         }
-        if (SpecialUI.StakesMenuInteract())
+        if (basicUIManager.RadialMenuInteract())
         {
             return;
         }
-        if (SpecialUI.ChoiceMenuInteract())
+        if (specialUIManager.StakesMenuInteract())
         {
             return;
         }
-        if (SpecialUI.IntInputInteract())
+        if (specialUIManager.ChoiceMenuInteract())
         {
             return;
         }
-        if (BasicUI.ChoiceButtonInteract())
+        if (specialUIManager.IntInputInteract())
+        {
+            return;
+        }
+        if (basicUIManager.ChoiceButtonInteract())
         {
             return;
         }

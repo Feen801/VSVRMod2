@@ -1,22 +1,37 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.SpatialTracking;
 
 namespace VSVRMod2;
-public class VRCamera
+public class VRCameraManager
 {
     //public static GameObject root;
-    private static GameObject primaryCamera;
+    private GameObject primaryCamera;
     static GameObject vrCamera;
     static GameObject vrCameraParent;
     //static GameObject vrUICamera;
-    private static GameObject headFollower;
-    private static GameObject eyeFollower;
-    private static Canvas uiCanvas;
-    private static Canvas overlayCanvas;
-    private static Canvas scoreCanvas;
-    private static Canvas fadeCanvas;
+    private GameObject headFollower;
+    //private GameObject eyeFollower;
+    private Canvas uiCanvas;
+    private Canvas overlayCanvas;
+    private Canvas scoreCanvas;
+    private Canvas fadeCanvas;
 
-    public static void SetupCamera()
+    public VRCameraManager(Scene scene)
+    {
+        if(scene.isLoaded && Equals(scene.name, Constants.sessionScene))
+        {
+            SetupCamera();
+            SetupUI();
+        }
+        else
+        {
+            throw new ArgumentException("Session scene is incorrect or not yet loaded");
+        }
+    }
+
+    private void SetupCamera()
     {
         GameObject worldCamDefault = GameObjectHelper.GetGameObjectCheckFound("WorldCamDefault");
         primaryCamera = GameObjectHelper.GetGameObjectCheckFound("PrimaryCamera");
@@ -57,7 +72,7 @@ public class VRCamera
         cube.transform.localRotation = new Quaternion(0, 0, 0, 0);
         */
     }
-    public static void MakeUIClose(bool close)
+    public void MakeUIClose(bool close)
     {
         if(close)
         {
@@ -86,8 +101,8 @@ public class VRCamera
         return projectedPoint;
     }
 
-    private static bool uiInVR = false;
-    public static void ToggleUIVR()
+    private bool uiInVR = false;
+    public void ToggleUIVR()
     {
         if (uiInVR) {
             RevertUI();
@@ -98,7 +113,7 @@ public class VRCamera
         }
     }
 
-    public static void SetupUI()
+    private void SetupUI()
     {
         uiInVR = true;
         GameObject ui = GameObjectHelper.GetGameObjectCheckFound("GeneralCanvas");
@@ -203,7 +218,7 @@ public class VRCamera
         vrCamera.SetActive(true);
     }
 
-    public static void RevertUI()
+    public void RevertUI()
     {
         uiInVR = false;
         uiCanvas.worldCamera = primaryCamera.GetComponent<Camera>();
@@ -222,7 +237,7 @@ public class VRCamera
         vrCamera.SetActive(false);
     }
 
-    public static void CenterCamera()
+    public void CenterCamera()
     {
         if (vrCamera == null)
         {

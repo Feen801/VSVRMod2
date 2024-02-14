@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace VSVRMod2;
 
-class SpecialUI
+public class SpecialUIManager
 {
     private struct ChoiceMenu
     {
@@ -15,7 +16,7 @@ class SpecialUI
         public VSGenericButton right;
         public VSGenericButton favorite;
     }
-    static ChoiceMenu choiceMenu;
+    ChoiceMenu choiceMenu;
 
     private struct StakesMenu
     {
@@ -24,7 +25,7 @@ class SpecialUI
         public VSGenericButton middle;
         public VSGenericButton bottom;
     }
-    static StakesMenu stakesMenu = new StakesMenu();
+    StakesMenu stakesMenu = new StakesMenu();
 
     private struct SafewordMenu
     {
@@ -33,14 +34,14 @@ class SpecialUI
         public VSGenericButton continueSession;
         public VSGenericButton endSession;
     }
-    static SafewordMenu safewordMenu = new SafewordMenu();
+    SafewordMenu safewordMenu = new SafewordMenu();
 
     private struct IntInput
     {
         public GameObject representative;
         public TMP_InputField text;
     }
-    static IntInput intInput = new IntInput();
+    IntInput intInput = new IntInput();
 
     private struct FindomInput
     {
@@ -50,16 +51,29 @@ class SpecialUI
         public GameObject sliderObject;
         public Slider slider;
     }
-    static FindomInput findomInput = new FindomInput();
+    FindomInput findomInput = new FindomInput();
 
     private struct Scoreboard
     {
         public GameObject representative;
         public VSFindomButton mainMenu;
     }
-    static Scoreboard scoreboard = new Scoreboard();
+    Scoreboard scoreboard = new Scoreboard();
 
-    public static void SetupMenus()
+    public SpecialUIManager(Scene scene)
+    {
+        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
+        {
+            SetupMenus();
+            
+        }
+        else
+        {
+            throw new ArgumentException("Session scene is incorrect or not yet loaded");
+        }
+    }
+
+    private void SetupMenus()
     {
         Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
         Transform overlayCanvas = GameObject.Find("Root/OverlayCanvas").transform;
@@ -194,7 +208,7 @@ class SpecialUI
         VSVRMod.logger.LogInfo("Setup Scoreboard");
     }
 
-    public static bool ChoiceMenuInteract()
+    public bool ChoiceMenuInteract()
     {
         if(choiceMenu.representative.activeSelf)
         {
@@ -233,7 +247,7 @@ class SpecialUI
         return false;
     }
 
-    public static bool StakesMenuInteract()
+    public bool StakesMenuInteract()
     {
         if (stakesMenu.representative.activeSelf)
         {
@@ -267,7 +281,7 @@ class SpecialUI
         return false;
     }
 
-    public static bool SafewordMenuInteract()
+    public bool SafewordMenuInteract()
     {
         if (safewordMenu.representative.activeSelf)
         {
@@ -305,9 +319,9 @@ class SpecialUI
         return false;
     }
 
-    private static float intInputInteractionNext = 0;
-    private static float intInputInteractionAccel = 0.4f;
-    public static bool IntInputInteract()
+    private float intInputInteractionNext = 0;
+    private float intInputInteractionAccel = 0.4f;
+    public bool IntInputInteract()
     {
         if (intInput.representative.activeSelf)
         {
@@ -336,11 +350,11 @@ class SpecialUI
         return false;
     }
 
-    private static float findomInputInteractionNext = 0;
-    private static float findomInputInteractionAccel = 0.4f;
+    private float findomInputInteractionNext = 0;
+    private float findomInputInteractionAccel = 0.4f;
     //false = controlling buttons, true = controlling slider
-    private static bool findomInputInteractState = false;
-    public static bool FindomInputInteract()
+    private bool findomInputInteractState = false;
+    public bool FindomInputInteract()
     {
         if (findomInput.representative.activeSelf)
         {
@@ -405,7 +419,7 @@ class SpecialUI
         return false;
     }
     
-    public static bool ScoreboardInteract()
+    public bool ScoreboardInteract()
     {
         if(!scoreboard.representative.activeSelf)
         {

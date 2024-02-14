@@ -8,16 +8,8 @@ using UnityEngine;
 using UnityEngine.XR.OpenXR;
 using UnityEngine.XR;
 using UnityEngine.SceneManagement;
-using System;
-using UnityEngine.UIElements;
-using UnityEngine.Events;
 using BepInEx.Logging;
-using UnityEngineInternal.Input;
 using BepInEx.Configuration;
-using UnityEngine.XR.OpenXR.Features.Interactions;
-using UnityEngine.InputSystem.Layouts;
-using Unity.XR.Oculus.Input;
-using UnityEngine.Analytics;
 
 namespace VSVRMod2;
 
@@ -26,11 +18,14 @@ namespace VSVRMod2;
 public class VSVRMod : BaseUnityPlugin
 #pragma warning restore BepInEx002 // Classes with BepInPlugin attribute must inherit from BaseUnityPlugin
 {
-    public const string sessionScene = "ExtraLoadScene";
     public bool inSession = false;
     private VRGestureRecognizer vrGestureRecognizer = new VRGestureRecognizer();
     public static ManualLogSource logger;
     public static ConfigFile config;
+
+    private static VRCameraManager vrCameraManager;
+    private static BasicUIManager basicUIManager;
+    private static SpecialUIManager specialUIManager;
 
     private void Awake()
     {
@@ -58,19 +53,16 @@ public class VSVRMod : BaseUnityPlugin
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Logger.LogInfo("A scene was loaded: " + scene.name);
-        if (Equals(scene.name, sessionScene))
+        if (Equals(scene.name, Constants.sessionScene))
         {
-            VRCamera.SetupCamera();
-            VRCamera.SetupUI();
-            BasicUI.SetupChoiceButtons();
-            BasicUI.SetupOtherButtons();
-            BasicUI.SetupRadialButtons();
-            SpecialUI.SetupMenus();
-            VRCamera.CenterCamera();
+            vrCameraManager = new VRCameraManager(scene);
+            basicUIManager = new BasicUIManager(scene);
+            specialUIManager= new SpecialUIManager(scene);
+            vrCameraManager.CenterCamera();
             VSVRAssets.ApplyUIShader();
 
-            vrGestureRecognizer.Nodded += BasicUI.HeadMovementTracker.Nod;
-            vrGestureRecognizer.HeadShaken += BasicUI.HeadMovementTracker.Headshake;
+            vrGestureRecognizer.Nodded += basicUIManager.SendNod;
+            vrGestureRecognizer.HeadShaken += basicUIManager.SendHeadshake;
 
             inSession = true;
         }
@@ -88,20 +80,20 @@ public class VSVRMod : BaseUnityPlugin
             if (VRConfig.useHeadMovement.Value) {
                 vrGestureRecognizer.Update();
             }
-            Keyboard.HandleKeyboardInputSession();
-            Controller.ControllerInteract();
+            Keyboard.HandleKeyboardInputSession(vrCameraManager);
+            Controller.ControllerInteract(basicUIManager, specialUIManager);
             int gripCount = Controller.CountGripsPressed();
             if (gripCount == 2)
             {
-                VRCamera.CenterCamera();
+                vrCameraManager.CenterCamera();
             }
             else if (gripCount == 1)
             {
-                VRCamera.MakeUIClose(true);
+                vrCameraManager.MakeUIClose(true);
             }
             else
             {
-                VRCamera.MakeUIClose(false);
+                vrCameraManager.MakeUIClose(false);
             }
         }
     }
