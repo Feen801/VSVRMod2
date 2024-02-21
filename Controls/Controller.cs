@@ -8,7 +8,8 @@ using UnityEngine.XR.OpenXR.Features;
 using UnityEngine.XR.OpenXR;
 using UnityEngine.InputSystem;
 using System;
-     
+using VSVRMod2.UI;
+
 namespace VSVRMod2;
 
 class Controller
@@ -284,46 +285,5 @@ class Controller
         }
 
         return maximal.magnitude;
-    }
-
-    public static void ControllerInteract(BasicUIManager basicUIManager, SpecialUIManager specialUIManager)
-    {
-        //Ordered by priority
-        if (specialUIManager.ScoreboardInteract())
-        {
-            return;
-        }
-        if (specialUIManager.SafewordMenuInteract())
-        {
-            return;
-        }
-        if (basicUIManager.TemporaryButtonInteract())
-        {
-            return;
-        }
-        if (specialUIManager.FindomInputInteract())
-        {
-            return;
-        }
-        if (basicUIManager.RadialMenuInteract())
-        {
-            return;
-        }
-        if (specialUIManager.StakesMenuInteract())
-        {
-            return;
-        }
-        if (specialUIManager.ChoiceMenuInteract())
-        {
-            return;
-        }
-        if (specialUIManager.IntInputInteract())
-        {
-            return;
-        }
-        if (basicUIManager.ChoiceButtonInteract())
-        {
-            return;
-        }
     }
 }

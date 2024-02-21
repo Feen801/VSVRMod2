@@ -10,6 +10,7 @@ using UnityEngine.XR;
 using UnityEngine.SceneManagement;
 using BepInEx.Logging;
 using BepInEx.Configuration;
+using VSVRMod2.UI;
 
 namespace VSVRMod2;
 
@@ -24,8 +25,7 @@ public class VSVRMod : BaseUnityPlugin
     public static ConfigFile config;
 
     private static VRCameraManager vrCameraManager;
-    private static BasicUIManager basicUIManager;
-    private static SpecialUIManager specialUIManager;
+    private static UIContainer uiContainer;
 
     private void Awake()
     {
@@ -55,14 +55,13 @@ public class VSVRMod : BaseUnityPlugin
         Logger.LogInfo("A scene was loaded: " + scene.name);
         if (Equals(scene.name, Constants.sessionScene))
         {
-            vrCameraManager = new VRCameraManager(scene);
-            basicUIManager = new BasicUIManager(scene);
-            specialUIManager= new SpecialUIManager(scene);
+            vrCameraManager = new(scene);
             vrCameraManager.CenterCamera();
+            uiContainer = new(scene);
             VSVRAssets.ApplyUIShader();
 
-            vrGestureRecognizer.Nodded += basicUIManager.SendNod;
-            vrGestureRecognizer.HeadShaken += basicUIManager.SendHeadshake;
+            vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
+            vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
 
             inSession = true;
         }
@@ -81,7 +80,7 @@ public class VSVRMod : BaseUnityPlugin
                 vrGestureRecognizer.Update();
             }
             Keyboard.HandleKeyboardInputSession(vrCameraManager);
-            Controller.ControllerInteract(basicUIManager, specialUIManager);
+            uiContainer.Interact();
             int gripCount = Controller.CountGripsPressed();
             if (gripCount == 2)
             {
