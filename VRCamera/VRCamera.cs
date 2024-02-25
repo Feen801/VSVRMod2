@@ -76,22 +76,12 @@ public class VRCameraManager
         cube.transform.localRotation = new Quaternion(0, 0, 0, 0);
         */
     }
-    public void MakeUIClose(bool close)
+    public void MakeUIClose()
     {
-        if(close)
-        {
-            uiCanvas.planeDistance = 0.2f;
-            overlayCanvas.planeDistance = 0.18f;
-            scoreCanvas.planeDistance = 0.16f;
-            fadeCanvas.planeDistance = 0.6f;
-        }
-        else
-        {
-            uiCanvas.planeDistance = 0.5f;
-            overlayCanvas.planeDistance = 0.45f;
-            scoreCanvas.planeDistance = 0.4f;
-            fadeCanvas.planeDistance = 0.6f;
-        }
+        uiCanvas.planeDistance = VRConfig.uiDistance.Value;
+        overlayCanvas.planeDistance = VRConfig.uiDistance.Value;
+        scoreCanvas.planeDistance = VRConfig.uiDistance.Value;
+        fadeCanvas.planeDistance = VRConfig.uiDistance.Value;
     }
 
     private static Vector3 ProjectPointOntoPlane(Vector3 point, Vector3 planeNormal, Vector3 planePoint)
@@ -153,7 +143,7 @@ public class VRCameraManager
             greenscreenUI.transform.localScale = new Vector3(100,100);
         }
 
-        MakeUIClose(false);
+        MakeUIClose();
 
         Transform hypnoSpinPlayer = overlay.transform.Find("HypnoSpinPlayer");
         hypnoSpinPlayer.rotation = new Quaternion(0, 0, 0, 0);

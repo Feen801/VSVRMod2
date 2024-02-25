@@ -86,14 +86,6 @@ public class VSVRMod : BaseUnityPlugin
             {
                 vrCameraManager.CenterCamera();
             }
-            else if (gripCount == 1)
-            {
-                vrCameraManager.MakeUIClose(true);
-            }
-            else
-            {
-                vrCameraManager.MakeUIClose(false);
-            }
             Controller.frameReset();
         }
     }

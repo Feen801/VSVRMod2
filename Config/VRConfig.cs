@@ -5,6 +5,9 @@ namespace VSVRMod2;
 
 public class VRConfig
 {
+    //UI settings
+    public static ConfigEntry<float> uiDistance;
+
     //Controls settings
     public static ConfigEntry<bool> useHeadMovement;
 
@@ -20,6 +23,9 @@ public class VRConfig
 
     public static void SetupConfig()
     {
+        uiDistance = VSVRMod.config.Bind("UI", "UI Distance", 0.5f, "How far away the UI appears from your face in meters.\n" +
+            "The relative size will not change, i.e. if you make it closer to you it will also become smaller such that it takes up the same FOV.");
+
         useHeadMovement = VSVRMod.config.Bind("Controls", "Use Head Movement", true, "Enable or disable the ability to press buttons by nodding or shaking your head.");
 
         vrCameraScale = VSVRMod.config.Bind("Camera", "VR Camera Scale", 1f, "Scale of the VR camera. A value of 0.5 would make the camera half size, making everything else appear twice as large.");
