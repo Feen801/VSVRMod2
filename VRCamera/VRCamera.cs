@@ -48,7 +48,11 @@ public class VRCameraManager
         VSVRMod.logger.LogInfo("Reparenting VR camera...");
         vrCamera.transform.SetParent(vrCameraParent.transform);
 
-        headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
+        if(VRConfig.greenscreenBackground.Value) {
+            vrCamera.GetComponent<Camera>().backgroundColor = VRConfig.greenscreenColor.Value;
+        }
+
+            headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
         headFollower.transform.SetParent(vrCamera.transform);
         PlayMakerFSM headResetter = headFollower.GetComponent<PlayMakerFSM>();
         headResetter.enabled = false;
@@ -138,6 +142,16 @@ public class VRCameraManager
         fadeCanvas.sortingOrder = 399;
         fadeCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         fadeCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+
+        if (VRConfig.greenscreenUI.Value)
+        {
+            GameObject greenscreenUI = new GameObject();
+            SpriteRenderer spriteRenderer = greenscreenUI.AddComponent<SpriteRenderer>();
+            spriteRenderer.color = VRConfig.greenscreenColor.Value;
+            spriteRenderer.sortingOrder = 99;
+            greenscreenUI.transform.SetParent(fade.transform);
+            greenscreenUI.transform.localScale = new Vector3(100,100);
+        }
 
         MakeUIClose(false);
 
