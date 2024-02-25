@@ -87,13 +87,13 @@ class Controller
         VSVRMod.logger.LogInfo("Enabled XR Controller Profiles");
     }
 
-    private static Dictionary<int, bool> triggerPresses = new Dictionary<int, bool>();
+    private static bool triggerPresses = false;
 
-    public static bool WasATriggerClicked(int duplicateID)
+    public static bool WasATriggerClicked()
     {
         bool clicked = false;
         bool pressed = IsATriggerPressed();
-        if (pressed && !triggerPresses.Get(duplicateID))
+        if (pressed && !triggerPresses)
         {
             clicked = true;
             if (outputControllerDebug >= 1)
@@ -101,7 +101,7 @@ class Controller
                 VSVRMod.logger.LogInfo("Trigger click!");
             }
         }
-        triggerPresses[duplicateID] = pressed;
+        triggerPresses = pressed;
 
         return clicked;
     }
@@ -130,13 +130,13 @@ class Controller
         return right > 0.5 || left > 0.5 || joystick;
     }
 
-    private static Dictionary<int, bool> stickPresses = new Dictionary<int, bool>();
+    private static bool stickPresses = false;
 
-    public static bool WasAStickClicked(int duplicateID)
+    public static bool WasAStickClicked()
     {
         bool clicked = false;
         bool pressed = IsAStickPressed();
-        if (pressed && !stickPresses.Get(duplicateID))
+        if (pressed && stickPresses)
         {
             clicked = true;
             if (outputControllerDebug >= 1)
@@ -144,7 +144,7 @@ class Controller
                 VSVRMod.logger.LogInfo("Stick click!");
             }
         }
-        stickPresses[duplicateID] = pressed;
+        stickPresses = pressed;
 
         return clicked;
     }
@@ -173,12 +173,12 @@ class Controller
         return right || left || joystick;
     }
 
-    private static Dictionary<int, bool> facePresses = new Dictionary<int, bool>();
-    public static bool WasAFaceButtonClicked(int duplicateID)
+    private static bool facePresses = false;
+    public static bool WasAFaceButtonClicked()
     {
         bool clicked = false;
         bool pressed = IsAFaceButtonPressed();
-        if (pressed && !facePresses.Get(duplicateID))
+        if (pressed && !facePresses)
         {
             clicked = true;
             if (outputControllerDebug >= 1)
@@ -186,7 +186,7 @@ class Controller
                 VSVRMod.logger.LogInfo("Face click!");
             }
         }
-        facePresses[duplicateID] = pressed;
+        facePresses = pressed;
         return clicked;
     }
 
@@ -285,5 +285,12 @@ class Controller
         }
 
         return maximal.magnitude;
+    }
+
+    public static void frameReset()
+    {
+        stickPresses = IsAStickPressed() && stickPresses;
+        facePresses = IsAFaceButtonPressed() && facePresses;
+        triggerPresses = IsATriggerPressed() && triggerPresses;
     }
 }

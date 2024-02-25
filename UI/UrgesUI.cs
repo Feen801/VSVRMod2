@@ -7,25 +7,18 @@ internal class UrgesUIManager : UIManager
 {
     private VSGenericButton giveInButton = null;
     private VSGenericButton resistButton = null;
-    public UrgesUIManager(Scene scene)
+    public UrgesUIManager(Scene scene) : base(scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
-        {
-            Transform parent = GameObject.Find("GeneralCanvas/EventManager").transform;
-            giveInButton = new VSGenericButton(parent, "Give In", "Urges/ActionTextContainer/GiveIn/GiveInButton");
-            resistButton = new VSGenericButton(parent, "Resist", "Urges/ActionTextContainer/Resist/ResistnButton");
+        Transform parent = GameObject.Find("GeneralCanvas/EventManager").transform;
+        giveInButton = new VSGenericButton(parent, "Give In", "Urges/ActionTextContainer/GiveIn/GiveInButton");
+        resistButton = new VSGenericButton(parent, "Resist", "Urges/ActionTextContainer/Resist/ResistnButton");
 
-            VSVRMod.logger.LogInfo("Finished setting up urge  buttons");
-        }
-        else
-        {
-            throw new ArgumentException("Session scene is incorrect or not yet loaded");
-        }
+        VSVRMod.logger.LogInfo("Finished setting up urge  buttons");
     }
 
-    public bool Interact()
+    public new bool Interact()
     {
-        bool faceButtonClicked = Controller.WasAFaceButtonClicked(775);
+        bool faceButtonClicked = Controller.WasAFaceButtonClicked();
         if (giveInButton.components.buttonObject.activeSelf && faceButtonClicked)
         {
             giveInButton.Click();

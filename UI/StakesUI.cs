@@ -15,45 +15,38 @@ public class StakesUIManager : UIManager
     }
     StakesMenu stakesMenu = new StakesMenu();
 
-    public StakesUIManager(Scene scene)
+    public StakesUIManager(Scene scene) : base(scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
-        {
-            Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
+        Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
 
-            //StakesUI-------------------
-            stakesMenu.representative = eventManager.Find("StakesUI").gameObject;
-            if (stakesMenu.representative == null)
-            {
-                VSVRMod.logger.LogError("StakesUI had null representative");
-            }
-            stakesMenu.top = new(eventManager.Find("StakesUI"),
-                "Stakes Top",
-                "BG1",
-                "/Collider",
-                "/Borders/DarkBorder"
-                );
-            stakesMenu.middle = new(eventManager.Find("StakesUI"),
-                "Stakes Middle",
-                "BG2",
-                "/Collider",
-                "/Borders/DarkBorder"
-                );
-            stakesMenu.bottom = new(eventManager.Find("StakesUI"),
-                "Stakes Bottom",
-                "BG3",
-                "/Collider",
-                "/Borders/DarkBorder"
-                );
-            VSVRMod.logger.LogInfo("Setup StakesUI");
-        }
-        else
+        //StakesUI-------------------
+        stakesMenu.representative = eventManager.Find("StakesUI").gameObject;
+        if (stakesMenu.representative == null)
         {
-            throw new ArgumentException("Session scene is incorrect or not yet loaded");
+            VSVRMod.logger.LogError("StakesUI had null representative");
         }
+        stakesMenu.top = new(eventManager.Find("StakesUI"),
+            "Stakes Top",
+            "BG1",
+            "/Collider",
+            "/Borders/DarkBorder"
+            );
+        stakesMenu.middle = new(eventManager.Find("StakesUI"),
+            "Stakes Middle",
+            "BG2",
+            "/Collider",
+            "/Borders/DarkBorder"
+            );
+        stakesMenu.bottom = new(eventManager.Find("StakesUI"),
+            "Stakes Bottom",
+            "BG3",
+            "/Collider",
+            "/Borders/DarkBorder"
+            );
+        VSVRMod.logger.LogInfo("Setup StakesUI");
     }
 
-    public bool Interact()
+    public new bool Interact()
     {
         if (stakesMenu.representative.activeSelf)
         {
@@ -77,7 +70,7 @@ public class StakesUIManager : UIManager
             if (theButton != null)
             {
                 theButton.Highlight(true);
-                if (Controller.WasATriggerClicked(105))
+                if (Controller.WasATriggerClicked())
                 {
                     theButton.Click();
                 }

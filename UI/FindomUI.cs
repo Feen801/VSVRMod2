@@ -18,55 +18,48 @@ public class FindomUIManager : UIManager
     }
     FindomInput findomInput = new FindomInput();
 
-    public FindomUIManager(Scene scene)
+    public FindomUIManager(Scene scene) : base(scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
+        Transform overlayCanvas = GameObject.Find("Root/OverlayCanvas").transform;
+
+        //Tribute Menu
+        findomInput.representative = overlayCanvas.Find("TributeMenu").gameObject;
+        if (findomInput.representative == null)
         {
-            Transform overlayCanvas = GameObject.Find("Root/OverlayCanvas").transform;
-
-            //Tribute Menu
-            findomInput.representative = overlayCanvas.Find("TributeMenu").gameObject;
-            if (findomInput.representative == null)
-            {
-                VSVRMod.logger.LogError("Tribute Menu had null representative");
-            }
-
-            findomInput.sendOptions = new List<VSFindomButton>();
-            findomInput.cancel = new(overlayCanvas, "Tribute Cancel", "TributeMenu/Cancel");
-            findomInput.sliderObject = overlayCanvas.Find("TributeMenu/Slider - Standard (Value)").gameObject;
-            if (findomInput.sliderObject == null)
-            {
-                VSVRMod.logger.LogError("Tribute Menu had null slider object");
-            }
-            findomInput.slider = findomInput.sliderObject.GetComponent<Slider>();
-            if (findomInput.slider == null)
-            {
-                VSVRMod.logger.LogError("Tribute Menu had null slider");
-            }
-            VSFindomButton tributeButton = new(overlayCanvas, "Tribute Button", "TributeMenu/Options/Group/Text (TMP) (7)/Button");
-            VSFindomButton bribeButton = new(overlayCanvas, "Bribe Button", "TributeMenu/Options/Group/Text (TMP) (6)/Button");
-            VSFindomButton placateButton = new(overlayCanvas, "Placate Button", "TributeMenu/Options/Group/Text (TMP) (8)/Button");
-            VSFindomButton comfortButton = new(overlayCanvas, "Comfort Button", "TributeMenu/Options/Group/Text (TMP) (9)/Button");
-
-            //From bottom to top
-            findomInput.sendOptions.Add(comfortButton);
-            findomInput.sendOptions.Add(placateButton);
-            findomInput.sendOptions.Add(bribeButton);
-            findomInput.sendOptions.Add(tributeButton);
-
-            VSVRMod.logger.LogInfo("Setup Tribute Menu");
+            VSVRMod.logger.LogError("Tribute Menu had null representative");
         }
-        else
+
+        findomInput.sendOptions = new List<VSFindomButton>();
+        findomInput.cancel = new(overlayCanvas, "Tribute Cancel", "TributeMenu/Cancel");
+        findomInput.sliderObject = overlayCanvas.Find("TributeMenu/Slider - Standard (Value)").gameObject;
+        if (findomInput.sliderObject == null)
         {
-            throw new ArgumentException("Session scene is incorrect or not yet loaded");
+            VSVRMod.logger.LogError("Tribute Menu had null slider object");
         }
+        findomInput.slider = findomInput.sliderObject.GetComponent<Slider>();
+        if (findomInput.slider == null)
+        {
+            VSVRMod.logger.LogError("Tribute Menu had null slider");
+        }
+        VSFindomButton tributeButton = new(overlayCanvas, "Tribute Button", "TributeMenu/Options/Group/Text (TMP) (7)/Button");
+        VSFindomButton bribeButton = new(overlayCanvas, "Bribe Button", "TributeMenu/Options/Group/Text (TMP) (6)/Button");
+        VSFindomButton placateButton = new(overlayCanvas, "Placate Button", "TributeMenu/Options/Group/Text (TMP) (8)/Button");
+        VSFindomButton comfortButton = new(overlayCanvas, "Comfort Button", "TributeMenu/Options/Group/Text (TMP) (9)/Button");
+
+        //From bottom to top
+        findomInput.sendOptions.Add(comfortButton);
+        findomInput.sendOptions.Add(placateButton);
+        findomInput.sendOptions.Add(bribeButton);
+        findomInput.sendOptions.Add(tributeButton);
+
+        VSVRMod.logger.LogInfo("Setup Tribute Menu");
     }
 
     private float findomInputInteractionNext = 0;
     private float findomInputInteractionAccel = 0.4f;
     //false = controlling buttons, true = controlling slider
     private bool findomInputInteractState = false;
-    public bool Interact()
+    public new bool Interact()
     {
         if (findomInput.representative.activeSelf)
         {
@@ -74,7 +67,7 @@ public class FindomUIManager : UIManager
             double x = vector2.x;
             double y = vector2.y;
             double magnitude = Controller.GetMaximalJoystickMagnitude();
-            if (Controller.WasAStickClicked(106))
+            if (Controller.WasAStickClicked())
             {
                 findomInputInteractState = !findomInputInteractState;
                 return true;
@@ -120,7 +113,7 @@ public class FindomUIManager : UIManager
                 if (theButton != null)
                 {
                     theButton.Highlight(true);
-                    if (Controller.WasATriggerClicked(777))
+                    if (Controller.WasATriggerClicked())
                     {
                         theButton.Click();
                     }

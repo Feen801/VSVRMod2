@@ -14,35 +14,28 @@ public class IntInputUIMManager : UIManager
     }
     IntInput intInput = new IntInput();
 
-    public IntInputUIMManager(Scene scene)
+    public IntInputUIMManager(Scene scene) : base(scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
-        {
-            Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
+        Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
 
-            //Count Input-------------------
-            intInput.representative = eventManager.Find("IntInputField").gameObject;
-            if (intInput.representative == null)
-            {
-                VSVRMod.logger.LogError("Int input had null representative");
-            }
-
-            intInput.text = intInput.representative.GetComponent<TMP_InputField>();
-            if (intInput.text == null)
-            {
-                VSVRMod.logger.LogError("Int input text was null");
-            }
-            VSVRMod.logger.LogInfo("Setup Count Input");
-        }
-        else
+        //Count Input-------------------
+        intInput.representative = eventManager.Find("IntInputField").gameObject;
+        if (intInput.representative == null)
         {
-            throw new ArgumentException("Session scene is incorrect or not yet loaded");
+            VSVRMod.logger.LogError("Int input had null representative");
         }
+
+        intInput.text = intInput.representative.GetComponent<TMP_InputField>();
+        if (intInput.text == null)
+        {
+            VSVRMod.logger.LogError("Int input text was null");
+        }
+        VSVRMod.logger.LogInfo("Setup Count Input");
     }
 
     private float intInputInteractionNext = 0;
     private float intInputInteractionAccel = 0.4f;
-    public bool Interact()
+    public new bool Interact()
     {
         if (intInput.representative.activeSelf)
         {

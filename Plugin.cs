@@ -94,6 +94,7 @@ public class VSVRMod : BaseUnityPlugin
             {
                 vrCameraManager.MakeUIClose(false);
             }
+            Controller.frameReset();
         }
     }
 

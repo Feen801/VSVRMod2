@@ -12,28 +12,21 @@ public class ScoreboardUIManager : UIManager
     }
     Scoreboard scoreboard = new Scoreboard();
 
-    public ScoreboardUIManager(Scene scene)
+    public ScoreboardUIManager(Scene scene) : base(scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
-        {
-            Transform scoreCanvas = GameObject.Find("ScoreCanvas").transform;
-            scoreboard.representative = scoreCanvas.Find("Scoreboard").gameObject;
-            scoreboard.mainMenu = new(scoreCanvas, "Main Menu", "Scoreboard/Finish/Button");
-            VSVRMod.logger.LogInfo("Setup Scoreboard");
-        }
-        else
-        {
-            throw new ArgumentException("Session scene is incorrect or not yet loaded");
-        }
+        Transform scoreCanvas = GameObject.Find("ScoreCanvas").transform;
+        scoreboard.representative = scoreCanvas.Find("Scoreboard").gameObject;
+        scoreboard.mainMenu = new(scoreCanvas, "Main Menu", "Scoreboard/Finish/Button");
+        VSVRMod.logger.LogInfo("Setup Scoreboard");
     }
 
-    public bool Interact()
+    public new bool Interact()
     {
         if (!scoreboard.representative.activeSelf)
         {
             return false;
         }
-        if (Controller.WasAFaceButtonClicked(200) || Controller.WasAStickClicked(200) || Controller.WasATriggerClicked(200))
+        if (Controller.WasAFaceButtonClicked() || Controller.WasAStickClicked() || Controller.WasATriggerClicked())
         {
             scoreboard.mainMenu.Click();
         }

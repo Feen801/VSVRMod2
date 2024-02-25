@@ -14,45 +14,38 @@ public class ChoiceUIManager : UIManager
     }
     ChoiceMenu choiceMenu;
 
-    public ChoiceUIManager(Scene scene)
+    public ChoiceUIManager(Scene scene) : base(scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
-        {
-            Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
+        Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
 
-            //ChoiceUI-------------------
-            choiceMenu.representative = eventManager.Find("ChoiceUI").gameObject;
-            if (choiceMenu.representative == null)
-            {
-                VSVRMod.logger.LogError("ChoiceUI had null representative");
-            }
-            choiceMenu.favorite = new(eventManager.Find("Buttons"),
-                "Favorite Heart",
-                "FavoriteHeart",
-                "/DoneBG/DoneText/Collider",
-                "/DoneBG/DoneText/Collider/ButtonPressReact1"
-                );
-            choiceMenu.left = new(eventManager.Find("ChoiceUI"),
-                "Choice Left",
-                "Choice1",
-                "/Collider",
-                "/Image (1)/Borders/DarkBorder"
-                );
-            choiceMenu.right = new(eventManager.Find("ChoiceUI"),
-                "Choice Right",
-                "Choice2",
-                "/Collider",
-                "/Image (1)/Borders/DarkBorder"
-                );
-            VSVRMod.logger.LogInfo("Setup ChoiceUI");
-        }
-        else
+        //ChoiceUI-------------------
+        choiceMenu.representative = eventManager.Find("ChoiceUI").gameObject;
+        if (choiceMenu.representative == null)
         {
-            throw new ArgumentException("Session scene is incorrect or not yet loaded");
+            VSVRMod.logger.LogError("ChoiceUI had null representative");
         }
+        choiceMenu.favorite = new(eventManager.Find("Buttons"),
+            "Favorite Heart",
+            "FavoriteHeart",
+            "/DoneBG/DoneText/Collider",
+            "/DoneBG/DoneText/Collider/ButtonPressReact1"
+            );
+        choiceMenu.left = new(eventManager.Find("ChoiceUI"),
+            "Choice Left",
+            "Choice1",
+            "/Collider",
+            "/Image (1)/Borders/DarkBorder"
+            );
+        choiceMenu.right = new(eventManager.Find("ChoiceUI"),
+            "Choice Right",
+            "Choice2",
+            "/Collider",
+            "/Image (1)/Borders/DarkBorder"
+            );
+        VSVRMod.logger.LogInfo("Setup ChoiceUI");
     }
 
-    public bool Interact()
+    public new bool Interact()
     {
         if (choiceMenu.representative.activeSelf)
         {
@@ -83,7 +76,7 @@ public class ChoiceUIManager : UIManager
             if (theButton != null)
             {
                 theButton.Highlight(true);
-                if (Controller.WasATriggerClicked(105))
+                if (Controller.WasATriggerClicked())
                 {
                     theButton.Click();
                 }

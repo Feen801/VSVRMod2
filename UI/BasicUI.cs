@@ -10,46 +10,39 @@ public class BasicUIManager : UIManager
 
     public HeadMovementTracker headMovementTracker;
 
-    public BasicUIManager(Scene scene)
+    public BasicUIManager(Scene scene) : base(scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
+        //Reference each postive (left) and negative (right) button by looping through the childern of each parent
+        GameObject positiveButtonParent = GameObject.Find("GeneralCanvas/EventManager/Buttons/Positives ------------");
+        GameObject negativeButtonParent = GameObject.Find("GeneralCanvas/EventManager/Buttons/Negatives ------------");
+
+        foreach (Transform positiveButton in positiveButtonParent.transform)
         {
-            //Reference each postive (left) and negative (right) button by looping through the childern of each parent
-            GameObject positiveButtonParent = GameObject.Find("GeneralCanvas/EventManager/Buttons/Positives ------------");
-            GameObject negativeButtonParent = GameObject.Find("GeneralCanvas/EventManager/Buttons/Negatives ------------");
-
-            foreach (Transform positiveButton in positiveButtonParent.transform)
+            if (Equals(positiveButton.name, "PoTMercy"))
             {
-                if (Equals(positiveButton.name, "PoTMercy"))
-                {
-                    //?????? what is this button succudev?
-                    continue;
-                }
-                VSChoiceButton positiveChoiceButton = new(positiveButtonParent.transform, positiveButton.name, positiveButton.name, VSChoiceButton.ButtonType.Positive);
-                VSVRMod.logger.LogInfo("Found pos choice button: " + positiveChoiceButton.name);
-                vsChoiceButtons.Add(positiveChoiceButton);
+                //?????? what is this button succudev?
+                continue;
             }
-
-            foreach (Transform negativeButton in negativeButtonParent.transform)
-            {
-                VSChoiceButton negativeChoiceButton = new(negativeButtonParent.transform, negativeButton.name, negativeButton.name, VSChoiceButton.ButtonType.Negative);
-                VSVRMod.logger.LogInfo("Found neg choice button: " + negativeChoiceButton.name);
-                vsChoiceButtons.Add(negativeChoiceButton);
-            }
-
-            VSVRMod.logger.LogInfo("Finished setting up basic buttons");
-
-            headMovementTracker = new HeadMovementTracker(this);
+            VSChoiceButton positiveChoiceButton = new(positiveButtonParent.transform, positiveButton.name, positiveButton.name, VSChoiceButton.ButtonType.Positive);
+            VSVRMod.logger.LogInfo("Found pos choice button: " + positiveChoiceButton.name);
+            vsChoiceButtons.Add(positiveChoiceButton);
         }
-        else
+
+        foreach (Transform negativeButton in negativeButtonParent.transform)
         {
-            throw new ArgumentException("Session scene is incorrect or not yet loaded");
+            VSChoiceButton negativeChoiceButton = new(negativeButtonParent.transform, negativeButton.name, negativeButton.name, VSChoiceButton.ButtonType.Negative);
+            VSVRMod.logger.LogInfo("Found neg choice button: " + negativeChoiceButton.name);
+            vsChoiceButtons.Add(negativeChoiceButton);
         }
+
+        VSVRMod.logger.LogInfo("Finished setting up basic buttons");
+
+        headMovementTracker = new HeadMovementTracker(this);
     }
 
-    public bool Interact()
+    public new bool Interact()
     {
-        bool triggerClick = Controller.WasATriggerClicked(776);
+        bool triggerClick = Controller.WasATriggerClicked();
         double x = Controller.GetMaximalJoystickValue().x;
         foreach (VSChoiceButton button in vsChoiceButtons)
         {

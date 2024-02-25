@@ -15,45 +15,38 @@ public class SafewordUIManager : UIManager
     }
     SafewordMenu safewordMenu = new SafewordMenu();
 
-    public SafewordUIManager(Scene scene)
+    public SafewordUIManager(Scene scene) : base(scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
-        {
-            Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
+        Transform eventManager = GameObject.Find("GeneralCanvas/EventManager").transform;
 
-            //Safeword-------------------
-            safewordMenu.representative = eventManager.Find("Buttons/EndSession").gameObject;
-            if (safewordMenu.representative == null)
-            {
-                VSVRMod.logger.LogError("Safeword had null representative");
-            }
-            safewordMenu.goEasy = new(eventManager.Find("Buttons"),
-                "Safeword Go Easy",
-                "GoEasy",
-                "/DoneBG/DoneText/Collider",
-                "/DoneBG/DoneText/Collider/ButtonPressReact1"
-                );
-            safewordMenu.continueSession = new(eventManager.Find("Buttons"),
-                "Safeword Continue",
-                "ContinueSession",
-                "/DoneBG/DoneText/Collider",
-                "/DoneBG/DoneText/Collider/ButtonPressReact1"
-                );
-            safewordMenu.endSession = new(eventManager.Find("Buttons"),
-                "Safeword End Session",
-                "EndSession",
-                "/DoneBG/DoneText/Collider",
-                "/DoneBG/DoneText/Collider/ButtonPressReact1"
-                );
-            VSVRMod.logger.LogInfo("Setup Safeword");
-        }
-        else
+        //Safeword-------------------
+        safewordMenu.representative = eventManager.Find("Buttons/EndSession").gameObject;
+        if (safewordMenu.representative == null)
         {
-            throw new ArgumentException("Session scene is incorrect or not yet loaded");
+            VSVRMod.logger.LogError("Safeword had null representative");
         }
+        safewordMenu.goEasy = new(eventManager.Find("Buttons"),
+            "Safeword Go Easy",
+            "GoEasy",
+            "/DoneBG/DoneText/Collider",
+            "/DoneBG/DoneText/Collider/ButtonPressReact1"
+            );
+        safewordMenu.continueSession = new(eventManager.Find("Buttons"),
+            "Safeword Continue",
+            "ContinueSession",
+            "/DoneBG/DoneText/Collider",
+            "/DoneBG/DoneText/Collider/ButtonPressReact1"
+            );
+        safewordMenu.endSession = new(eventManager.Find("Buttons"),
+            "Safeword End Session",
+            "EndSession",
+            "/DoneBG/DoneText/Collider",
+            "/DoneBG/DoneText/Collider/ButtonPressReact1"
+            );
+        VSVRMod.logger.LogInfo("Setup Safeword");
     }
 
-    public bool Interact()
+    public new bool Interact()
     {
         if (safewordMenu.representative.activeSelf)
         {
@@ -81,7 +74,7 @@ public class SafewordUIManager : UIManager
             if (theButton != null)
             {
                 theButton.Highlight(true);
-                if (Controller.WasATriggerClicked(106))
+                if (Controller.WasATriggerClicked())
                 {
                     theButton.Click();
                 }
