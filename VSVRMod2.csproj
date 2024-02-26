@@ -80,8 +80,4 @@
       <HintPath>Libs\Managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Patchers\" />
-  </ItemGroup>
 </Project>
