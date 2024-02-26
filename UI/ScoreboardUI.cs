@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine.SceneManagement;
 using UnityEngine;
 
 namespace VSVRMod2.UI;

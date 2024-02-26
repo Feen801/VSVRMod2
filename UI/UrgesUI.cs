@@ -1,6 +1,5 @@
-﻿using System;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine;
 
 namespace VSVRMod2.UI;
 internal class UrgesUIManager : UIManager

@@ -20,7 +20,7 @@ public class VRCameraManager
 
     public VRCameraManager(Scene scene)
     {
-        if(scene.isLoaded && Equals(scene.name, Constants.sessionScene))
+        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
         {
             SetupCamera();
             SetupUI();
@@ -37,7 +37,7 @@ public class VRCameraManager
         primaryCamera = GameObjectHelper.GetGameObjectCheckFound("PrimaryCamera");
         vrCameraParent = new GameObject("VRCameraParent");
         vrCameraParent.transform.SetParent(worldCamDefault.transform);
-        
+
         VSVRMod.logger.LogInfo("Creating VR camera...");
         vrCamera = new GameObject("VRCamera");
         VSVRMod.logger.LogInfo("Adding components to VR camera...");
@@ -48,11 +48,12 @@ public class VRCameraManager
         VSVRMod.logger.LogInfo("Reparenting VR camera...");
         vrCamera.transform.SetParent(vrCameraParent.transform);
 
-        if(VRConfig.greenscreenBackground.Value) {
+        if (VRConfig.greenscreenBackground.Value)
+        {
             vrCamera.GetComponent<Camera>().backgroundColor = VRConfig.greenscreenColor.Value;
         }
 
-            headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
+        headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
         headFollower.transform.SetParent(vrCamera.transform);
         PlayMakerFSM headResetter = headFollower.GetComponent<PlayMakerFSM>();
         headResetter.enabled = false;
@@ -98,7 +99,8 @@ public class VRCameraManager
     private bool uiInVR = false;
     public void ToggleUIVR()
     {
-        if (uiInVR) {
+        if (uiInVR)
+        {
             RevertUI();
         }
         else
@@ -140,7 +142,7 @@ public class VRCameraManager
             spriteRenderer.color = VRConfig.greenscreenColor.Value;
             spriteRenderer.sortingOrder = 99;
             greenscreenUI.transform.SetParent(fade.transform);
-            greenscreenUI.transform.localScale = new Vector3(100,100);
+            greenscreenUI.transform.localScale = new Vector3(100, 100);
         }
 
         MakeUIClose();
@@ -149,7 +151,7 @@ public class VRCameraManager
         hypnoSpinPlayer.rotation = new Quaternion(0, 0, 0, 0);
 
         GameObject currentAdjust = overlay.transform.Find("TributeMenu").gameObject;
-        if(currentAdjust == null)
+        if (currentAdjust == null)
         {
             VSVRMod.logger.LogError("TributeMenu not found");
         }
