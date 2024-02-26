@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
 using BepInEx.Unity.Mono;
 using HarmonyLib;
-using UnityEngine.XR.Management;
 using UnityEngine;
-using UnityEngine.XR.OpenXR;
-using UnityEngine.XR;
 using UnityEngine.SceneManagement;
-using BepInEx.Logging;
-using BepInEx.Configuration;
+using UnityEngine.XR;
+using UnityEngine.XR.Management;
+using UnityEngine.XR.OpenXR;
 using VSVRMod2.UI;
 
 namespace VSVRMod2;
@@ -35,7 +35,7 @@ public class VSVRMod : BaseUnityPlugin
         config = Config;
 
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-        
+
         VRConfig.SetupConfig();
         Controller.EnableControllerProfiles();
         InitializeXRRuntime();
@@ -76,7 +76,8 @@ public class VSVRMod : BaseUnityPlugin
         Keyboard.HandleKeyboardInput();
         if (inSession)
         {
-            if (VRConfig.useHeadMovement.Value) {
+            if (VRConfig.useHeadMovement.Value)
+            {
                 vrGestureRecognizer.Update();
             }
             Keyboard.HandleKeyboardInputSession(vrCameraManager);
@@ -86,7 +87,6 @@ public class VSVRMod : BaseUnityPlugin
             {
                 vrCameraManager.CenterCamera();
             }
-            Controller.frameReset();
         }
     }
 

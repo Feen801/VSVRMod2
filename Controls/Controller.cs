@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements.Collections;
 using UnityEngine.XR;
 using System.Reflection;
 using UnityEngine.XR.OpenXR.Features.Interactions;
 using UnityEngine.XR.OpenXR.Features;
 using UnityEngine.XR.OpenXR;
-using UnityEngine.InputSystem;
 using System;
-using VSVRMod2.UI;
 
 namespace VSVRMod2;
 
@@ -87,21 +84,24 @@ class Controller
         VSVRMod.logger.LogInfo("Enabled XR Controller Profiles");
     }
 
-    private static bool triggerPresses = false;
+    private static int lastTriggerFrame = 0;
 
     public static bool WasATriggerClicked()
     {
+        int frame = Time.frameCount;
         bool clicked = false;
         bool pressed = IsATriggerPressed();
-        if (pressed && !triggerPresses)
-        {
-            clicked = true;
-            if (outputControllerDebug >= 1)
+        if (pressed) {
+            if (frame != lastTriggerFrame + 1)
             {
-                VSVRMod.logger.LogInfo("Trigger click!");
+                clicked = true;
+                if (outputControllerDebug >= 1)
+                {
+                    VSVRMod.logger.LogInfo("Trigger click!");
+                }
             }
+            lastTriggerFrame = frame;
         }
-        triggerPresses = pressed;
 
         return clicked;
     }
@@ -110,8 +110,6 @@ class Controller
     {
         float left = 0f;
         float right = 0f;
-        bool joystick = false;
-
         if (leftController != null)
         {
             leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.trigger, out left);
@@ -120,8 +118,7 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.trigger, out right);
         }
-        joystick = Input.GetAxis("Fire1") > 0.5f;
-
+        bool joystick = Input.GetAxis("Fire1") > 0.5f;
         if (outputControllerDebug >= 2)
         {
             VSVRMod.logger.LogInfo("Trigger: Left: " + left + " Right: " + right);
@@ -130,21 +127,24 @@ class Controller
         return right > 0.5 || left > 0.5 || joystick;
     }
 
-    private static bool stickPresses = false;
+    private static int lastStickFrame = 0;
 
     public static bool WasAStickClicked()
     {
+        int frame = Time.frameCount;
         bool clicked = false;
         bool pressed = IsAStickPressed();
-        if (pressed && stickPresses)
-        {
-            clicked = true;
-            if (outputControllerDebug >= 1)
+        if (pressed) {
+            if (frame != lastStickFrame + 1)
             {
-                VSVRMod.logger.LogInfo("Stick click!");
+                clicked = true;
+                if (outputControllerDebug >= 1)
+                {
+                    VSVRMod.logger.LogInfo("Stick click!");
+                }
             }
+            lastStickFrame = frame;
         }
-        stickPresses = pressed;
 
         return clicked;
     }
@@ -173,20 +173,25 @@ class Controller
         return right || left || joystick;
     }
 
-    private static bool facePresses = false;
+    private static int lastFaceFrame = 0;
     public static bool WasAFaceButtonClicked()
     {
+        int frame = Time.frameCount;
         bool clicked = false;
         bool pressed = IsAFaceButtonPressed();
-        if (pressed && !facePresses)
+        if (pressed)
         {
-            clicked = true;
-            if (outputControllerDebug >= 1)
+            if (frame != lastFaceFrame + 1)
             {
-                VSVRMod.logger.LogInfo("Face click!");
+                clicked = true;
+                if (outputControllerDebug >= 1)
+                {
+                    VSVRMod.logger.LogInfo("Face button click!");
+                }
             }
+            lastFaceFrame = frame;
         }
-        facePresses = pressed;
+
         return clicked;
     }
 
@@ -285,12 +290,5 @@ class Controller
         }
 
         return maximal.magnitude;
-    }
-
-    public static void frameReset()
-    {
-        stickPresses = IsAStickPressed() && stickPresses;
-        facePresses = IsAFaceButtonPressed() && facePresses;
-        triggerPresses = IsATriggerPressed() && triggerPresses;
     }
 }
