@@ -87,6 +87,7 @@ public class VSVRMod : BaseUnityPlugin
             {
                 vrCameraManager.CenterCamera();
             }
+            Controller.endFrame();
         }
     }
 

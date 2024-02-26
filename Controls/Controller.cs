@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.XR;
-using System.Reflection;
-using UnityEngine.XR.OpenXR.Features.Interactions;
-using UnityEngine.XR.OpenXR.Features;
 using UnityEngine.XR.OpenXR;
-using System;
+using UnityEngine.XR.OpenXR.Features;
+using UnityEngine.XR.OpenXR.Features.Interactions;
 
 namespace VSVRMod2;
 
@@ -91,7 +91,8 @@ class Controller
         int frame = Time.frameCount;
         bool clicked = false;
         bool pressed = IsATriggerPressed();
-        if (pressed) {
+        if (pressed)
+        {
             if (frame != lastTriggerFrame + 1)
             {
                 clicked = true;
@@ -100,7 +101,6 @@ class Controller
                     VSVRMod.logger.LogInfo("Trigger click!");
                 }
             }
-            lastTriggerFrame = frame;
         }
 
         return clicked;
@@ -134,7 +134,8 @@ class Controller
         int frame = Time.frameCount;
         bool clicked = false;
         bool pressed = IsAStickPressed();
-        if (pressed) {
+        if (pressed)
+        {
             if (frame != lastStickFrame + 1)
             {
                 clicked = true;
@@ -143,7 +144,6 @@ class Controller
                     VSVRMod.logger.LogInfo("Stick click!");
                 }
             }
-            lastStickFrame = frame;
         }
 
         return clicked;
@@ -189,13 +189,12 @@ class Controller
                     VSVRMod.logger.LogInfo("Face button click!");
                 }
             }
-            lastFaceFrame = frame;
         }
 
         return clicked;
     }
 
-    public static int CountGripsPressed() 
+    public static int CountGripsPressed()
     {
         bool left = false;
         bool right = false;
@@ -290,5 +289,13 @@ class Controller
         }
 
         return maximal.magnitude;
+    }
+
+    public static void endFrame()
+    {
+        int frame = Time.frameCount;
+        lastStickFrame = frame;
+        lastFaceFrame = frame;
+        lastTriggerFrame = frame;
     }
 }
