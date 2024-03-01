@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.SceneManagement;
 using UnityEngine.SpatialTracking;
 
@@ -22,8 +23,10 @@ public class VRCameraManager
     {
         if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
         {
-            SetupCamera();
+            NewSetupCamera();
             SetupUI();
+            SetupGreenscreen();
+            SetupHeadTargetFollower();
         }
         else
         {
@@ -31,12 +34,11 @@ public class VRCameraManager
         }
     }
 
-    private void SetupCamera()
+    private void NewSetupCamera()
     {
         GameObject worldCamDefault = GameObjectHelper.GetGameObjectCheckFound("WorldCamDefault");
-        primaryCamera = GameObjectHelper.GetGameObjectCheckFound("PrimaryCamera");
         vrCameraParent = new GameObject("VRCameraParent");
-        vrCameraParent.transform.SetParent(worldCamDefault.transform);
+        vrCameraParent.transform.SetParent(worldCamDefault.transform.root);
 
         VSVRMod.logger.LogInfo("Creating VR camera...");
         vrCamera = new GameObject("VRCamera");
@@ -48,35 +50,72 @@ public class VRCameraManager
         VSVRMod.logger.LogInfo("Reparenting VR camera...");
         vrCamera.transform.SetParent(vrCameraParent.transform);
 
+        PositionConstraint posConstraint = vrCameraParent.AddComponent<PositionConstraint>();
+        ConstraintSource constraintSource = new ConstraintSource();
+        constraintSource.sourceTransform = vrCameraParent.transform;
+        constraintSource.weight = 1.0f;
+
+        posConstraint.AddSource(constraintSource);
+
+        VSVRMod.logger.LogInfo("Constrained VR camera position.");
+
+        if (VRConfig.fixCameraHeight.Value)
+        {
+            posConstraint.translationAxis = Axis.X | Axis.Z;
+            vrCameraParent.transform.position.Set(vrCameraParent.transform.position.x, 0f, vrCameraParent.transform.position.z);
+        }
+        else
+        {
+            posConstraint.translationAxis = Axis.X | Axis.Y | Axis.Z;
+        }
+        posConstraint.translationOffset = Vector3.zero;
+        posConstraint.constraintActive = true;
+
+        RotationConstraint rotConstraint = vrCameraParent.AddComponent<RotationConstraint>();
+
+        rotConstraint.AddSource(constraintSource);
+
+        if (VRConfig.fixCameraAngle.Value)
+        {
+            rotConstraint.rotationAxis = Axis.Y;
+        }
+        else
+        {
+            rotConstraint.rotationAxis = Axis.X | Axis.Y | Axis.Z;
+        }
+        rotConstraint.rotationOffset = Vector3.zero;
+        rotConstraint.constraintActive = true;
+
+        VSVRMod.logger.LogInfo("Constrained VR camera rotation.");
+    }
+
+    private void SetupGreenscreen()
+    {
         if (VRConfig.greenscreenBackground.Value)
         {
             vrCamera.GetComponent<Camera>().backgroundColor = VRConfig.greenscreenColor.Value;
         }
-
+        GameObject fade = GameObjectHelper.GetGameObjectCheckFound("FadeCanvas");
+        if (VRConfig.greenscreenUI.Value)
+        {
+            GameObject greenscreenUI = new GameObject();
+            SpriteRenderer spriteRenderer = greenscreenUI.AddComponent<SpriteRenderer>();
+            spriteRenderer.color = VRConfig.greenscreenColor.Value;
+            spriteRenderer.sortingOrder = 99;
+            greenscreenUI.transform.SetParent(fade.transform);
+            greenscreenUI.transform.localScale = new Vector3(100, 100);
+        }
+    }
+    private void SetupHeadTargetFollower()
+    {
         headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
         headFollower.transform.SetParent(vrCamera.transform);
         PlayMakerFSM headResetter = headFollower.GetComponent<PlayMakerFSM>();
         headResetter.enabled = false;
         headFollower.transform.localPosition = new Vector3(0, 0, 0);
         headFollower.transform.localRotation = new Quaternion(0, 0, 0, 0);
-
-        //Tried to make eyes also follow the vr camera, but it is complicated. May revist
-        /**
-        eyeFollower = GameObject.Find("EyeTarget");
-        //eyeFollower.transform.SetParent(vrCamera.transform);
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube.transform.SetParent(eyeFollower.transform);
-        cube.transform.localScale = Vector3.one * 0.1f;
-        PlayMakerFSM eyeResetter = eyeFollower.GetComponent<PlayMakerFSM>();
-        PlayMakerLateUpdate eyeResetter2 = eyeFollower.GetComponent<PlayMakerLateUpdate>();
-        eyeResetter.enabled = false;
-        eyeResetter2.enabled = false;
-        //eyeFollower.transform.localPosition = new Vector3(0, 0, 0);
-        //eyeFollower.transform.localRotation = new Quaternion(0, 0, 0, 0);
-        cube.transform.localPosition = new Vector3(0, 0, 0);
-        cube.transform.localRotation = new Quaternion(0, 0, 0, 0);
-        */
     }
+
     public void MakeUIClose()
     {
         uiCanvas.planeDistance = VRConfig.uiDistance.Value;
@@ -134,16 +173,6 @@ public class VRCameraManager
         fadeCanvas.sortingOrder = 399;
         fadeCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         fadeCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-
-        if (VRConfig.greenscreenUI.Value)
-        {
-            GameObject greenscreenUI = new GameObject();
-            SpriteRenderer spriteRenderer = greenscreenUI.AddComponent<SpriteRenderer>();
-            spriteRenderer.color = VRConfig.greenscreenColor.Value;
-            spriteRenderer.sortingOrder = 99;
-            greenscreenUI.transform.SetParent(fade.transform);
-            greenscreenUI.transform.localScale = new Vector3(100, 100);
-        }
 
         MakeUIClose();
 
