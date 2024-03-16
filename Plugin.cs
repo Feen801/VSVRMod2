@@ -20,12 +20,14 @@ public class VSVRMod : BaseUnityPlugin
 #pragma warning restore BepInEx002 // Classes with BepInPlugin attribute must inherit from BaseUnityPlugin
 {
     public bool inSession = false;
-    private VRGestureRecognizer vrGestureRecognizer = new VRGestureRecognizer();
+    private static readonly VRGestureRecognizer vrGestureRecognizer = new();
     public static ManualLogSource logger;
     public static ConfigFile config;
 
     private static VRCameraManager vrCameraManager;
     private static UIContainer uiContainer;
+
+    private static readonly Controller.Headset controllerHeadset = new();
 
     private void Awake()
     {
@@ -63,6 +65,9 @@ public class VSVRMod : BaseUnityPlugin
             vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
             vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
 
+            controllerHeadset.OnWorn += vrCameraManager.SetupUI;
+            controllerHeadset.OnRemoved += vrCameraManager.RevertUI;
+
             inSession = true;
         }
         else
@@ -79,6 +84,10 @@ public class VSVRMod : BaseUnityPlugin
             if (VRConfig.useHeadMovement.Value)
             {
                 vrGestureRecognizer.Update();
+            }
+            if (VRConfig.automaticScreenSwap.Value)
+            {
+                controllerHeadset.Update();
             }
             Keyboard.HandleKeyboardInputSession(vrCameraManager);
             uiContainer.Interact();

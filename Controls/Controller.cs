@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.XR;
 using UnityEngine.XR.OpenXR;
 using UnityEngine.XR.OpenXR.Features;
@@ -14,6 +15,7 @@ class Controller
     public static int outputControllerDebug = 0;
     private static UnityEngine.XR.InputDevice leftController;
     private static UnityEngine.XR.InputDevice rightController;
+    private static UnityEngine.XR.InputDevice headset;
 
     public static void CheckControllers()
     {
@@ -42,6 +44,11 @@ class Controller
         {
             rightController = device;
             VSVRMod.logger.LogInfo("Right Controller!");
+        }
+        else if (device.characteristics.HasFlag(InputDeviceCharacteristics.HeadMounted))
+        {
+            headset = device;
+            VSVRMod.logger.LogInfo("Headset found!");
         }
     }
 
@@ -238,6 +245,37 @@ class Controller
         }
 
         return left1 || left2 || right1 || right2 || joystick;
+    }
+
+    public static bool IsHeadsetWorn()
+    {
+        headset.TryGetFeatureValue(UnityEngine.XR.CommonUsages.userPresence, out bool worn);
+        return worn;
+    }
+
+    public class Headset
+    {
+        public event Action OnWorn;
+        public event Action OnRemoved;
+
+        private bool lastState = true;
+
+        public void Update()
+        {
+            bool worn = IsHeadsetWorn();
+            if (worn != lastState)
+            {
+                if(worn)
+                {
+                    OnWorn?.Invoke();
+                }
+                else
+                { 
+                    OnRemoved?.Invoke();
+                }
+                lastState = worn;
+            }
+        }
     }
 
     public static Vector2 GetMaximalJoystickValue()

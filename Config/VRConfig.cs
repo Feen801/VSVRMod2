@@ -10,6 +10,7 @@ public class VRConfig
 
     //Controls settings
     public static ConfigEntry<bool> useHeadMovement;
+    public static ConfigEntry<bool> automaticScreenSwap;
 
     //Camera settings
     public static ConfigEntry<float> vrCameraScale;
@@ -27,6 +28,7 @@ public class VRConfig
             "The relative size will not change, i.e. if you make it closer to you it will also become smaller such that it takes up the same FOV.");
 
         useHeadMovement = VSVRMod.config.Bind("Controls", "Use Head Movement", true, "Enable or disable the ability to press buttons by nodding or shaking your head.");
+        automaticScreenSwap = VSVRMod.config.Bind("Controls", "Automatic Screen Swap", true, "Automatically swap the game output to your monitor when your headset is removed. Only works on Oculus and WMR headsets.");
 
         vrCameraScale = VSVRMod.config.Bind("Camera", "VR Camera Scale", 1f, "Scale of the VR camera. A value of 0.5 would make the camera half size, making everything else appear twice as large.");
         fixCameraHeight = VSVRMod.config.Bind("Camera", "Fix Camera Height", false, "Makes the VR camera respect the actual distance from your head to the floor, instead of being scene dependent. Not recommended.");

@@ -7,13 +7,12 @@ using UnityEngine.SpatialTracking;
 namespace VSVRMod2;
 public class VRCameraManager
 {
-    //public static GameObject root;
     private GameObject primaryCamera;
+    private GameObject worldCamDefault;
+    private Camera worldCamDefaultCamera;
     static GameObject vrCamera;
     static GameObject vrCameraParent;
-    //static GameObject vrUICamera;
     private GameObject headFollower;
-    //private GameObject eyeFollower;
     private Canvas uiCanvas;
     private Canvas overlayCanvas;
     private Canvas scoreCanvas;
@@ -26,7 +25,7 @@ public class VRCameraManager
             NewSetupCamera();
             SetupUI();
             SetupGreenscreen();
-            SetupHeadTargetFollower();
+            
         }
         else
         {
@@ -36,7 +35,8 @@ public class VRCameraManager
 
     private void NewSetupCamera()
     {
-        GameObject worldCamDefault = GameObjectHelper.GetGameObjectCheckFound("WorldCamDefault");
+        worldCamDefault = GameObjectHelper.GetGameObjectCheckFound("WorldCamDefault");
+        worldCamDefaultCamera = worldCamDefault.GetComponent<Camera>();
         vrCameraParent = new GameObject("VRCameraParent");
         vrCameraParent.transform.SetParent(worldCamDefault.transform.root);
 
@@ -106,12 +106,19 @@ public class VRCameraManager
             greenscreenUI.transform.localScale = new Vector3(100, 100);
         }
     }
-    private void SetupHeadTargetFollower()
+    private void SetupHeadTargetFollower(Boolean revert)
     {
         headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
-        headFollower.transform.SetParent(vrCamera.transform);
+        if (revert)
+        {
+            headFollower.transform.SetParent(worldCamDefault.transform);
+        }
+        else
+        {
+            headFollower.transform.SetParent(vrCamera.transform);
+        }
         PlayMakerFSM headResetter = headFollower.GetComponent<PlayMakerFSM>();
-        headResetter.enabled = false;
+        headResetter.enabled = revert;
         headFollower.transform.localPosition = new Vector3(0, 0, 0);
         headFollower.transform.localRotation = new Quaternion(0, 0, 0, 0);
     }
@@ -148,7 +155,7 @@ public class VRCameraManager
         }
     }
 
-    private void SetupUI()
+    public void SetupUI()
     {
         uiInVR = true;
         GameObject ui = GameObjectHelper.GetGameObjectCheckFound("GeneralCanvas");
@@ -251,6 +258,8 @@ public class VRCameraManager
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
         vrCamera.SetActive(true);
+        SetupHeadTargetFollower(false);
+        worldCamDefaultCamera.enabled = false;
     }
 
     public void RevertUI()
@@ -269,7 +278,9 @@ public class VRCameraManager
         fadeCanvas.worldCamera = null;
         fadeCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
 
+        worldCamDefaultCamera.enabled = true;
         vrCamera.SetActive(false);
+        SetupHeadTargetFollower(true);
     }
 
     public void CenterCamera()
