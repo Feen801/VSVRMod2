@@ -19,7 +19,7 @@ public class ScoreboardUIManager : UIManager
         VSVRMod.logger.LogInfo("Setup Scoreboard");
     }
 
-    public new bool Interact()
+    public override bool Interact()
     {
         if (!scoreboard.representative.activeSelf)
         {

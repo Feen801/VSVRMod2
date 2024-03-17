@@ -45,7 +45,7 @@ public class StakesUIManager : UIManager
         VSVRMod.logger.LogInfo("Setup StakesUI");
     }
 
-    public new bool Interact()
+    public override bool Interact()
     {
         if (stakesMenu.representative.activeSelf)
         {

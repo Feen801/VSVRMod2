@@ -1,8 +1,10 @@
 ﻿using System;
+using UnityEditor.XR.LegacyInputHelpers;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.SceneManagement;
 using UnityEngine.SpatialTracking;
+using UnityEngine.UI;
 
 namespace VSVRMod2;
 public class VRCameraManager
@@ -12,15 +14,17 @@ public class VRCameraManager
     private Camera worldCamDefaultCamera;
     static GameObject vrCamera;
     static GameObject vrCameraParent;
+    static GameObject vrCameraOffset;
     private GameObject headFollower;
     private Canvas uiCanvas;
     private Canvas overlayCanvas;
     private Canvas scoreCanvas;
     private Canvas fadeCanvas;
+    private GameObject greenscreenUI;
 
     public VRCameraManager(Scene scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
+        if (scene.isLoaded && Equals(scene.name, Constants.SessionScene))
         {
             NewSetupCamera();
             SetupUI();
@@ -36,9 +40,14 @@ public class VRCameraManager
     private void NewSetupCamera()
     {
         worldCamDefault = GameObjectHelper.GetGameObjectCheckFound("WorldCamDefault");
+        primaryCamera = GameObjectHelper.GetGameObjectCheckFound("PrimaryCamera");
         worldCamDefaultCamera = worldCamDefault.GetComponent<Camera>();
         vrCameraParent = new GameObject("VRCameraParent");
         vrCameraParent.transform.SetParent(worldCamDefault.transform.root);
+        vrCameraOffset = new GameObject("VRCameraOffset");
+        vrCameraOffset.transform.SetParent(vrCameraParent.transform);
+
+        headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
 
         VSVRMod.logger.LogInfo("Creating VR camera...");
         vrCamera = new GameObject("VRCamera");
@@ -48,11 +57,11 @@ public class VRCameraManager
         float cameraScale = VRConfig.vrCameraScale.Value;
         vrCamera.transform.localScale = new Vector3(cameraScale, cameraScale, cameraScale);
         VSVRMod.logger.LogInfo("Reparenting VR camera...");
-        vrCamera.transform.SetParent(vrCameraParent.transform);
+        vrCamera.transform.SetParent(vrCameraOffset.transform);
 
         PositionConstraint posConstraint = vrCameraParent.AddComponent<PositionConstraint>();
         ConstraintSource constraintSource = new ConstraintSource();
-        constraintSource.sourceTransform = vrCameraParent.transform;
+        constraintSource.sourceTransform = worldCamDefault.transform;
         constraintSource.weight = 1.0f;
 
         posConstraint.AddSource(constraintSource);
@@ -95,20 +104,29 @@ public class VRCameraManager
         {
             vrCamera.GetComponent<Camera>().backgroundColor = VRConfig.greenscreenColor.Value;
         }
-        GameObject fade = GameObjectHelper.GetGameObjectCheckFound("FadeCanvas");
+        GameObject cv = GameObjectHelper.GetGameObjectCheckFound("GeneralCanvas");
         if (VRConfig.greenscreenUI.Value)
         {
-            GameObject greenscreenUI = new GameObject();
-            SpriteRenderer spriteRenderer = greenscreenUI.AddComponent<SpriteRenderer>();
-            spriteRenderer.color = VRConfig.greenscreenColor.Value;
-            spriteRenderer.sortingOrder = 99;
-            greenscreenUI.transform.SetParent(fade.transform);
+            greenscreenUI = new GameObject();
+            greenscreenUI.AddComponent<RectTransform>();
+            Image imageComponent = greenscreenUI.AddComponent<Image>();
+            imageComponent.color = VRConfig.greenscreenColor.Value;
+            greenscreenUI.transform.SetParent(cv.transform);
             greenscreenUI.transform.localScale = new Vector3(100, 100);
+            greenscreenUI.transform.localPosition = Vector3.zero;
+            greenscreenUI.SetActive(false);
+            greenscreenUI.transform.SetAsFirstSibling();
         }
     }
+
+    public void ToggleGreenscreenUI() {
+        if(VRConfig.greenscreenUI.Value) {
+            greenscreenUI.SetActive(!greenscreenUI.activeSelf);
+        }
+    }
+
     private void SetupHeadTargetFollower(Boolean revert)
     {
-        headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
         if (revert)
         {
             headFollower.transform.SetParent(worldCamDefault.transform);
@@ -285,12 +303,12 @@ public class VRCameraManager
 
     public void CenterCamera()
     {
-        if (vrCamera == null)
+        if (vrCamera == null || VRConfig.fixCameraHeight.Value)
         {
             return;
         }
-        vrCameraParent.transform.position = vrCamera.transform.position;
-        vrCameraParent.transform.localPosition = -vrCamera.transform.localPosition;
-        vrCameraParent.transform.rotation = new Quaternion(0, 0, 0, 0);
+        vrCameraOffset.transform.position = vrCamera.transform.position;
+        vrCameraOffset.transform.localPosition = -vrCamera.transform.localPosition;
+        vrCameraOffset.transform.rotation = new Quaternion(0, 0, 0, 0);
     }
 }

@@ -14,6 +14,7 @@
     </RestoreAdditionalProjectSources>
     <RootNamespace>VSVRMod2</RootNamespace>
     <OutputType>Library</OutputType>
+    <Configurations>Debug;Release;Auto</Configurations>
   </PropertyGroup>
 
   <ItemGroup>

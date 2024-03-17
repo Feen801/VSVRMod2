@@ -5,25 +5,24 @@ using UnityEngine.SceneManagement;
 namespace VSVRMod2.UI;
 class UIContainer
 {
-    SortedList<int, UIManager> priorityUIList = [];
+    List<UIManager> priorityUIList = [];
 
     public BasicUIManager basicUIManager = null;
 
     public UIContainer(Scene scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.sessionScene))
+        if (scene.isLoaded && Equals(scene.name, Constants.SessionScene))
         {
-            int i = 0;
-            priorityUIList.Add(i++, new ScoreboardUIManager(scene));
-            priorityUIList.Add(i++, new SafewordUIManager(scene));
-            priorityUIList.Add(i++, new OpportunityUIManager(scene));
-            priorityUIList.Add(i++, new UrgesUIManager(scene));
-            priorityUIList.Add(i++, new FindomUIManager(scene));
-            priorityUIList.Add(i++, new RadialUIManager(scene));
-            priorityUIList.Add(i++, new StakesUIManager(scene));
-            priorityUIList.Add(i++, new ChoiceUIManager(scene));
-            priorityUIList.Add(i++, new IntInputUIMManager(scene));
-            priorityUIList.Add(i++, basicUIManager = new BasicUIManager(scene));
+            priorityUIList.Add(new ScoreboardUIManager(scene));
+            priorityUIList.Add(new SafewordUIManager(scene));
+            priorityUIList.Add(new OpportunityUIManager(scene));
+            priorityUIList.Add(new UrgesUIManager(scene));
+            priorityUIList.Add(new FindomUIManager(scene));
+            priorityUIList.Add(new RadialUIManager(scene));
+            priorityUIList.Add(new StakesUIManager(scene));
+            priorityUIList.Add(new ChoiceUIManager(scene));
+            priorityUIList.Add(new IntInputUIMManager(scene));
+            priorityUIList.Add(basicUIManager = new BasicUIManager(scene));
         }
         else
         {
@@ -33,10 +32,13 @@ class UIContainer
 
     public void Interact()
     {
-        foreach (UIManager uiManager in priorityUIList.Values)
+        foreach (UIManager uiManager in priorityUIList)
         {
             bool foundInteractableUI = uiManager.Interact();
-            if (foundInteractableUI) return;
+            if (foundInteractableUI)
+            {
+                return;
+            }
         }
     }
 }

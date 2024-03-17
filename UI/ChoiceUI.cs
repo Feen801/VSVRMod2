@@ -44,7 +44,7 @@ public class ChoiceUIManager : UIManager
         VSVRMod.logger.LogInfo("Setup ChoiceUI");
     }
 
-    public new bool Interact()
+    public override bool Interact()
     {
         if (choiceMenu.representative.activeSelf)
         {

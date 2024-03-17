@@ -35,7 +35,7 @@ public class IntInputUIMManager : UIManager
 
     private float intInputInteractionNext = 0;
     private float intInputInteractionAccel = 0.4f;
-    public new bool Interact()
+    public override bool Interact()
     {
         if (intInput.representative.activeSelf)
         {

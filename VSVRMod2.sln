@@ -7,10 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VSVRMod2", "VSVRMod2.csproj
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Auto|Any CPU = Auto|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7202225E-5362-4017-8D97-FF7EA9368C4F}.Auto|Any CPU.ActiveCfg = Auto|Any CPU
+		{7202225E-5362-4017-8D97-FF7EA9368C4F}.Auto|Any CPU.Build.0 = Auto|Any CPU
 		{7202225E-5362-4017-8D97-FF7EA9368C4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7202225E-5362-4017-8D97-FF7EA9368C4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7202225E-5362-4017-8D97-FF7EA9368C4F}.Release|Any CPU.ActiveCfg = Release|Any CPU

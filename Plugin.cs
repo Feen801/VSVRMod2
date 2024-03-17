@@ -55,7 +55,7 @@ public class VSVRMod : BaseUnityPlugin
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Logger.LogInfo("A scene was loaded: " + scene.name);
-        if (Equals(scene.name, Constants.sessionScene))
+        if (Equals(scene.name, Constants.SessionScene))
         {
             vrCameraManager = new(scene);
             vrCameraManager.CenterCamera();
@@ -95,6 +95,10 @@ public class VSVRMod : BaseUnityPlugin
             if (gripCount == 2)
             {
                 vrCameraManager.CenterCamera();
+            }
+            if (Controller.WasAGripClicked())
+            {
+                vrCameraManager.ToggleGreenscreenUI();
             }
             Controller.endFrame();
         }

@@ -59,7 +59,7 @@ public class FindomUIManager : UIManager
     private float findomInputInteractionAccel = 0.4f;
     //false = controlling buttons, true = controlling slider
     private bool findomInputInteractState = false;
-    public new bool Interact()
+    public override bool Interact()
     {
         if (findomInput.representative.activeSelf)
         {

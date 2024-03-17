@@ -10,17 +10,23 @@ internal class UrgesUIManager : UIManager
     {
         Transform parent = GameObject.Find("GeneralCanvas/EventManager").transform;
         giveInButton = new VSGenericButton(parent, "Give In", "Urges/ActionTextContainer/GiveIn/GiveInButton");
-        resistButton = new VSGenericButton(parent, "Resist", "Urges/ActionTextContainer/Resist/ResistnButton");
+        resistButton = new VSGenericButton(parent, "Resist", "Urges/ActionTextContainer/IgnoreButton");
 
-        VSVRMod.logger.LogInfo("Finished setting up urge  buttons");
+        VSVRMod.logger.LogInfo("Finished setting up urge buttons");
     }
 
-    public new bool Interact()
+    public override bool Interact()
     {
-        bool faceButtonClicked = Controller.WasAFaceButtonClicked();
+        bool faceButtonClicked = Controller.WasALowerFaceButtonClicked();
         if (giveInButton.components.buttonObject.activeSelf && faceButtonClicked)
         {
             giveInButton.Click();
+            return true;
+        }
+        faceButtonClicked = Controller.WasAUpperFaceButtonClicked();
+        if (resistButton.components.buttonObject.activeSelf && faceButtonClicked)
+        {
+            resistButton.Click();
             return true;
         }
         return false;

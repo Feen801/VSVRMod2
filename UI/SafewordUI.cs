@@ -45,7 +45,7 @@ public class SafewordUIManager : UIManager
         VSVRMod.logger.LogInfo("Setup Safeword");
     }
 
-    public new bool Interact()
+    public override bool Interact()
     {
         if (safewordMenu.representative.activeSelf)
         {

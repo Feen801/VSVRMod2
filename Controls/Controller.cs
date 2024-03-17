@@ -48,6 +48,15 @@ class Controller
         else if (device.characteristics.HasFlag(InputDeviceCharacteristics.HeadMounted))
         {
             headset = device;
+            List<InputFeatureUsage> useages = [];
+            headset.TryGetFeatureUsages(useages);
+            foreach (InputFeatureUsage usage in useages)
+            {
+                if (usage.name == Constants.UserPresence)
+                {
+                    headsetHasProximitySensor = true;
+                }
+            }
             VSVRMod.logger.LogInfo("Headset found!");
         }
     }
@@ -91,16 +100,15 @@ class Controller
         VSVRMod.logger.LogInfo("Enabled XR Controller Profiles");
     }
 
-    private static int lastTriggerFrame = 0;
+    private static bool lastTriggerStatus = false;
 
     public static bool WasATriggerClicked()
     {
-        int frame = Time.frameCount;
         bool clicked = false;
         bool pressed = IsATriggerPressed();
         if (pressed)
         {
-            if (frame != lastTriggerFrame + 1)
+            if (pressed != lastTriggerStatus)
             {
                 clicked = true;
                 if (outputControllerDebug >= 1)
@@ -134,16 +142,14 @@ class Controller
         return right > 0.5 || left > 0.5 || joystick;
     }
 
-    private static int lastStickFrame = 0;
-
+    private static bool lastStickStatus = false;
     public static bool WasAStickClicked()
     {
-        int frame = Time.frameCount;
         bool clicked = false;
         bool pressed = IsAStickPressed();
         if (pressed)
         {
-            if (frame != lastStickFrame + 1)
+            if (pressed != lastStickStatus)
             {
                 clicked = true;
                 if (outputControllerDebug >= 1)
@@ -180,15 +186,14 @@ class Controller
         return right || left || joystick;
     }
 
-    private static int lastFaceFrame = 0;
+    private static bool lastFaceStatus = false;
     public static bool WasAFaceButtonClicked()
     {
-        int frame = Time.frameCount;
         bool clicked = false;
         bool pressed = IsAFaceButtonPressed();
         if (pressed)
         {
-            if (frame != lastFaceFrame + 1)
+            if (pressed != lastFaceStatus)
             {
                 clicked = true;
                 if (outputControllerDebug >= 1)
@@ -201,11 +206,72 @@ class Controller
         return clicked;
     }
 
+    private static bool lastLowerFaceStatus = false;
+    public static bool WasALowerFaceButtonClicked()
+    {
+        bool clicked = false;
+        bool pressed = IsALowerFaceButtonPressed();
+        if (pressed)
+        {
+            if (pressed != lastLowerFaceStatus)
+            {
+                clicked = true;
+                if (outputControllerDebug >= 1)
+                {
+                    VSVRMod.logger.LogInfo("Lower Face button click!");
+                }
+            }
+        }
+
+        return clicked;
+    }
+
+    private static bool lastUpperFaceStatus = false;
+    public static bool WasAUpperFaceButtonClicked()
+    {
+        bool clicked = false;
+        bool pressed = IsAUpperFaceButtonPressed();
+        if (pressed)
+        {
+            if (pressed != lastUpperFaceStatus)
+            {
+                clicked = true;
+                if (outputControllerDebug >= 1)
+                {
+                    VSVRMod.logger.LogInfo("Upper Face button click!");
+                }
+            }
+        }
+
+        return clicked;
+    }
+
+    private static bool lastGripStatus = false;
+    public static bool WasAGripClicked()
+    {
+        bool clicked = false;
+        bool pressed = CountGripsPressed() >= 1;
+        if (pressed)
+        {
+            if (pressed != lastGripStatus)
+            {
+                clicked = true;
+                if (outputControllerDebug >= 1)
+                {
+                    VSVRMod.logger.LogInfo("Grip button click!");
+                }
+            }
+        }
+
+        return clicked;
+    }
+
     public static int CountGripsPressed()
     {
         bool left = false;
         bool right = false;
         bool joystick = false;
+
         if (leftController != null)
         {
             leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.gripButton, out left);
@@ -221,36 +287,67 @@ class Controller
 
     public static bool IsAFaceButtonPressed()
     {
+        return IsALowerFaceButtonPressed() || IsAUpperFaceButtonPressed();
+    }
+
+    public static bool IsALowerFaceButtonPressed()
+    {
         bool left1 = false;
-        bool left2 = false;
         bool right1 = false;
-        bool right2 = false;
         bool joystick = false;
 
         if (leftController != null)
         {
             leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out left1);
-            leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out left2);
         }
         if (rightController != null)
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out right1);
+        }
+        joystick = Input.GetAxis("Jump") > 0.5f;
+
+        if (outputControllerDebug >= 2)
+        {
+            VSVRMod.logger.LogInfo("Face Button: Left: " + (left1) + " Right: " + (right1));
+        }
+
+        return left1 || right1 || joystick;
+    }
+
+    public static bool IsAUpperFaceButtonPressed()
+    {
+        bool left2 = false;
+        bool right2 = false;
+        bool joystick = false;
+
+        if (leftController != null)
+        {
+            leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out left2);
+        }
+        if (rightController != null)
+        {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out right2);
         }
         joystick = Input.GetAxis("Jump") > 0.5f;
 
         if (outputControllerDebug >= 2)
         {
-            VSVRMod.logger.LogInfo("Face Button: Left: " + (left1 || left2) + " Right: " + (right1 || right2));
+            VSVRMod.logger.LogInfo("Face Button: Left: " + (left2) + " Right: " + (right2));
         }
 
-        return left1 || left2 || right1 || right2 || joystick;
+        return left2 || right2;
     }
+
+    private static bool headsetHasProximitySensor = false;
 
     public static bool IsHeadsetWorn()
     {
-        headset.TryGetFeatureValue(UnityEngine.XR.CommonUsages.userPresence, out bool worn);
-        return worn;
+        if(headsetHasProximitySensor)
+        {
+            headset.TryGetFeatureValue(UnityEngine.XR.CommonUsages.userPresence, out bool worn);
+            return worn;
+        }
+        return true;
     }
 
     public class Headset
@@ -331,9 +428,11 @@ class Controller
 
     public static void endFrame()
     {
-        int frame = Time.frameCount;
-        lastStickFrame = frame;
-        lastFaceFrame = frame;
-        lastTriggerFrame = frame;
+        lastStickStatus = IsAStickPressed();
+        lastFaceStatus = IsAFaceButtonPressed();
+        lastUpperFaceStatus = IsAUpperFaceButtonPressed();
+        lastLowerFaceStatus = IsALowerFaceButtonPressed();
+        lastTriggerStatus = IsATriggerPressed();
+        lastGripStatus = CountGripsPressed() >= 1;
     }
 }

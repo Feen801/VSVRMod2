@@ -23,7 +23,7 @@ class OpportunityUIManager : UIManager
         VSVRMod.logger.LogInfo("Finished setting up opportunity buttons");
     }
 
-    public new bool Interact()
+    public override bool Interact()
     {
         bool faceButtonClicked = Controller.WasAFaceButtonClicked();
         foreach (VSGenericButton button in vsOpportunityButtons)

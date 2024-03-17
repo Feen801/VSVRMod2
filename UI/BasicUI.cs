@@ -39,7 +39,7 @@ public class BasicUIManager : UIManager
         headMovementTracker = new HeadMovementTracker(this);
     }
 
-    public new bool Interact()
+    public override bool Interact()
     {
         bool triggerClick = Controller.WasATriggerClicked();
         double x = Controller.GetMaximalJoystickValue().x;

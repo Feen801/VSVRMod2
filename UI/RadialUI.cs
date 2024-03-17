@@ -90,7 +90,7 @@ public class RadialUIManager : UIManager
 
     private VSRadialButton.RadialLevel currentRadialLevel = VSRadialButton.RadialLevel.None;
 
-    public new bool Interact()
+    public override bool Interact()
     {
         bool stickClick = Controller.WasAStickClicked();
         bool triggerClick = Controller.WasATriggerClicked();
