@@ -1,23 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Configuration;
+using BepInEx.Logging;
 using BepInEx.Unity.Mono;
 using HarmonyLib;
-using UnityEngine.XR.Management;
 using UnityEngine;
-using UnityEngine.XR.OpenXR;
-using UnityEngine.XR;
 using UnityEngine.SceneManagement;
-using System;
-using UnityEngine.UIElements;
-using UnityEngine.Events;
-using BepInEx.Logging;
-using UnityEngineInternal.Input;
-using BepInEx.Configuration;
-using UnityEngine.XR.OpenXR.Features.Interactions;
-using UnityEngine.InputSystem.Layouts;
-using Unity.XR.Oculus.Input;
-using UnityEngine.Analytics;
+using UnityEngine.XR;
+using UnityEngine.XR.Management;
+using UnityEngine.XR.OpenXR;
+using VSVRMod2.UI;
 
 namespace VSVRMod2;
 
@@ -26,11 +19,15 @@ namespace VSVRMod2;
 public class VSVRMod : BaseUnityPlugin
 #pragma warning restore BepInEx002 // Classes with BepInPlugin attribute must inherit from BaseUnityPlugin
 {
-    public const string sessionScene = "ExtraLoadScene";
     public bool inSession = false;
-    private VRGestureRecognizer vrGestureRecognizer = new VRGestureRecognizer();
+    private static readonly VRGestureRecognizer vrGestureRecognizer = new();
     public static ManualLogSource logger;
     public static ConfigFile config;
+
+    private static VRCameraManager vrCameraManager;
+    private static UIContainer uiContainer;
+
+    private static readonly Controller.Headset controllerHeadset = new();
 
     private void Awake()
     {
@@ -40,7 +37,7 @@ public class VSVRMod : BaseUnityPlugin
         config = Config;
 
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-        
+
         VRConfig.SetupConfig();
         Controller.EnableControllerProfiles();
         InitializeXRRuntime();
@@ -58,19 +55,18 @@ public class VSVRMod : BaseUnityPlugin
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         Logger.LogInfo("A scene was loaded: " + scene.name);
-        if (Equals(scene.name, sessionScene))
+        if (Equals(scene.name, Constants.SessionScene))
         {
-            VRCamera.SetupCamera();
-            VRCamera.SetupUI();
-            BasicUI.SetupChoiceButtons();
-            BasicUI.SetupOtherButtons();
-            BasicUI.SetupRadialButtons();
-            SpecialUI.SetupMenus();
-            VRCamera.CenterCamera();
+            vrCameraManager = new(scene);
+            vrCameraManager.CenterCamera();
+            uiContainer = new(scene);
             VSVRAssets.ApplyUIShader();
 
-            vrGestureRecognizer.Nodded += BasicUI.HeadMovementTracker.Nod;
-            vrGestureRecognizer.HeadShaken += BasicUI.HeadMovementTracker.Headshake;
+            vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
+            vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
+
+            controllerHeadset.OnWorn += vrCameraManager.SetupUI;
+            controllerHeadset.OnRemoved += vrCameraManager.RevertUI;
 
             inSession = true;
         }
@@ -85,24 +81,26 @@ public class VSVRMod : BaseUnityPlugin
         Keyboard.HandleKeyboardInput();
         if (inSession)
         {
-            if (VRConfig.useHeadMovement.Value) {
+            if (VRConfig.useHeadMovement.Value)
+            {
                 vrGestureRecognizer.Update();
             }
-            Keyboard.HandleKeyboardInputSession();
-            Controller.ControllerInteract();
+            if (VRConfig.automaticScreenSwap.Value)
+            {
+                controllerHeadset.Update();
+            }
+            Keyboard.HandleKeyboardInputSession(vrCameraManager);
+            uiContainer.Interact();
             int gripCount = Controller.CountGripsPressed();
             if (gripCount == 2)
             {
-                VRCamera.CenterCamera();
+                vrCameraManager.CenterCamera();
             }
-            else if (gripCount == 1)
+            if (Controller.WasAGripClicked())
             {
-                VRCamera.MakeUIClose(true);
+                vrCameraManager.ToggleGreenscreenUI();
             }
-            else
-            {
-                VRCamera.MakeUIClose(false);
-            }
+            Controller.endFrame();
         }
     }
 

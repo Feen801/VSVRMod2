@@ -4,16 +4,16 @@ namespace VSVRMod2;
 
 class Keyboard
 {
-    public static void HandleKeyboardInputSession()
+    public static void HandleKeyboardInputSession(VRCameraManager vrCameraManager)
     {
         if (Input.GetKeyDown(KeyCode.Comma))
         {
-            VRCamera.CenterCamera();
+            vrCameraManager.CenterCamera();
         }
         
         if (Input.GetKeyDown(KeyCode.Slash))
         {
-            VRCamera.ToggleUIVR();
+            vrCameraManager.ToggleUIVR();
         }
     }
 
