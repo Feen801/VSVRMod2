@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
@@ -10,6 +11,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
 using UnityEngine.XR.OpenXR;
+using VSVRMod2.Helper;
 using VSVRMod2.UI;
 
 namespace VSVRMod2;
@@ -29,6 +31,8 @@ public class VSVRMod : BaseUnityPlugin
 
     private static readonly Controller.Headset controllerHeadset = new();
 
+    private static bool noVR = false;
+
     private void Awake()
     {
         // Plugin startup logic
@@ -39,6 +43,16 @@ public class VSVRMod : BaseUnityPlugin
         Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
         VRConfig.SetupConfig();
+
+        ShortcutHelper.CreateShortcut();
+
+        string[] args = System.Environment.GetCommandLineArgs();
+        if (args.Contains<string>("-novr")) {
+            logger.LogWarning("VR disabled!");
+            noVR = true;
+            return;
+        }
+
         Controller.EnableControllerProfiles();
         InitializeXRRuntime();
         StartDisplay();
@@ -54,6 +68,10 @@ public class VSVRMod : BaseUnityPlugin
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        if(noVR)
+        {
+            return;
+        }
         Logger.LogInfo("A scene was loaded: " + scene.name);
         if (Equals(scene.name, Constants.SessionScene))
         {
@@ -78,6 +96,10 @@ public class VSVRMod : BaseUnityPlugin
 
     void Update()
     {
+        if (noVR)
+        {
+            return;
+        }
         Keyboard.HandleKeyboardInput();
         if (inSession)
         {
