@@ -85,6 +85,7 @@ public class VSVRMod : BaseUnityPlugin
 
             controllerHeadset.OnWorn += vrCameraManager.SetupUI;
             controllerHeadset.OnRemoved += vrCameraManager.RevertUI;
+            vrCameraManager.SetupUI();
 
             inSession = true;
         }
