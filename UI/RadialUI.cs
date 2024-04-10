@@ -129,54 +129,64 @@ public class RadialUIManager : UIManager
             }
         }
 
-        if (stickMagnitude > 0.3 && currentRadialLevel != VSRadialButton.RadialLevel.None)
+        if (currentRadialLevel != VSRadialButton.RadialLevel.None)
         {
-            List<VSRadialButton> candidateButtons = [];
-            foreach (VSRadialButton button in vsRadialButtons)
+            if(stickMagnitude > 0.3)
             {
-                if (button.minDegrees < stickDirection && button.maxDegrees > stickDirection && button.components.buttonObject.activeSelf)
+                List<VSRadialButton> candidateButtons = [];
+                foreach (VSRadialButton button in vsRadialButtons)
                 {
-                    if (button.IsOnRadialLevel(currentRadialLevel))
+                    if (button.minDegrees < stickDirection && button.maxDegrees > stickDirection && button.components.buttonObject.activeSelf)
                     {
-                        candidateButtons.Add(button);
+                        if (button.IsOnRadialLevel(currentRadialLevel))
+                        {
+                            candidateButtons.Add(button);
+                        }
+                        else
+                        {
+                            button.components.highlight.SetActive(false);
+                        }
                     }
                     else
                     {
                         button.components.highlight.SetActive(false);
                     }
                 }
-                else
-                {
-                    button.components.highlight.SetActive(false);
-                }
-            }
 
-            VSRadialButton trueButton = null;
+                VSRadialButton trueButton = null;
 
-            foreach (VSRadialButton button in candidateButtons)
-            {
-                if (trueButton == null || button.maxMagnitude < trueButton.maxMagnitude && button.maxMagnitude > stickMagnitude)
+                foreach (VSRadialButton button in candidateButtons)
                 {
-                    if (trueButton != null)
+                    if (trueButton == null || button.maxMagnitude < trueButton.maxMagnitude && button.maxMagnitude > stickMagnitude)
                     {
-                        trueButton.components.highlight.SetActive(false);
+                        if (trueButton != null)
+                        {
+                            trueButton.components.highlight.SetActive(false);
+                        }
+                        trueButton = button;
                     }
-                    trueButton = button;
+                    else
+                    {
+                        button.components.highlight.SetActive(false);
+                    }
                 }
-                else
+
+                if (trueButton != null)
+                {
+                    trueButton.components.highlight.SetActive(true);
+                    if (triggerClick)
+                    {
+                        trueButton.Click();
+                    }
+                    return true;
+                }
+            }
+            else
+            {
+                foreach (VSRadialButton button in vsRadialButtons)
                 {
                     button.components.highlight.SetActive(false);
                 }
-            }
-
-            if (trueButton != null)
-            {
-                trueButton.components.highlight.SetActive(true);
-                if (triggerClick)
-                {
-                    trueButton.Click();
-                }
-                return true;
             }
         }
         return false;
