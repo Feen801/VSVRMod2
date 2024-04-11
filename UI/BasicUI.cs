@@ -10,7 +10,7 @@ public class BasicUIManager : UIManager
 
     public HeadMovementTracker headMovementTracker;
 
-    VSGenericButton good;
+    VSRadialButton good;
 
     public BasicUIManager(Scene scene) : base(scene)
     {
@@ -47,7 +47,7 @@ public class BasicUIManager : UIManager
             VSVRMod.logger.LogError("centerGameObject not found (basicUI).");
         }
         Transform center = centerGameObject.transform;
-        good = new(center, "Good", "Level1/OtherButtons/KeepGoingBG");
+        good = new(center, "Good", "Level1/OtherButtons/KeepGoingBG", 1, 0, 360, VSRadialButton.RadialLevel.Both);
     }
 
     public override bool Interact()

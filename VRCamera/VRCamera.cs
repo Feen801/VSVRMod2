@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEditor.XR.LegacyInputHelpers;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -275,6 +276,20 @@ public class VRCameraManager
         }
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
+
+        currentAdjust = overlay.transform.Find("YourStatusMenuManager").gameObject;
+        if (currentAdjust == null)
+        {
+            VSVRMod.logger.LogError("YourStatusMenuManager not found");
+        }
+        else
+        {
+            VSVRMod.logger.LogInfo("YourStatusMenuManager found");
+        }
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(340, -1100, 0);
+        //no vr -2073.563 -133.0297 0.401
+        //in vr -464.9204 -133.0297 0.401
+        currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
         vrCamera.SetActive(true);
         SetupHeadTargetFollower(false);
         worldCamDefaultCamera.enabled = false;
@@ -301,6 +316,53 @@ public class VRCameraManager
         SetupHeadTargetFollower(true);
     }
 
+    public void DisableTaskGradient()
+    {
+        GameObject eventManager = GameObjectHelper.GetGameObjectCheckFound("GeneralCanvas/EventManager");
+
+        List<GameObject> bgs= [];
+        AddChecked(bgs, "InstructionBorder/Background", eventManager);
+        AddChecked(bgs, "InstructionBorder/Background (1)", eventManager);
+        AddChecked(bgs, "TimedEvent/Background", eventManager);
+        AddChecked(bgs, "TimedEvent/Background (3)", eventManager);
+        AddChecked(bgs, "StrokeCount/Background", eventManager);
+        AddChecked(bgs, "StrokeCount/Background (1)", eventManager);
+        AddChecked(bgs, "TaskDisliked/Bubble", eventManager);
+        AddChecked(bgs, "Forgive/Bubble", eventManager);
+        AddChecked(bgs, "FavorCosts/Bubble", eventManager);
+        AddChecked(bgs, "EdgeLockout/Bubble", eventManager);
+        AddChecked(bgs, "IntensifyTask/Bubble", eventManager);
+        AddChecked(bgs, "ToggleDiffIncrease/Bubble", eventManager);
+        AddChecked(bgs, "ToggleDiffDecrease/Bubble", eventManager);
+        AddChecked(bgs, "MercyTask/Bubble", eventManager);
+        AddChecked(bgs, "MercyRefuse/Bubble", eventManager);
+        AddChecked(bgs, "MercyEdgeLockout/Bubble", eventManager);
+        AddChecked(bgs, "MercyEdgeCost/Bubble", eventManager);
+        AddChecked(bgs, "MercyMood/Bubble", eventManager);
+        AddChecked(bgs, "MercyRefuseDispleased/Bubble", eventManager);
+        AddChecked(bgs, "TauntDispleased/Bubble", eventManager);
+        AddChecked(bgs, "TauntPunish/Bubble", eventManager);
+        AddChecked(bgs, "TauntDevious/Bubble", eventManager);
+
+        foreach (GameObject bg in bgs)
+        {
+            bg.SetActive(false);
+        }
+    }
+
+    private void AddChecked(List<GameObject> list, string path, GameObject parent)
+    {
+        Transform bg = parent.transform.Find(path);
+        if (bg != null)
+        {
+            list.Add(bg.gameObject);
+        }
+        else
+        {
+            VSVRMod.logger.LogError(path + " not found for disabling gradients");
+        }
+    }
+
     public void CenterCamera()
     {
         if (vrCamera == null || VRConfig.fixCameraHeight.Value)
@@ -310,5 +372,23 @@ public class VRCameraManager
         vrCameraOffset.transform.position = vrCamera.transform.position;
         vrCameraOffset.transform.localPosition = -vrCamera.transform.localPosition;
         vrCameraOffset.transform.rotation = new Quaternion(0, 0, 0, 0);
+    }
+
+    private bool didRecenter = false;
+
+    public void CenterCameraIfFar() 
+    {
+        if (didRecenter)
+        {
+            return;
+        }
+        Vector3 distanceVector = worldCamDefault.transform.position - vrCamera.transform.position;
+        double distance = distanceVector.sqrMagnitude;
+        //VSVRMod.logger.LogWarning(distance);
+        if(distance > 0.1)
+        {
+            didRecenter = true;
+            CenterCamera();
+        }
     }
 }

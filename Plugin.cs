@@ -28,6 +28,7 @@ public class VSVRMod : BaseUnityPlugin
 
     private static VRCameraManager vrCameraManager;
     private static UIContainer uiContainer;
+    private static StartUIManager beginUiManager;
 
     private static readonly Controller.Headset controllerHeadset = new();
 
@@ -63,6 +64,8 @@ public class VSVRMod : BaseUnityPlugin
 
         VSVRAssets.LoadAssets();
 
+        beginUiManager = new StartUIManager();
+
         logger.LogInfo("Reached end of Plugin.Awake()");
     }
 
@@ -76,7 +79,6 @@ public class VSVRMod : BaseUnityPlugin
         if (Equals(scene.name, Constants.SessionScene))
         {
             vrCameraManager = new(scene);
-            vrCameraManager.CenterCamera();
             uiContainer = new(scene);
             VSVRAssets.ApplyUIShader();
 
@@ -86,6 +88,10 @@ public class VSVRMod : BaseUnityPlugin
             controllerHeadset.OnWorn += vrCameraManager.SetupUI;
             controllerHeadset.OnRemoved += vrCameraManager.RevertUI;
             vrCameraManager.SetupUI();
+            if (!VRConfig.taskGradient.Value) 
+            {
+                vrCameraManager.DisableTaskGradient();
+            }
 
             inSession = true;
         }
@@ -123,8 +129,13 @@ public class VSVRMod : BaseUnityPlugin
             {
                 vrCameraManager.ToggleGreenscreenUI();
             }
-            Controller.endFrame();
+            vrCameraManager.CenterCameraIfFar();
         }
+        else
+        {
+            beginUiManager.Interact();
+        }
+        Controller.endFrame();
     }
 
     /**

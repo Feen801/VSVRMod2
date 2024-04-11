@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using static VSVRMod2.VSChoiceButton;
 
 namespace VSVRMod2;
 
@@ -39,25 +40,25 @@ public class VSGenericButton : VSButton
         }
         this.name = name;
         Transform buttonObject = knownParent.Find(path);
+        if (buttonObject == null)
+        {
+            VSVRMod.logger.LogError(this.name + " had null buttonObject at " + path);
+        }
         Transform collider = knownParent.Find(path + colliderPath);
         Transform highlight = knownParent.Find(path + highlightPath);
         if (collider == null)
         {
-            VSVRMod.logger.LogError(this.name + " had null collider");
+            VSVRMod.logger.LogError(this.name + " had null collider at " + path + colliderPath);
         }
         this.components.collider = collider.gameObject;
         this.components.buttonFsm = this.components.collider.GetComponent<PlayMakerFSM>();
-        if (buttonObject == null)
-        {
-            VSVRMod.logger.LogError(this.name + " had null buttonObject");
-        }
         if (this.components.buttonFsm == null)
         {
             VSVRMod.logger.LogError(this.name + " had null buttonFsm");
         }
         if (highlight == null)
         {
-            VSVRMod.logger.LogError(this.name + " had null highlight");
+            VSVRMod.logger.LogError(this.name + " had null highlight at " + path + highlightPath);
         }
         this.components.buttonObject = buttonObject.gameObject;
         this.components.highlight = highlight.gameObject;
@@ -172,5 +173,34 @@ public class VSFindomButton : VSButton
     public void Click()
     {
         this.button.OnSubmit(null);
+    }
+}
+
+public class VSStatusCancelButton : VSGenericButton
+{
+    static Color defaultColor = new Color(0.7843f, 0.3059f, 0.3059f, 1);
+    public Image highlight;
+
+    new public void Highlight(bool status)
+    {
+        highlight.color = status ? Color.white : defaultColor;
+    }
+
+    new public void Click()
+    {
+        components.buttonFsm.SendEvent("EVENT_TRIGGER");
+    }
+
+    public static new string colliderPath = "/Button";
+    public static new string highlightPath = "/Button/Icon";
+
+    public VSStatusCancelButton(Transform knownParent, string name, string path) : base(knownParent, name, path, colliderPath, highlightPath) 
+    {
+        Transform tf = knownParent.Find(name + highlightPath);
+        if(tf == null)
+        {
+            VSVRMod.logger.LogError(this.name + " had null image transform at " + highlightPath);
+        }
+        highlight = tf.gameObject.GetComponent<Image>();
     }
 }
