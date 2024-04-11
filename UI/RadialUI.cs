@@ -15,6 +15,10 @@ public class RadialUIManager : UIManager
     private VSGenericButton level2Arrow;
     private GameObject exitButtonRadial;
 
+    private GameObject popupArousalMeter;
+    private VSRadialButton plusPopup;
+    private VSRadialButton minusPopup;
+
     public RadialUIManager(Scene scene) : base(scene)
     {
         GameObject centerGameObject = GameObject.Find("NewButtons/Center");
@@ -86,6 +90,15 @@ public class RadialUIManager : UIManager
         vsRadialButtons.Add(minus);
 
         VSVRMod.logger.LogInfo("Finished setting up radial buttons");
+
+        GameObject popupArousal = GameObjectHelper.GetGameObjectCheckFound("PopupArousal");
+        Transform popupArousalMeterTransform = popupArousal.transform.Find("PopupArousalMeter");
+        popupArousalMeter = popupArousalMeterTransform.gameObject;
+
+        plusPopup = new(popupArousalMeterTransform, "PlusPopup", "Overlays/Plus", 1, 270, 360, VSRadialButton.RadialLevel.Both);
+        minusPopup = new(popupArousalMeterTransform, "MinusPopup", "Overlays/Minus", 1, 180, 270, VSRadialButton.RadialLevel.Both);
+
+        VSVRMod.logger.LogInfo("Finished setting up PopupArousal buttons");
     }
 
     private VSRadialButton.RadialLevel currentRadialLevel = VSRadialButton.RadialLevel.None;
@@ -96,6 +109,7 @@ public class RadialUIManager : UIManager
         bool triggerClick = Controller.WasATriggerClicked();
         double stickMagnitude = Controller.GetMaximalJoystickMagnitude();
         double stickDirection = Controller.GetMaximalJoystickAngle();
+        double stickValueX = Controller.GetMaximalJoystickValue().x;
 
         if (!level1.activeSelf)
         {
@@ -129,54 +143,93 @@ public class RadialUIManager : UIManager
             }
         }
 
-        if (stickMagnitude > 0.3 && currentRadialLevel != VSRadialButton.RadialLevel.None)
+        if (currentRadialLevel != VSRadialButton.RadialLevel.None)
         {
-            List<VSRadialButton> candidateButtons = [];
-            foreach (VSRadialButton button in vsRadialButtons)
+            if(stickMagnitude > 0.3)
             {
-                if (button.minDegrees < stickDirection && button.maxDegrees > stickDirection && button.components.buttonObject.activeSelf)
+                List<VSRadialButton> candidateButtons = [];
+                foreach (VSRadialButton button in vsRadialButtons)
                 {
-                    if (button.IsOnRadialLevel(currentRadialLevel))
+                    if (button.minDegrees < stickDirection && button.maxDegrees > stickDirection && button.components.buttonObject.activeSelf)
                     {
-                        candidateButtons.Add(button);
+                        if (button.IsOnRadialLevel(currentRadialLevel))
+                        {
+                            candidateButtons.Add(button);
+                        }
+                        else
+                        {
+                            button.components.highlight.SetActive(false);
+                        }
                     }
                     else
                     {
                         button.components.highlight.SetActive(false);
                     }
                 }
-                else
-                {
-                    button.components.highlight.SetActive(false);
-                }
-            }
 
-            VSRadialButton trueButton = null;
+                VSRadialButton trueButton = null;
 
-            foreach (VSRadialButton button in candidateButtons)
-            {
-                if (trueButton == null || button.maxMagnitude < trueButton.maxMagnitude && button.maxMagnitude > stickMagnitude)
+                foreach (VSRadialButton button in candidateButtons)
                 {
-                    if (trueButton != null)
+                    if (trueButton == null || button.maxMagnitude < trueButton.maxMagnitude && button.maxMagnitude > stickMagnitude)
                     {
-                        trueButton.components.highlight.SetActive(false);
+                        if (trueButton != null)
+                        {
+                            trueButton.components.highlight.SetActive(false);
+                        }
+                        trueButton = button;
                     }
-                    trueButton = button;
+                    else
+                    {
+                        button.components.highlight.SetActive(false);
+                    }
                 }
-                else
+
+                if (trueButton != null)
+                {
+                    trueButton.components.highlight.SetActive(true);
+                    if (triggerClick)
+                    {
+                        trueButton.Click();
+                    }
+                    return true;
+                }
+            }
+            else
+            {
+                foreach (VSRadialButton button in vsRadialButtons)
                 {
                     button.components.highlight.SetActive(false);
                 }
             }
-
-            if (trueButton != null)
+        }
+        else if(popupArousalMeter.activeSelf)
+        {
+            if (stickMagnitude > 0.3)
             {
-                trueButton.components.highlight.SetActive(true);
-                if (triggerClick)
+                if(stickValueX > 0)
                 {
-                    trueButton.Click();
+                    plusPopup.Highlight(true);
+                    minusPopup.Highlight(false);
+                    if(triggerClick)
+                    {
+                        plusPopup.Click();
+                    }
                 }
-                return true;
+                else
+                {
+                    plusPopup.Highlight(false);
+                    minusPopup.Highlight(true);
+                    if(triggerClick)
+                    {
+                        minusPopup.Click();
+                    }
+                }
+            }
+            else
+            {
+                plusPopup.Highlight(false);
+                minusPopup.Highlight(false);
             }
         }
         return false;

@@ -7,6 +7,7 @@ public class VRConfig
 {
     //UI settings
     public static ConfigEntry<float> uiDistance;
+    public static ConfigEntry<bool> taskGradient;
 
     //Controls settings
     public static ConfigEntry<bool> useHeadMovement;
@@ -26,6 +27,7 @@ public class VRConfig
     {
         uiDistance = VSVRMod.config.Bind("UI", "UI Distance", 0.5f, "How far away the UI appears from your face in meters.\n" +
             "The relative size will not change, i.e. if you make it closer to you it will also become smaller such that it takes up the same FOV.");
+        taskGradient = VSVRMod.config.Bind("UI", "Task Gradient", true, "Enable or disable the semitransparent gradient behind the task text");
 
         useHeadMovement = VSVRMod.config.Bind("Controls", "Use Head Movement", true, "Enable or disable the ability to press buttons by nodding or shaking your head.");
         automaticScreenSwap = VSVRMod.config.Bind("Controls", "Automatic Screen Swap", true, "Automatically swap the game output to your monitor when your headset is removed. Only works on Oculus and WMR headsets.");
@@ -38,7 +40,7 @@ public class VRConfig
             "IMPORTANT: For this to have an effect, turn off the ingame environment in Options -> General -> Graphics Settings -> No Background.\n" +
             "If you enable this setting, you should probably also enable \"Fix Camera Height\" and \"Fix Camera Angle\" in this config.\n" +
             "I don't really recommend using full passthrough, as many poses will look very strange.");
-        greenscreenColor = VSVRMod.config.Bind("Greenscreen", "Greenscreen Color", Color.green, "Color of the greenscreen in RGBA format. Default is R:00 G:FF B:00 A:FF for full opacity green.");
+        greenscreenColor = VSVRMod.config.Bind("Greenscreen", "Greenscreen Color", Color.blue, "Color of the greenscreen in RGBA format. Default is R:00 G:00 B:FF A:FF for full opacity blue.");
         greenscreenUI = VSVRMod.config.Bind("Greenscreen", "UI Greenscreen", false, "Enables a toggleable greenscreen that covers everything except the UI, making it possible to find things without removing your headset.");
     }
 }

@@ -57,6 +57,7 @@ public class FindomUIManager : UIManager
 
     private float findomInputInteractionNext = 0;
     private float findomInputInteractionAccel = 0.4f;
+    private float findomInputInteractionAccelScale = 1;
     //false = controlling buttons, true = controlling slider
     private bool findomInputInteractState = false;
     public override bool Interact()
@@ -79,9 +80,13 @@ public class FindomUIManager : UIManager
                     if (findomInputInteractionNext < Time.time)
                     {
                         int currentInt = (int)findomInput.slider.value;
-                        currentInt += (int)Math.Round(x * 4);
+                        currentInt += (int)Math.Round(Math.Sign(x) * findomInputInteractionAccelScale);
                         findomInputInteractionNext = Time.time + findomInputInteractionAccel;
-                        findomInputInteractionAccel = Math.Clamp(findomInputInteractionAccel - 0.04f, 0.04f, float.PositiveInfinity);
+                        findomInputInteractionAccel = Math.Clamp(findomInputInteractionAccel - (0.1f * (float)magnitude), 0.04f, float.PositiveInfinity);
+                        if (findomInputInteractionAccel <= 0.05f)
+                        {
+                            findomInputInteractionAccelScale *= 1 + (0.1f*(float)magnitude);
+                        }
                         currentInt = Math.Clamp(currentInt, (int)findomInput.slider.minValue, (int)findomInput.slider.maxValue);
                         findomInput.slider.value = currentInt;
                     }
@@ -89,6 +94,7 @@ public class FindomUIManager : UIManager
                 else
                 {
                     findomInputInteractionAccel = 0.4f;
+                    findomInputInteractionAccelScale = 1;
                 }
                 return true;
             }

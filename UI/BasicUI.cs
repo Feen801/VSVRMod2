@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.SceneManagement;
 
 namespace VSVRMod2.UI;
@@ -8,6 +9,8 @@ public class BasicUIManager : UIManager
     private List<VSChoiceButton> vsChoiceButtons = [];
 
     public HeadMovementTracker headMovementTracker;
+
+    VSRadialButton good;
 
     public BasicUIManager(Scene scene) : base(scene)
     {
@@ -37,6 +40,14 @@ public class BasicUIManager : UIManager
         VSVRMod.logger.LogInfo("Finished setting up basic buttons");
 
         headMovementTracker = new HeadMovementTracker(this);
+
+        GameObject centerGameObject = GameObject.Find("NewButtons/Center");
+        if (centerGameObject == null)
+        {
+            VSVRMod.logger.LogError("centerGameObject not found (basicUI).");
+        }
+        Transform center = centerGameObject.transform;
+        good = new(center, "Good", "Level1/OtherButtons/KeepGoingBG", 1, 0, 360, VSRadialButton.RadialLevel.Both);
     }
 
     public override bool Interact()
@@ -80,6 +91,11 @@ public class BasicUIManager : UIManager
                 VSVRMod.logger.LogInfo("Trying to click: " + button.name);
                 button.Click();
             }
+        }
+        if(good.components.buttonObject.activeSelf)
+        {
+            VSVRMod.logger.LogInfo("Trying to click: " + good.name);
+            good.Click();
         }
     }
 

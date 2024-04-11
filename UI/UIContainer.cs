@@ -18,6 +18,7 @@ class UIContainer
             priorityUIList.Add(new OpportunityUIManager(scene));
             priorityUIList.Add(new UrgesUIManager(scene));
             priorityUIList.Add(new FindomUIManager(scene));
+            priorityUIList.Add(new StatusUIManager(scene));
             priorityUIList.Add(new RadialUIManager(scene));
             priorityUIList.Add(new StakesUIManager(scene));
             priorityUIList.Add(new ChoiceUIManager(scene));

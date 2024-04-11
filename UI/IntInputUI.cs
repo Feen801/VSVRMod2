@@ -49,9 +49,9 @@ public class IntInputUIMManager : UIManager
                 {
                     string current = intInput.text.text;
                     int.TryParse(current, out int currentInt);
-                    currentInt += (int)Math.Round(x * 4);
+                    currentInt += (int)Math.Sign(x);
                     intInputInteractionNext = Time.time + intInputInteractionAccel;
-                    intInputInteractionAccel = Math.Clamp(intInputInteractionAccel - 0.04f, 0.04f, float.PositiveInfinity);
+                    intInputInteractionAccel = Math.Clamp(intInputInteractionAccel - (0.8f * (float)magnitude), 0.04f, float.PositiveInfinity);
                     intInput.text.text = currentInt.ToString();
                 }
                 return true;

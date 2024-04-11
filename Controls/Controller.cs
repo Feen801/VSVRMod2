@@ -133,7 +133,7 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.trigger, out right);
         }
-        bool joystick = Input.GetAxis("Fire1") > 0.5f;
+        bool joystick = false; // Input.GetAxis("Fire1") > 0.5f;
         if (outputControllerDebug >= 2)
         {
             VSVRMod.logger.LogInfo("Trigger: Left: " + left + " Right: " + right);
@@ -176,7 +176,7 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxisClick, out right);
         }
-        joystick = Input.GetAxis("Fire2") > 0.5f;
+        joystick = false; // Input.GetAxis("Fire2") > 0.5f;
 
         if (outputControllerDebug >= 2)
         {
@@ -280,7 +280,7 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.gripButton, out right);
         }
-        joystick = Input.GetAxis("Fire3") > 0.5f;
+        joystick = false; // Input.GetAxis("Fire3") > 0.5f;
 
         return Math.Clamp(Convert.ToInt32(left) + Convert.ToInt32(right) + Convert.ToInt32(joystick), 0, 2);
     }
@@ -304,7 +304,7 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primaryButton, out right1);
         }
-        joystick = Input.GetAxis("Jump") > 0.5f;
+        joystick = false; // Input.GetAxis("Jump") > 0.5f;
 
         if (outputControllerDebug >= 2)
         {
@@ -328,7 +328,7 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.secondaryButton, out right2);
         }
-        joystick = Input.GetAxis("Jump") > 0.5f;
+        joystick = false; // Input.GetAxis("Jump") > 0.5f;
 
         if (outputControllerDebug >= 2)
         {
@@ -388,7 +388,7 @@ class Controller
         {
             rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.primary2DAxis, out rightJoystickValue);
         }
-        Vector2 joystick = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        Vector2 joystick = Vector2.zero; // new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
         leftJoystickValue = leftJoystickValue.magnitude > joystick.magnitude ? leftJoystickValue : joystick;
 
         if (outputControllerDebug >= 3)
