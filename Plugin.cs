@@ -71,7 +71,7 @@ public class VSVRMod : BaseUnityPlugin
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if(noVR)
+        if (noVR)
         {
             return;
         }
@@ -87,7 +87,6 @@ public class VSVRMod : BaseUnityPlugin
 
             controllerHeadset.OnWorn += vrCameraManager.SetupUI;
             controllerHeadset.OnRemoved += vrCameraManager.RevertUI;
-            vrCameraManager.SetupUI();
             if (!VRConfig.taskGradient.Value) 
             {
                 vrCameraManager.DisableTaskGradient();
@@ -101,7 +100,7 @@ public class VSVRMod : BaseUnityPlugin
         }
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if (noVR)
         {

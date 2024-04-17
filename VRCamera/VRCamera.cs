@@ -22,15 +22,21 @@ public class VRCameraManager
     private Canvas scoreCanvas;
     private Canvas fadeCanvas;
     private GameObject greenscreenUI;
+    private GameObject overlay;
+    private GameObject ui;
 
     public VRCameraManager(Scene scene)
     {
         if (scene.isLoaded && Equals(scene.name, Constants.SessionScene))
         {
             NewSetupCamera();
+            UIReferences();
+
+            //UI components may not properly be rescaled unless the VR camera is off at first.
+            RevertUI();
             SetupUI();
+
             SetupGreenscreen();
-            
         }
         else
         {
@@ -174,28 +180,35 @@ public class VRCameraManager
         }
     }
 
+    private void UIReferences()
+    {
+        ui = GameObjectHelper.GetGameObjectCheckFound("GeneralCanvas");
+        uiCanvas = ui.GetComponent<Canvas>();
+
+        overlay = GameObjectHelper.GetGameObjectCheckFound("OverlayCanvas");
+        overlayCanvas = overlay.GetComponent<Canvas>();
+
+        GameObject score = GameObjectHelper.GetGameObjectCheckFound("ScoreCanvas");
+        scoreCanvas = score.GetComponent<Canvas>();
+
+        GameObject fade = GameObjectHelper.GetGameObjectCheckFound("FadeCanvas");
+        fadeCanvas = fade.GetComponent<Canvas>();
+    }
+
     public void SetupUI()
     {
         uiInVR = true;
-        GameObject ui = GameObjectHelper.GetGameObjectCheckFound("GeneralCanvas");
-        uiCanvas = ui.GetComponent<Canvas>();
         uiCanvas.sortingOrder = 400;
         uiCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         uiCanvas.renderMode = RenderMode.ScreenSpaceCamera;
 
-        GameObject overlay = GameObjectHelper.GetGameObjectCheckFound("OverlayCanvas");
-        overlayCanvas = overlay.GetComponent<Canvas>();
         overlayCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         overlayCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         overlayCanvas.GetComponent<Canvas>().sortingOrder = 401;
 
-        GameObject score = GameObjectHelper.GetGameObjectCheckFound("ScoreCanvas");
-        scoreCanvas = score.GetComponent<Canvas>();
         scoreCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         scoreCanvas.renderMode = RenderMode.ScreenSpaceCamera;
 
-        GameObject fade = GameObjectHelper.GetGameObjectCheckFound("FadeCanvas");
-        fadeCanvas = fade.GetComponent<Canvas>();
         fadeCanvas.sortingOrder = 399;
         fadeCanvas.worldCamera = vrCamera.GetComponent<Camera>();
         fadeCanvas.renderMode = RenderMode.ScreenSpaceCamera;
