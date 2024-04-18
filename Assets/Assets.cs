@@ -37,6 +37,58 @@ public class VSVRAssets
 
     public static void ApplyUIShader()
     {
+        //Prevent tattoos from rendering under the floor?
+        GameObject tattoos = GameObjectHelper.GetGameObjectCheckFound("TattooContainer");
+        if (tattoos == null)
+        {
+            VSVRMod.logger.LogError("Could not find TattooContainer for NOT applying UI shader");
+        }
+        Transform basicTattoos = tattoos.transform.Find("SkinRendering/Basic");
+        Image imagex = basicTattoos.GetComponent<Image>();
+        imagex.material = UnityEngine.Object.Instantiate(imagex.material);
+        foreach (Transform t in basicTattoos)
+        {
+            Image image = t.GetComponent<Image>();
+            if(image != null)
+            {
+                image.material = UnityEngine.Object.Instantiate(image.material);
+            }
+        }
+        Transform thirstyTattoos = tattoos.transform.Find("GlowTattooRendering/Thirsty");
+        imagex = thirstyTattoos.GetComponent<Image>();
+        imagex.material = UnityEngine.Object.Instantiate(imagex.material);
+        foreach (Transform t in thirstyTattoos)
+        {
+            Image image = t.GetComponent<Image>();
+            if (image != null)
+            {
+                image.material = UnityEngine.Object.Instantiate(image.material);
+            }
+        }
+        Transform mischievousTattoos = tattoos.transform.Find("GlowTattooRendering/Mischievous");
+        imagex = mischievousTattoos.GetComponent<Image>();
+        imagex.material = UnityEngine.Object.Instantiate(imagex.material);
+        foreach (Transform t in mischievousTattoos)
+        {
+            Image image = t.GetComponent<Image>();
+            if (image != null)
+            {
+                image.material = UnityEngine.Object.Instantiate(image.material);
+            }
+        }
+        Transform furiousTattoos = tattoos.transform.Find("GlowTattooRendering/Furious");
+        imagex = furiousTattoos.GetComponent<Image>();
+        imagex.material = UnityEngine.Object.Instantiate(imagex.material);
+        foreach (Transform t in furiousTattoos)
+        {
+            Image image = t.GetComponent<Image>();
+            if (image != null)
+            {
+                image.material = UnityEngine.Object.Instantiate(image.material);
+            }
+        }
+
+
         GameObject eventManager = GameObjectHelper.GetGameObjectCheckFound("EventManager");
         if (eventManager == null)
         {
