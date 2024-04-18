@@ -300,9 +300,20 @@ public class VRCameraManager
             VSVRMod.logger.LogInfo("YourStatusMenuManager found");
         }
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(340, -1100, 0);
-        //no vr -2073.563 -133.0297 0.401
-        //in vr -464.9204 -133.0297 0.401
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
+
+        currentAdjust = ui.transform.Find("EventManager/ASMROverlay").gameObject;
+        if (currentAdjust == null)
+        {
+            VSVRMod.logger.LogError("ASMROverlay not found");
+        }
+        else
+        {
+            VSVRMod.logger.LogInfo("ASMROverlay found");
+        }
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 750, 0);
+        currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
+
         vrCamera.SetActive(true);
         SetupHeadTargetFollower(false);
         worldCamDefaultCamera.enabled = false;
@@ -332,6 +343,7 @@ public class VRCameraManager
     public void DisableTaskGradient()
     {
         GameObject eventManager = GameObjectHelper.GetGameObjectCheckFound("GeneralCanvas/EventManager");
+        GameObject overlayCanvas = GameObjectHelper.GetGameObjectCheckFound("OverlayCanvas");
 
         List<GameObject> bgs= [];
         AddChecked(bgs, "InstructionBorder/Background", eventManager);
@@ -356,6 +368,22 @@ public class VRCameraManager
         AddChecked(bgs, "TauntDispleased/Bubble", eventManager);
         AddChecked(bgs, "TauntPunish/Bubble", eventManager);
         AddChecked(bgs, "TauntDevious/Bubble", eventManager);
+        AddChecked(bgs, "BeatManager2/Background", eventManager);
+        AddChecked(bgs, "BeatManager2/Background", eventManager);
+
+        AddChecked(bgs, "FinDom/Bubble", eventManager);
+        AddChecked(bgs, "Chastity/Bubble", eventManager);
+        AddChecked(bgs, "FavorFail/Bubble", eventManager);
+        AddChecked(bgs, "FinDomFail/Bubble", eventManager);
+        AddChecked(bgs, "FinDomAccept/Bubble", eventManager);
+        AddChecked(bgs, "SettingsChange/Bubble", eventManager);
+        AddChecked(bgs, "HCChastityDouble/Bubble", eventManager);
+
+        AddChecked(bgs, "Urges/ActionTextContainer/Image (1)", eventManager);
+
+
+        //weird thingy dunno why its even there?
+        AddChecked(bgs, "TributeMenu/Slider - Standard (Value)/Text (TMP) (7)/Image", overlayCanvas);
 
         foreach (GameObject bg in bgs)
         {
