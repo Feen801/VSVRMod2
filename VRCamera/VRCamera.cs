@@ -388,6 +388,11 @@ public class VRCameraManager
         foreach (GameObject bg in bgs)
         {
             bg.SetActive(false);
+            PlayMakerFSM fsm = bg.GetComponent<PlayMakerFSM>();
+            if(fsm != null)
+            {
+                fsm.enabled = false;
+            }
         }
     }
 
