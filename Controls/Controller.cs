@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.XR;
 using UnityEngine.XR.OpenXR;
 using UnityEngine.XR.OpenXR.Features;
@@ -426,7 +425,7 @@ class Controller
         return maximal.magnitude;
     }
 
-    public static void endFrame()
+    public static void EndFrame()
     {
         lastStickStatus = IsAStickPressed();
         lastFaceStatus = IsAFaceButtonPressed();

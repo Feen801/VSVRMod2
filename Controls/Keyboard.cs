@@ -17,6 +17,8 @@ class Keyboard
         }
     }
 
+    private static bool r1 = true;
+
     public static void HandleKeyboardInput()
     {
         if (Input.GetKeyDown(KeyCode.Quote))
@@ -27,6 +29,11 @@ class Keyboard
         if (Input.GetKeyDown(KeyCode.Period))
         {
             Controller.CheckControllers();
+        }
+        if(Input.GetKeyDown(KeyCode.PageUp) && r1)
+        {
+            r1 = false;
+            VSVRMod.instance.InitialSessionSetup();
         }
     }
 }

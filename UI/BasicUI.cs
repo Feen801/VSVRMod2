@@ -128,6 +128,10 @@ public class BasicUIManager : UIManager
 
         public void Nod()
         {
+            if (!Controller.IsHeadsetWorn())
+            {
+                return;
+            }
             headshakes = 0;
             if (MathHelper.CurrentTimeMillis() - lastNodTime > 1000)
             {
@@ -144,6 +148,10 @@ public class BasicUIManager : UIManager
         }
         public void Headshake()
         {
+            if (!Controller.IsHeadsetWorn())
+            {
+                return;
+            }
             nods = 0;
             if (MathHelper.CurrentTimeMillis() - lastHeadshakeTime > 1000)
             {

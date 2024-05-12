@@ -48,6 +48,11 @@ public class VRCameraManager
     {
         worldCamDefault = GameObjectHelper.GetGameObjectCheckFound("WorldCamDefault");
         primaryCamera = GameObjectHelper.GetGameObjectCheckFound("PrimaryCamera");
+        if( worldCamDefault == null ) 
+        {
+            VSVRMod.logger.LogInfo("WorldCamDefault may be disabled, doing fallback method.");
+            worldCamDefault = primaryCamera.transform.Find("WorldCamDefault").gameObject;
+        }
         worldCamDefaultCamera = worldCamDefault.GetComponent<Camera>();
         vrCameraParent = new GameObject("VRCameraParent");
         vrCameraParent.transform.SetParent(worldCamDefault.transform.root);
@@ -312,12 +317,18 @@ public class VRCameraManager
             VSVRMod.logger.LogInfo("ASMROverlay found");
         }
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 750, 0);
-        currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
+        if(TemporaryFindABetterSolutionLaterPlease)
+        {
+            currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
+            TemporaryFindABetterSolutionLaterPlease = false;
+        }
 
         vrCamera.SetActive(true);
         SetupHeadTargetFollower(false);
         worldCamDefaultCamera.enabled = false;
     }
+
+    private static bool TemporaryFindABetterSolutionLaterPlease = true;
 
     public void RevertUI()
     {
@@ -393,6 +404,11 @@ public class VRCameraManager
             {
                 fsm.enabled = false;
             }
+            Image img = bg.GetComponent<Image>();
+            if (img != null)
+            {
+                img.enabled = false;
+            }
         }
     }
 
@@ -417,7 +433,7 @@ public class VRCameraManager
         }
         vrCameraOffset.transform.position = vrCamera.transform.position;
         vrCameraOffset.transform.localPosition = -vrCamera.transform.localPosition;
-        vrCameraOffset.transform.rotation = new Quaternion(0, 0, 0, 0);
+        vrCameraOffset.transform.rotation = new Quaternion(0, 0, 0, 0);//Quaternion.FromToRotation(Vector3.zero, new Vector3(0, -vrCamera.transform.rotation.y, 0));
     }
 
     private bool didRecenter = false;
