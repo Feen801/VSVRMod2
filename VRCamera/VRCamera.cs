@@ -25,6 +25,8 @@ public class VRCameraManager
     private GameObject overlay;
     private GameObject ui;
 
+    private static bool isFirstUIAdjust = true;
+
     public VRCameraManager(Scene scene)
     {
         if (scene.isLoaded && Equals(scene.name, Constants.SessionScene))
@@ -48,6 +50,11 @@ public class VRCameraManager
     {
         worldCamDefault = GameObjectHelper.GetGameObjectCheckFound("WorldCamDefault");
         primaryCamera = GameObjectHelper.GetGameObjectCheckFound("PrimaryCamera");
+        if( worldCamDefault == null ) 
+        {
+            VSVRMod.logger.LogInfo("WorldCamDefault may be disabled, doing fallback method.");
+            worldCamDefault = primaryCamera.transform.Find("WorldCamDefault").gameObject;
+        }
         worldCamDefaultCamera = worldCamDefault.GetComponent<Camera>();
         vrCameraParent = new GameObject("VRCameraParent");
         vrCameraParent.transform.SetParent(worldCamDefault.transform.root);
@@ -242,17 +249,17 @@ public class VRCameraManager
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1000, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(1f, 1f, 1f);
 
-        currentAdjust = ui.transform.Find("EventManager/ToyChecklist").gameObject;
-        if (currentAdjust == null)
-        {
-            VSVRMod.logger.LogError("ToyChecklist not found");
-        }
-        else
-        {
-            VSVRMod.logger.LogInfo("ToyChecklist found");
-        }
-        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 480, 0);
-        currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.2f, 0.2f, 0.2f);
+        /*        currentAdjust = ui.transform.Find("EventManager/ToyChecklist").gameObject;
+                if (currentAdjust == null)
+                {
+                    VSVRMod.logger.LogError("ToyChecklist not found");
+                }
+                else
+                {
+                    VSVRMod.logger.LogInfo("ToyChecklist found");
+                }
+                currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 480, 0);
+                currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.2f, 0.2f, 0.2f);*/
 
         currentAdjust = ui.transform.Find("EventManager/TradeOfferUI").gameObject;
         if (currentAdjust == null)
@@ -289,6 +296,10 @@ public class VRCameraManager
         }
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
+        if (isFirstUIAdjust) {
+            currentAdjust.transform.localScale *= VRConfig.uiScale.Value;
+            currentAdjust.transform.localPosition += new Vector3(0, VRConfig.uiHeightOffset.Value, 0);
+        }
 
         currentAdjust = overlay.transform.Find("YourStatusMenuManager").gameObject;
         if (currentAdjust == null)
@@ -312,11 +323,16 @@ public class VRCameraManager
             VSVRMod.logger.LogInfo("ASMROverlay found");
         }
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 750, 0);
-        currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
+        if(isFirstUIAdjust)
+        {
+            currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
+        }
 
         vrCamera.SetActive(true);
         SetupHeadTargetFollower(false);
         worldCamDefaultCamera.enabled = false;
+        isFirstUIAdjust = false;
+        VSVRMod.logger.LogError("Adjusted UI for VR");
     }
 
     public void RevertUI()
@@ -338,6 +354,8 @@ public class VRCameraManager
         worldCamDefaultCamera.enabled = true;
         vrCamera.SetActive(false);
         SetupHeadTargetFollower(true);
+
+        VSVRMod.logger.LogInfo("Adjusted UI for monitor");
     }
 
     public void DisableTaskGradient()
@@ -381,13 +399,19 @@ public class VRCameraManager
 
         AddChecked(bgs, "Urges/ActionTextContainer/Image (1)", eventManager);
 
-
-        //weird thingy dunno why its even there?
-        AddChecked(bgs, "TributeMenu/Slider - Standard (Value)/Text (TMP) (7)/Image", overlayCanvas);
-
         foreach (GameObject bg in bgs)
         {
             bg.SetActive(false);
+            PlayMakerFSM fsm = bg.GetComponent<PlayMakerFSM>();
+            if(fsm != null)
+            {
+                fsm.enabled = false;
+            }
+            Image img = bg.GetComponent<Image>();
+            if (img != null)
+            {
+                img.enabled = false;
+            }
         }
     }
 
@@ -412,7 +436,7 @@ public class VRCameraManager
         }
         vrCameraOffset.transform.position = vrCamera.transform.position;
         vrCameraOffset.transform.localPosition = -vrCamera.transform.localPosition;
-        vrCameraOffset.transform.rotation = new Quaternion(0, 0, 0, 0);
+        vrCameraOffset.transform.localEulerAngles = new Vector3(0, -vrCamera.transform.localEulerAngles.y, 0);
     }
 
     private bool didRecenter = false;

@@ -8,6 +8,7 @@ using BepInEx.Unity.Mono;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements.UIR;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
 using UnityEngine.XR.OpenXR;
@@ -30,12 +31,17 @@ public class VSVRMod : BaseUnityPlugin
     private static UIContainer uiContainer;
     private static StartUIManager beginUiManager;
 
-    private static readonly Controller.Headset controllerHeadset = new();
+    public static readonly Controller.Headset controllerHeadset = new();
 
     private static bool noVR = false;
 
+    public static VSVRMod instance;
+
+    private static Scene sessionScene;
+
     private void Awake()
     {
+        instance = this;
         // Plugin startup logic
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
         logger = Logger;
@@ -78,26 +84,31 @@ public class VSVRMod : BaseUnityPlugin
         Logger.LogInfo("A scene was loaded: " + scene.name);
         if (Equals(scene.name, Constants.SessionScene))
         {
-            vrCameraManager = new(scene);
-            uiContainer = new(scene);
-            VSVRAssets.ApplyUIShader();
-
-            vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
-            vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
-
-            controllerHeadset.OnWorn += vrCameraManager.SetupUI;
-            controllerHeadset.OnRemoved += vrCameraManager.RevertUI;
-            if (!VRConfig.taskGradient.Value) 
-            {
-                vrCameraManager.DisableTaskGradient();
-            }
-
-            inSession = true;
+            sessionScene = scene;
+            InitialSessionSetup();
         }
         else
         {
             inSession = false;
         }
+    }
+
+    public void InitialSessionSetup()
+    {
+        vrCameraManager = new(sessionScene);
+        uiContainer = new(sessionScene);
+        VSVRAssets.ApplyUIShader();
+
+        vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
+        vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
+
+        controllerHeadset.OnWorn += vrCameraManager.SetupUI;
+        controllerHeadset.OnRemoved += vrCameraManager.RevertUI;
+        if (!VRConfig.taskGradient.Value)
+        {
+            vrCameraManager.DisableTaskGradient();
+        }
+        inSession = true;
     }
 
     void FixedUpdate()
@@ -134,7 +145,7 @@ public class VSVRMod : BaseUnityPlugin
         {
             beginUiManager.Interact();
         }
-        Controller.endFrame();
+        Controller.EndFrame();
     }
 
     /**

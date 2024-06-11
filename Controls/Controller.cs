@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.XR;
 using UnityEngine.XR.OpenXR;
 using UnityEngine.XR.OpenXR.Features;
@@ -10,7 +9,7 @@ using UnityEngine.XR.OpenXR.Features.Interactions;
 
 namespace VSVRMod2;
 
-class Controller
+public class Controller
 {
     public static int outputControllerDebug = 0;
     private static UnityEngine.XR.InputDevice leftController;
@@ -357,6 +356,8 @@ class Controller
 
         private bool lastState = true;
 
+        public float lastPutOn = 0f;
+
         public void Update()
         {
             bool worn = IsHeadsetWorn();
@@ -365,6 +366,7 @@ class Controller
                 if(worn)
                 {
                     OnWorn?.Invoke();
+                    lastPutOn = Time.time;
                 }
                 else
                 { 
@@ -426,7 +428,7 @@ class Controller
         return maximal.magnitude;
     }
 
-    public static void endFrame()
+    public static void EndFrame()
     {
         lastStickStatus = IsAStickPressed();
         lastFaceStatus = IsAFaceButtonPressed();
