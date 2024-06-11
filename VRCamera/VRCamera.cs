@@ -249,17 +249,17 @@ public class VRCameraManager
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1000, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(1f, 1f, 1f);
 
-/*        currentAdjust = ui.transform.Find("EventManager/ToyChecklist").gameObject;
-        if (currentAdjust == null)
-        {
-            VSVRMod.logger.LogError("ToyChecklist not found");
-        }
-        else
-        {
-            VSVRMod.logger.LogInfo("ToyChecklist found");
-        }
-        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 480, 0);
-        currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.2f, 0.2f, 0.2f);*/
+        /*        currentAdjust = ui.transform.Find("EventManager/ToyChecklist").gameObject;
+                if (currentAdjust == null)
+                {
+                    VSVRMod.logger.LogError("ToyChecklist not found");
+                }
+                else
+                {
+                    VSVRMod.logger.LogInfo("ToyChecklist found");
+                }
+                currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 480, 0);
+                currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.2f, 0.2f, 0.2f);*/
 
         currentAdjust = ui.transform.Find("EventManager/TradeOfferUI").gameObject;
         if (currentAdjust == null)
@@ -296,8 +296,10 @@ public class VRCameraManager
         }
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
-        currentAdjust.transform.localScale *= VRConfig.uiScale.Value;
-        currentAdjust.transform.position += new Vector3(0, VRConfig.uiHeightOffset.Value, 0);
+        if (isFirstUIAdjust) {
+            currentAdjust.transform.localScale *= VRConfig.uiScale.Value;
+            currentAdjust.transform.localPosition += new Vector3(0, VRConfig.uiHeightOffset.Value, 0);
+        }
 
         currentAdjust = overlay.transform.Find("YourStatusMenuManager").gameObject;
         if (currentAdjust == null)
