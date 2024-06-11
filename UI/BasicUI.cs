@@ -119,6 +119,8 @@ public class BasicUIManager : UIManager
         long lastNodTime;
         long lastHeadshakeTime;
 
+        const float GRACE_SECONDS = 2.0f;
+
         BasicUIManager basicUIManager;
 
         public HeadMovementTracker(BasicUIManager basicUIManager)
@@ -128,7 +130,7 @@ public class BasicUIManager : UIManager
 
         public void Nod()
         {
-            if (!Controller.IsHeadsetWorn() || VSVRMod.controllerHeadset.lastPutOn > Time.time - 5.0f)
+            if (!Controller.IsHeadsetWorn() || VSVRMod.controllerHeadset.lastPutOn > Time.time - GRACE_SECONDS)
             {
                 return;
             }
@@ -148,7 +150,7 @@ public class BasicUIManager : UIManager
         }
         public void Headshake()
         {
-            if (!Controller.IsHeadsetWorn() || VSVRMod.controllerHeadset.lastPutOn > Time.time - 5.0f)
+            if (!Controller.IsHeadsetWorn() || VSVRMod.controllerHeadset.lastPutOn > Time.time - GRACE_SECONDS)
             {
                 return;
             }
