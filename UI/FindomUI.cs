@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using System.IO;
 
 namespace VSVRMod2.UI;
 
@@ -51,6 +52,11 @@ public class FindomUIManager : UIManager
         findomInput.sendOptions.Add(placateButton);
         findomInput.sendOptions.Add(bribeButton);
         findomInput.sendOptions.Add(tributeButton);
+
+        //weird thingy dunno why its even there? not related
+        VSVRMod.logger.LogInfo("Hiding weird thing in Tribute Menu");
+        Transform annoyingThing = overlayCanvas.transform.Find("TributeMenu/Slider - Standard (Value)/Text (TMP) (7)/Image");
+        annoyingThing.gameObject.SetActive(false);
 
         VSVRMod.logger.LogInfo("Setup Tribute Menu");
     }

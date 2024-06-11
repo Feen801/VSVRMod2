@@ -17,7 +17,7 @@ public class StartUIManager
     {
         if (Controller.WasAFaceButtonClicked())
         {
-            GameObject preparationMenu = GameObject.Find("Pre-Game/MainMenu/Camera Canvas/MenuManager/PreparationMenu");
+            GameObject preparationMenu = GameObject.Find("Pre-Game/MainMenu/Camera Canvas/MenuManager/FinalChecksMenu/SessionReady/ButtonContainer (1)");
             if (preparationMenu == null || !preparationMenu.activeSelf) {
                 VSVRMod.logger.LogWarning("Not in preparation menu, this may be expected.");
             }

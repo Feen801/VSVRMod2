@@ -128,7 +128,7 @@ public class BasicUIManager : UIManager
 
         public void Nod()
         {
-            if (!Controller.IsHeadsetWorn())
+            if (!Controller.IsHeadsetWorn() || VSVRMod.controllerHeadset.lastPutOn > Time.time - 5.0f)
             {
                 return;
             }
@@ -148,7 +148,7 @@ public class BasicUIManager : UIManager
         }
         public void Headshake()
         {
-            if (!Controller.IsHeadsetWorn())
+            if (!Controller.IsHeadsetWorn() || VSVRMod.controllerHeadset.lastPutOn > Time.time - 5.0f)
             {
                 return;
             }

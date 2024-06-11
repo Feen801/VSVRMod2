@@ -8,6 +8,8 @@ public class VRConfig
     //UI settings
     public static ConfigEntry<float> uiDistance;
     public static ConfigEntry<bool> taskGradient;
+    public static ConfigEntry<float> uiScale;
+    public static ConfigEntry<float> uiHeightOffset;
 
     //Controls settings
     public static ConfigEntry<bool> useHeadMovement;
@@ -27,7 +29,11 @@ public class VRConfig
     {
         uiDistance = VSVRMod.config.Bind("UI", "UI Distance", 0.5f, "How far away the UI appears from your face in meters.\n" +
             "The relative size will not change, i.e. if you make it closer to you it will also become smaller such that it takes up the same FOV.");
-        taskGradient = VSVRMod.config.Bind("UI", "Task Gradient", true, "Enable or disable the semitransparent gradient behind the task text");
+        taskGradient = VSVRMod.config.Bind("UI", "Task Gradient", true, "Enable or disable the semitransparent gradient behind the task text. May not work in all circumstances.");
+        uiScale = VSVRMod.config.Bind("UI", "UI Scale", 1.0f, "Scale the overall size of the UI up or down." +
+            "\nLowering this could be helpful if some UI elements are difficult to see in your headset due to limited FOV.");
+        uiHeightOffset = VSVRMod.config.Bind("UI", "UI Height Offset", 0f, "Vertically moves the UI. 10 units corresponds to about 1 degree in VR." +
+            "\nChanging this could be helpful if some UI elements are difficult to see in your headset due to limited FOV.");
 
         useHeadMovement = VSVRMod.config.Bind("Controls", "Use Head Movement", true, "Enable or disable the ability to press buttons by nodding or shaking your head.");
         automaticScreenSwap = VSVRMod.config.Bind("Controls", "Automatic Screen Swap", true, "Automatically swap the game output to your monitor when your headset is removed. Only works on Oculus and WMR headsets.");

@@ -9,7 +9,7 @@ using UnityEngine.XR.OpenXR.Features.Interactions;
 
 namespace VSVRMod2;
 
-class Controller
+public class Controller
 {
     public static int outputControllerDebug = 0;
     private static UnityEngine.XR.InputDevice leftController;
@@ -356,6 +356,8 @@ class Controller
 
         private bool lastState = true;
 
+        public float lastPutOn = 0f;
+
         public void Update()
         {
             bool worn = IsHeadsetWorn();
@@ -364,6 +366,7 @@ class Controller
                 if(worn)
                 {
                     OnWorn?.Invoke();
+                    lastPutOn = Time.time;
                 }
                 else
                 { 

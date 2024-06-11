@@ -31,7 +31,7 @@ public class VSVRMod : BaseUnityPlugin
     private static UIContainer uiContainer;
     private static StartUIManager beginUiManager;
 
-    private static readonly Controller.Headset controllerHeadset = new();
+    public static readonly Controller.Headset controllerHeadset = new();
 
     private static bool noVR = false;
 
