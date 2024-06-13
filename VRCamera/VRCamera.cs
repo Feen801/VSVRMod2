@@ -58,12 +58,14 @@ public class VRCameraManager
             worldCamDefault = primaryCamera.transform.Find("WorldCamDefault").gameObject;
         }
         worldCamDefaultCamera = worldCamDefault.GetComponent<Camera>();
-        vrCameraDolly = new GameObject("VRCameraParent");
-        vrCameraDolly.transform.SetParent(worldCamDefault.transform.root);
+        
         vrCameraParent = new GameObject("VRCameraParent");
-        vrCameraParent.transform.SetParent(vrCameraDolly.transform);
+        vrCameraParent.transform.SetParent(worldCamDefault.transform.root);
+        vrCameraDolly = new GameObject("VRCameraParent");
+        vrCameraDolly.transform.SetParent(vrCameraParent.transform);
         vrCameraOffset = new GameObject("VRCameraOffset");
-        vrCameraOffset.transform.SetParent(vrCameraParent.transform);
+        vrCameraOffset.transform.SetParent(vrCameraDolly.transform);
+        
 
         headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
 
