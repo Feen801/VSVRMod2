@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEditor.XR.LegacyInputHelpers;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -14,6 +15,7 @@ public class VRCameraManager
     private GameObject worldCamDefault;
     private Camera worldCamDefaultCamera;
     static GameObject vrCamera;
+    static GameObject vrCameraDolly;
     static GameObject vrCameraParent;
     static GameObject vrCameraOffset;
     private GameObject headFollower;
@@ -56,10 +58,14 @@ public class VRCameraManager
             worldCamDefault = primaryCamera.transform.Find("WorldCamDefault").gameObject;
         }
         worldCamDefaultCamera = worldCamDefault.GetComponent<Camera>();
+        
         vrCameraParent = new GameObject("VRCameraParent");
         vrCameraParent.transform.SetParent(worldCamDefault.transform.root);
+        vrCameraDolly = new GameObject("VRCameraParent");
+        vrCameraDolly.transform.SetParent(vrCameraParent.transform);
         vrCameraOffset = new GameObject("VRCameraOffset");
-        vrCameraOffset.transform.SetParent(vrCameraParent.transform);
+        vrCameraOffset.transform.SetParent(vrCameraDolly.transform);
+        
 
         headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
 
@@ -454,6 +460,24 @@ public class VRCameraManager
         {
             didRecenter = true;
             CenterCamera();
+        }
+    }
+
+    public void CameraControls()
+    {
+        int gripCount = Controller.CountGripsPressed();
+        if (gripCount == 2)
+        {
+            this.CenterCamera();
+        }
+        else if (gripCount == 1)
+        {
+            float speed = Controller.GetMaximalJoystickValue().y;
+            vrCameraDolly.transform.localPosition += Vector3.forward * speed * Time.fixedDeltaTime;
+        }
+        if (Controller.WasAGripClickedQuickly())
+        {
+            this.ToggleGreenscreenUI();
         }
     }
 }

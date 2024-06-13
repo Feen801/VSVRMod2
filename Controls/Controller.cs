@@ -265,6 +265,33 @@ public class Controller
         return clicked;
     }
 
+    private static float lastGripNotClickedTime = 0;
+    public static bool WasAGripClickedQuickly()
+    {
+        bool clicked = false;
+        bool pressed = CountGripsPressed() >= 1;
+        if (!pressed)
+        {
+            if (lastGripNotClickedTime + 0.2 >= Time.time)
+            {
+                if (pressed != lastGripStatus)
+                {
+                    clicked = true;
+                    if (outputControllerDebug >= 1)
+                    {
+                        VSVRMod.logger.LogInfo("Grip button quick click!");
+                    }
+                }
+            }
+            lastGripNotClickedTime = Time.time;
+        }
+        if(CountGripsPressed() >= 2)
+        {
+            lastGripNotClickedTime = -1;
+        }
+        return clicked;
+    }
+
     public static int CountGripsPressed()
     {
         bool left = false;
