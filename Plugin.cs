@@ -130,15 +130,7 @@ public class VSVRMod : BaseUnityPlugin
             }
             Keyboard.HandleKeyboardInputSession(vrCameraManager);
             uiContainer.Interact();
-            int gripCount = Controller.CountGripsPressed();
-            if (gripCount == 2)
-            {
-                vrCameraManager.CenterCamera();
-            }
-            if (Controller.WasAGripClicked())
-            {
-                vrCameraManager.ToggleGreenscreenUI();
-            }
+            vrCameraManager.CameraControls();
             vrCameraManager.CenterCameraIfFar();
         }
         else
