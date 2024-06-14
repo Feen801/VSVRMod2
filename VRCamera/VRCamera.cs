@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Unity.Collections;
-using UnityEditor.XR.LegacyInputHelpers;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.SceneManagement;
@@ -370,40 +368,40 @@ public class VRCameraManager
         GameObject overlayCanvas = GameObjectHelper.GetGameObjectCheckFound("OverlayCanvas");
 
         List<GameObject> bgs= [];
-        AddChecked(bgs, "InstructionBorder/Background", eventManager);
-        AddChecked(bgs, "InstructionBorder/Background (1)", eventManager);
-        AddChecked(bgs, "TimedEvent/Background", eventManager);
-        AddChecked(bgs, "TimedEvent/Background (3)", eventManager);
-        AddChecked(bgs, "StrokeCount/Background", eventManager);
-        AddChecked(bgs, "StrokeCount/Background (1)", eventManager);
-        AddChecked(bgs, "TaskDisliked/Bubble", eventManager);
-        AddChecked(bgs, "Forgive/Bubble", eventManager);
-        AddChecked(bgs, "FavorCosts/Bubble", eventManager);
-        AddChecked(bgs, "EdgeLockout/Bubble", eventManager);
-        AddChecked(bgs, "IntensifyTask/Bubble", eventManager);
-        AddChecked(bgs, "ToggleDiffIncrease/Bubble", eventManager);
-        AddChecked(bgs, "ToggleDiffDecrease/Bubble", eventManager);
-        AddChecked(bgs, "MercyTask/Bubble", eventManager);
-        AddChecked(bgs, "MercyRefuse/Bubble", eventManager);
-        AddChecked(bgs, "MercyEdgeLockout/Bubble", eventManager);
-        AddChecked(bgs, "MercyEdgeCost/Bubble", eventManager);
-        AddChecked(bgs, "MercyMood/Bubble", eventManager);
-        AddChecked(bgs, "MercyRefuseDispleased/Bubble", eventManager);
-        AddChecked(bgs, "TauntDispleased/Bubble", eventManager);
-        AddChecked(bgs, "TauntPunish/Bubble", eventManager);
-        AddChecked(bgs, "TauntDevious/Bubble", eventManager);
-        AddChecked(bgs, "BeatManager2/Background", eventManager);
-        AddChecked(bgs, "BeatManager2/Background", eventManager);
+        GameObjectHelper.AddChecked(bgs, "InstructionBorder/Background", eventManager);
+        GameObjectHelper.AddChecked(bgs, "InstructionBorder/Background (1)", eventManager);
+        GameObjectHelper.AddChecked(bgs, "TimedEvent/Background", eventManager);
+        GameObjectHelper.AddChecked(bgs, "TimedEvent/Background (3)", eventManager);
+        GameObjectHelper.AddChecked(bgs, "StrokeCount/Background", eventManager);
+        GameObjectHelper.AddChecked(bgs, "StrokeCount/Background (1)", eventManager);
+        GameObjectHelper.AddChecked(bgs, "TaskDisliked/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "Forgive/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "FavorCosts/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "EdgeLockout/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "IntensifyTask/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "ToggleDiffIncrease/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "ToggleDiffDecrease/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "MercyTask/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "MercyRefuse/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "MercyEdgeLockout/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "MercyEdgeCost/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "MercyMood/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "MercyRefuseDispleased/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "TauntDispleased/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "TauntPunish/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "TauntDevious/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "BeatManager2/Background", eventManager);
+        GameObjectHelper.AddChecked(bgs, "BeatManager2/Background", eventManager);
 
-        AddChecked(bgs, "FinDom/Bubble", eventManager);
-        AddChecked(bgs, "Chastity/Bubble", eventManager);
-        AddChecked(bgs, "FavorFail/Bubble", eventManager);
-        AddChecked(bgs, "FinDomFail/Bubble", eventManager);
-        AddChecked(bgs, "FinDomAccept/Bubble", eventManager);
-        AddChecked(bgs, "SettingsChange/Bubble", eventManager);
-        AddChecked(bgs, "HCChastityDouble/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "FinDom/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "Chastity/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "FavorFail/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "FinDomFail/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "FinDomAccept/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "SettingsChange/Bubble", eventManager);
+        GameObjectHelper.AddChecked(bgs, "HCChastityDouble/Bubble", eventManager);
 
-        AddChecked(bgs, "Urges/ActionTextContainer/Image (1)", eventManager);
+        GameObjectHelper.AddChecked(bgs, "Urges/ActionTextContainer/Image (1)", eventManager);
 
         foreach (GameObject bg in bgs)
         {
@@ -418,19 +416,6 @@ public class VRCameraManager
             {
                 img.enabled = false;
             }
-        }
-    }
-
-    private void AddChecked(List<GameObject> list, string path, GameObject parent)
-    {
-        Transform bg = parent.transform.Find(path);
-        if (bg != null)
-        {
-            list.Add(bg.gameObject);
-        }
-        else
-        {
-            VSVRMod.logger.LogError(path + " not found for disabling gradients");
         }
     }
 
