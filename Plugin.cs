@@ -8,7 +8,6 @@ using BepInEx.Unity.Mono;
 using HarmonyLib;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements.UIR;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
 using UnityEngine.XR.OpenXR;

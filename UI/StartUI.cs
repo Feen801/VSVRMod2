@@ -1,9 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using Unity.XR.CoreUtils;
-using UnityEngine;
-using UnityEngine.Analytics;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
 namespace VSVRMod2.UI;
 public class StartUIManager

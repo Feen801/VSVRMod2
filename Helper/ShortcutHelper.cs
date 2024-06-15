@@ -3,7 +3,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
-using BepInEx.Logging;
 
 namespace VSVRMod2.Helper
 {

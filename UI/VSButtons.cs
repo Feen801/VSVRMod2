@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using static VSVRMod2.VSChoiceButton;
 
 namespace VSVRMod2;
 
