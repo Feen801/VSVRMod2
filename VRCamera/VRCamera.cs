@@ -15,7 +15,6 @@ public class VRCameraManager
     static GameObject vrCamera;
     static GameObject vrCameraDolly;
     static GameObject vrCameraParent;
-    static GameObject vrCameraOffset;
     private GameObject headFollower;
     private Canvas uiCanvas;
     private Canvas overlayCanvas;
@@ -59,11 +58,8 @@ public class VRCameraManager
         
         vrCameraParent = new GameObject("VRCameraParent");
         vrCameraParent.transform.SetParent(worldCamDefault.transform.root);
-        vrCameraDolly = new GameObject("VRCameraParent");
+        vrCameraDolly = new GameObject("VRCameraDolly");
         vrCameraDolly.transform.SetParent(vrCameraParent.transform);
-        vrCameraOffset = new GameObject("VRCameraOffset");
-        vrCameraOffset.transform.SetParent(vrCameraDolly.transform);
-        
 
         headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
 
@@ -71,11 +67,11 @@ public class VRCameraManager
         vrCamera = new GameObject("VRCamera");
         VSVRMod.logger.LogInfo("Adding components to VR camera...");
         vrCamera.AddComponent<Camera>().nearClipPlane = 0.01f;
-        vrCamera.AddComponent<TrackedPoseDriver>();
+        vrCamera.AddComponent<TrackedPoseDriver>().UseRelativeTransform = true;
         float cameraScale = VRConfig.vrCameraScale.Value;
         vrCamera.transform.localScale = new Vector3(cameraScale, cameraScale, cameraScale);
         VSVRMod.logger.LogInfo("Reparenting VR camera...");
-        vrCamera.transform.SetParent(vrCameraOffset.transform);
+        vrCamera.transform.SetParent(vrCameraDolly.transform);
 
         PositionConstraint posConstraint = vrCameraParent.AddComponent<PositionConstraint>();
         ConstraintSource constraintSource = new ConstraintSource();
@@ -425,9 +421,12 @@ public class VRCameraManager
         {
             return;
         }
-        vrCameraOffset.transform.position = vrCamera.transform.position;
-        vrCameraOffset.transform.localPosition = -vrCamera.transform.localPosition;
-        vrCameraOffset.transform.localEulerAngles = new Vector3(0, -vrCamera.transform.localEulerAngles.y, 0);
+        TrackedPoseDriver vrCameraPoseDriver = vrCamera.GetComponent<TrackedPoseDriver>();
+        Pose pose = new Pose();
+        pose.position = -(vrCamera.transform.localPosition - vrCameraPoseDriver.originPose.position);
+        pose.rotation = Quaternion.Euler(0, -(vrCamera.transform.localEulerAngles.y - vrCameraPoseDriver.originPose.rotation.eulerAngles.y), 0);
+        vrCameraPoseDriver.originPose = pose;
+        VSVRMod.logger.LogInfo("Camera centered...");
     }
 
     private bool didRecenter = false;
@@ -448,14 +447,24 @@ public class VRCameraManager
         }
     }
 
+    private bool shouldCenterCamera = true;
+
     public void CameraControls()
     {
         int gripCount = Controller.CountGripsPressed();
         if (gripCount == 2)
         {
-            this.CenterCamera();
+            if(shouldCenterCamera)
+            {
+                this.CenterCamera();
+            }
+            shouldCenterCamera = false;
         }
-        else if (gripCount == 1)
+        else
+        {
+            shouldCenterCamera = true;
+        }
+        if (gripCount == 1)
         {
             float speed = Controller.GetMaximalJoystickValue().y;
             vrCameraDolly.transform.localPosition += Vector3.forward * speed * Time.fixedDeltaTime;
