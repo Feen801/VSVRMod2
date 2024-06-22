@@ -15,6 +15,7 @@ public class VRCameraManager
     static GameObject vrCamera;
     static GameObject vrCameraDolly;
     static GameObject vrCameraParent;
+    static GameObject vrCameraOffset;
     private GameObject headFollower;
     private Canvas uiCanvas;
     private Canvas overlayCanvas;
@@ -60,6 +61,8 @@ public class VRCameraManager
         vrCameraParent.transform.SetParent(worldCamDefault.transform.root);
         vrCameraDolly = new GameObject("VRCameraDolly");
         vrCameraDolly.transform.SetParent(vrCameraParent.transform);
+        vrCameraOffset = new GameObject("VRCameraOffset");
+        vrCameraOffset.transform.SetParent(vrCameraDolly.transform);
 
         headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
 
@@ -71,7 +74,7 @@ public class VRCameraManager
         float cameraScale = VRConfig.vrCameraScale.Value;
         vrCamera.transform.localScale = new Vector3(cameraScale, cameraScale, cameraScale);
         VSVRMod.logger.LogInfo("Reparenting VR camera...");
-        vrCamera.transform.SetParent(vrCameraDolly.transform);
+        vrCamera.transform.SetParent(vrCameraOffset.transform);
 
         PositionConstraint posConstraint = vrCameraParent.AddComponent<PositionConstraint>();
         ConstraintSource constraintSource = new ConstraintSource();
@@ -204,6 +207,10 @@ public class VRCameraManager
 
     public void SetupUI()
     {
+        vrCamera.SetActive(true);
+        SetupHeadTargetFollower(false);
+        worldCamDefaultCamera.enabled = false;
+
         uiInVR = true;
         uiCanvas.sortingOrder = 400;
         uiCanvas.worldCamera = vrCamera.GetComponent<Camera>();
@@ -328,15 +335,16 @@ public class VRCameraManager
             currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
         }
 
-        vrCamera.SetActive(true);
-        SetupHeadTargetFollower(false);
-        worldCamDefaultCamera.enabled = false;
         isFirstUIAdjust = false;
         VSVRMod.logger.LogError("Adjusted UI for VR");
     }
 
     public void RevertUI()
     {
+        worldCamDefaultCamera.enabled = true;
+        vrCamera.SetActive(false);
+        SetupHeadTargetFollower(true);
+
         uiInVR = false;
         uiCanvas.worldCamera = primaryCamera.GetComponent<Camera>();
         uiCanvas.renderMode = RenderMode.ScreenSpaceCamera;
@@ -350,10 +358,6 @@ public class VRCameraManager
 
         fadeCanvas.worldCamera = null;
         fadeCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
-
-        worldCamDefaultCamera.enabled = true;
-        vrCamera.SetActive(false);
-        SetupHeadTargetFollower(true);
 
         VSVRMod.logger.LogInfo("Adjusted UI for monitor");
     }
@@ -421,11 +425,8 @@ public class VRCameraManager
         {
             return;
         }
-        TrackedPoseDriver vrCameraPoseDriver = vrCamera.GetComponent<TrackedPoseDriver>();
-        Pose pose = new Pose();
-        pose.position = -(vrCamera.transform.localPosition - vrCameraPoseDriver.originPose.position);
-        pose.rotation = Quaternion.Euler(0, -(vrCamera.transform.localEulerAngles.y - vrCameraPoseDriver.originPose.rotation.eulerAngles.y), 0);
-        vrCameraPoseDriver.originPose = pose;
+        vrCameraOffset.transform.position = vrCamera.transform.position;
+        vrCameraOffset.transform.localPosition = -vrCamera.transform.localPosition;
         VSVRMod.logger.LogInfo("Camera centered...");
     }
 

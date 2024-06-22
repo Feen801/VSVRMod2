@@ -6,6 +6,7 @@ using UnityEngine.XR;
 using UnityEngine.XR.OpenXR;
 using UnityEngine.XR.OpenXR.Features;
 using UnityEngine.XR.OpenXR.Features.Interactions;
+using static VSVRMod2.Controller;
 
 namespace VSVRMod2;
 
