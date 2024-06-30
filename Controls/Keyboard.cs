@@ -8,7 +8,7 @@ class Keyboard
     {
         if (Input.GetKeyDown(KeyCode.Comma))
         {
-            vrCameraManager.CenterCamera();
+            vrCameraManager.CenterCamera(true);
         }
         
         if (Input.GetKeyDown(KeyCode.Slash))

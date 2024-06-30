@@ -9,6 +9,8 @@ public class VSVRAssets
     static AssetBundle vsvrAssets;
     static Shader uiShader;
     static Shader textShader;
+    public static GameObject leftHandFlame;
+    public static GameObject rightHandFlame;
 
     public static void LoadAssets()
     {
@@ -29,6 +31,18 @@ public class VSVRAssets
         if (textShader == null)
         {
             VSVRMod.logger.LogError("Failed to load VR text Shader " + "TMP_SDF");
+        }
+
+        leftHandFlame = vsvrAssets.LoadAsset<GameObject>("LeftHand");
+        if (leftHandFlame == null)
+        {
+            VSVRMod.logger.LogError("Failed to load hand flame " + "LeftHand");
+        }
+
+        rightHandFlame = vsvrAssets.LoadAsset<GameObject>("RightHand");
+        if (rightHandFlame == null)
+        {
+            VSVRMod.logger.LogError("Failed to load hand flame " + "RightHand");
         }
     }
 

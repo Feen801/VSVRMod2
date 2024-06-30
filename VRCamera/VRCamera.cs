@@ -24,6 +24,8 @@ public class VRCameraManager
     private GameObject greenscreenUI;
     private GameObject overlay;
     private GameObject ui;
+    private GameObject leftHand;
+    private GameObject rightHand;
 
     private static bool isFirstUIAdjust = true;
 
@@ -72,9 +74,18 @@ public class VRCameraManager
         vrCamera.AddComponent<Camera>().nearClipPlane = 0.01f;
         vrCamera.AddComponent<TrackedPoseDriver>().UseRelativeTransform = true;
         float cameraScale = VRConfig.vrCameraScale.Value;
-        vrCamera.transform.localScale = new Vector3(cameraScale, cameraScale, cameraScale);
+        vrCameraOffset.transform.localScale = new Vector3(cameraScale, cameraScale, cameraScale);
         VSVRMod.logger.LogInfo("Reparenting VR camera...");
         vrCamera.transform.SetParent(vrCameraOffset.transform);
+
+        if (VRConfig.visibleControllers.Value)
+        {
+            VSVRMod.logger.LogInfo("Creating hand flames...");
+            leftHand = GameObject.Instantiate(VSVRAssets.leftHandFlame);
+            rightHand = GameObject.Instantiate(VSVRAssets.rightHandFlame);
+            leftHand.transform.SetParent(vrCameraOffset.transform);
+            rightHand.transform.SetParent(vrCameraOffset.transform);
+        }
 
         PositionConstraint posConstraint = vrCameraParent.AddComponent<PositionConstraint>();
         ConstraintSource constraintSource = new ConstraintSource();
@@ -419,7 +430,7 @@ public class VRCameraManager
         }
     }
 
-    public void CenterCamera()
+    public void CenterCamera(bool fullReset)
     {
         if (vrCamera == null || VRConfig.fixCameraHeight.Value)
         {
@@ -427,6 +438,10 @@ public class VRCameraManager
         }
         vrCameraOffset.transform.position = vrCamera.transform.position;
         vrCameraOffset.transform.localPosition = -vrCamera.transform.localPosition;
+        if (fullReset)
+        {
+            vrCameraDolly.transform.localPosition = Vector3.zero;
+        }
         VSVRMod.logger.LogInfo("Camera centered...");
     }
 
@@ -444,11 +459,12 @@ public class VRCameraManager
         if(distance > 0.1)
         {
             didRecenter = true;
-            CenterCamera();
+            CenterCamera(false);
         }
     }
 
     private bool shouldCenterCamera = true;
+    private float timeCenterHeld = 0;
 
     public void CameraControls()
     {
@@ -457,13 +473,20 @@ public class VRCameraManager
         {
             if(shouldCenterCamera)
             {
-                this.CenterCamera();
+                this.CenterCamera(false);
             }
             shouldCenterCamera = false;
+            timeCenterHeld += Time.fixedDeltaTime;
+            if(timeCenterHeld > 1 && timeCenterHeld < 2)
+            {
+                this.CenterCamera(true);
+                timeCenterHeld += 99;
+            }
         }
         else
         {
             shouldCenterCamera = true;
+            timeCenterHeld = 0;
         }
         if (gripCount == 1)
         {

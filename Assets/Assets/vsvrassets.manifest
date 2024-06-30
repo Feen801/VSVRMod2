@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 1824688267
+CRC: 4010909393
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d2065361a902ae07b3c6b45c96bae013
+    Hash: db08c4df920a7401b9bda6c0f49b3fe2
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 4aec58ef623e9e134526838c741e141f
+    Hash: 664015c9f0186dea1c880ca979c81705
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: d2065361a902ae07b3c6b45c96bae013
+    Hash: db08c4df920a7401b9bda6c0f49b3fe2
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -39,6 +39,8 @@ ClassTypes:
 - Class: 199
   Script: {instanceID: 0}
 - Class: 224
+  Script: {instanceID: 0}
+- Class: 1818360609
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers:
 - AssemblyName: Unity.TextMeshPro
@@ -77,7 +79,8 @@ Assets:
 - Assets/Shaders/UIIgnoreDepth.shader
 - Assets/Shaders/Particle.shader
 - Assets/Materials/ParticleMaterial.mat
-- Assets/Prefabs/Hand.prefab
+- Assets/Prefabs/LeftHand.prefab
+- Assets/Prefabs/RightHand.prefab
 - Assets/Shaders/BillboardText.shader
 - Assets/Shaders/TMP_SDF.shader
 Dependencies: []
