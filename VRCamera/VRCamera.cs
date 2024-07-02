@@ -5,6 +5,7 @@ using UnityEngine.Animations;
 using UnityEngine.SceneManagement;
 using UnityEngine.SpatialTracking;
 using UnityEngine.UI;
+using UnityEngine.UIElements.Collections;
 
 namespace VSVRMod2;
 public class VRCameraManager
@@ -26,8 +27,6 @@ public class VRCameraManager
     private GameObject ui;
     private GameObject leftHand;
     private GameObject rightHand;
-
-    private static bool isFirstUIAdjust = true;
 
     public VRCameraManager(Scene scene)
     {
@@ -153,7 +152,7 @@ public class VRCameraManager
         }
     }
 
-    private void SetupHeadTargetFollower(Boolean revert)
+    private void SetupHeadTargetFollower(bool revert)
     {
         if (revert)
         {
@@ -216,8 +215,26 @@ public class VRCameraManager
         fadeCanvas = fade.GetComponent<Canvas>();
     }
 
+    private List<GameObject> gameObjectsToUndo = new List<GameObject>();
+    private Dictionary<GameObject, Vector3> pastPositions = new Dictionary<GameObject, Vector3>();
+    private Dictionary<GameObject, Vector3> pastScales = new Dictionary<GameObject, Vector3>();
+
+    private void SavePastPositionAndScale(GameObject gameObject)
+    {
+        gameObjectsToUndo.Add(gameObject);
+        if(!pastPositions.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().anchoredPosition3D))
+        {
+            pastPositions[gameObject] = gameObject.transform.GetComponent<RectTransform>().anchoredPosition3D;
+        }
+        if (!pastScales.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().localScale))
+        {
+            pastScales[gameObject] = gameObject.transform.GetComponent<RectTransform>().localScale;
+        }
+    }
+
     public void SetupUI()
     {
+        gameObjectsToUndo.Clear();
         vrCamera.SetActive(true);
         SetupHeadTargetFollower(false);
         worldCamDefaultCamera.enabled = false;
@@ -252,6 +269,7 @@ public class VRCameraManager
         {
             VSVRMod.logger.LogInfo("TributeMenu found");
         }
+        SavePastPositionAndScale(currentAdjust);
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 300, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.5f, 0.5f, 0.5f);
 
@@ -264,6 +282,7 @@ public class VRCameraManager
         {
             VSVRMod.logger.LogInfo("SpinWheelUI found");
         }
+        SavePastPositionAndScale(currentAdjust);
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1000, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(1f, 1f, 1f);
 
@@ -288,6 +307,7 @@ public class VRCameraManager
         {
             VSVRMod.logger.LogInfo("TradeOfferUI found");
         }
+        SavePastPositionAndScale(currentAdjust);
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1240, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
 
@@ -300,6 +320,7 @@ public class VRCameraManager
         {
             VSVRMod.logger.LogInfo("Urges found");
         }
+        SavePastPositionAndScale(currentAdjust);
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1000, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(1f, 1f, 1f);
 
@@ -312,12 +333,11 @@ public class VRCameraManager
         {
             VSVRMod.logger.LogInfo("EventManager found");
         }
+        SavePastPositionAndScale(currentAdjust);
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 560, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
-        if (isFirstUIAdjust) {
-            currentAdjust.transform.localScale *= VRConfig.uiScale.Value;
-            currentAdjust.transform.localPosition += new Vector3(0, VRConfig.uiHeightOffset.Value, 0);
-        }
+        currentAdjust.transform.localScale *= VRConfig.uiScale.Value;
+        currentAdjust.transform.localPosition += new Vector3(0, VRConfig.uiHeightOffset.Value, 0);
 
         currentAdjust = overlay.transform.Find("YourStatusMenuManager").gameObject;
         if (currentAdjust == null)
@@ -328,6 +348,7 @@ public class VRCameraManager
         {
             VSVRMod.logger.LogInfo("YourStatusMenuManager found");
         }
+        SavePastPositionAndScale(currentAdjust);
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(340, -1100, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.7f, 0.7f, 0.7f);
 
@@ -340,18 +361,50 @@ public class VRCameraManager
         {
             VSVRMod.logger.LogInfo("ASMROverlay found");
         }
+        SavePastPositionAndScale(currentAdjust);
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 750, 0);
-        if(isFirstUIAdjust)
+        currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
+
+        currentAdjust = overlay.transform.Find("Favor").gameObject;
+        if (currentAdjust == null)
         {
-            currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
+            VSVRMod.logger.LogError("Favor not found");
+        }
+        else
+        {
+            VSVRMod.logger.LogInfo("Favor found");
+        }
+        SavePastPositionAndScale(currentAdjust);
+        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 650, 0);
+        currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
+
+        if (leftHand != null && rightHand != null)
+        {
+            leftHand.gameObject.SetActive(true);
+            rightHand.gameObject.SetActive(true);
         }
 
-        isFirstUIAdjust = false;
         VSVRMod.logger.LogError("Adjusted UI for VR");
+    }
+
+    private void UndoSetupPositioning()
+    {
+        for (int i = gameObjectsToUndo.Count - 1; i >= 0; i--)
+        {
+            GameObject gameObject = gameObjectsToUndo[i];
+            if (Equals(gameObject.name, "EventManager"))
+            {
+                gameObject.transform.localPosition -= new Vector3(0, VRConfig.uiHeightOffset.Value, 0);
+            }
+            gameObject.GetComponent<RectTransform>().localScale = pastScales.Get(gameObject);
+            gameObject.GetComponent<RectTransform>().anchoredPosition3D = pastPositions.Get(gameObject);
+        }
     }
 
     public void RevertUI()
     {
+        UndoSetupPositioning();
+
         worldCamDefaultCamera.enabled = true;
         vrCamera.SetActive(false);
         SetupHeadTargetFollower(true);
@@ -369,6 +422,12 @@ public class VRCameraManager
 
         fadeCanvas.worldCamera = null;
         fadeCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+
+        if (leftHand != null && rightHand != null)
+        {
+            leftHand.gameObject.SetActive(false);
+            rightHand.gameObject.SetActive(false);
+        }
 
         VSVRMod.logger.LogInfo("Adjusted UI for monitor");
     }

@@ -6,6 +6,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.Mono;
 using HarmonyLib;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR;
@@ -90,6 +91,10 @@ public class VSVRMod : BaseUnityPlugin
         {
             inSession = false;
         }
+        if (Equals(scene.name, Constants.MenuScene))
+        {
+            AddToDebugDisplay();
+        }
     }
 
     public void InitialSessionSetup()
@@ -137,6 +142,18 @@ public class VSVRMod : BaseUnityPlugin
             beginUiManager.Interact();
         }
         Controller.EndFrame();
+    }
+
+    void AddToDebugDisplay()
+    {
+        string fullString = Constants.VersionStringPrefix + " " + Constants.CurrentVersionString;
+        GameObject version = GameObjectHelper.GetGameObjectCheckFound("DebugCanvas/Version");
+        GameObject VRModversion = Instantiate(version);
+        VRModversion.GetComponent<PlayMakerFSM>().enabled = false;
+        VRModversion.name = "VR Mod Version";
+        VRModversion.transform.position = version.transform.position + Vector3.down * 20;
+        VRModversion.transform.parent = GameObjectHelper.GetGameObjectCheckFound("DebugCanvas").transform;
+        VRModversion.GetComponent<TextMeshProUGUI>().SetText(fullString);
     }
 
     /**
