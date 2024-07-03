@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.SpatialTracking;
 using UnityEngine.UI;
 using UnityEngine.UIElements.Collections;
+using HutongGames.PlayMaker.Actions;
 
 namespace VSVRMod2;
 public class VRCameraManager
@@ -27,6 +28,7 @@ public class VRCameraManager
     private GameObject ui;
     private GameObject leftHand;
     private GameObject rightHand;
+    PlayMakerFSM headResetter;
 
     public VRCameraManager(Scene scene)
     {
@@ -35,9 +37,10 @@ public class VRCameraManager
             NewSetupCamera();
             UIReferences();
 
-            //UI components may not properly be rescaled unless the VR camera is off at first.
-            RevertUI();
-            SetupUI();
+            if(Controller.IsHeadsetWorn())
+            {
+                SetupUI();
+            }
 
             SetupGreenscreen();
         }
@@ -154,6 +157,13 @@ public class VRCameraManager
 
     private void SetupHeadTargetFollower(bool revert)
     {
+        if(headFollower == null)
+        {
+            VSVRMod.logger.LogInfo("what the hell");
+            VSVRMod.logger.LogInfo("how did this become null");
+            VSVRMod.logger.LogInfo("why does this only happen when starting a second one");
+            headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
+        }
         if (revert)
         {
             headFollower.transform.SetParent(worldCamDefault.transform);
@@ -162,8 +172,11 @@ public class VRCameraManager
         {
             headFollower.transform.SetParent(vrCamera.transform);
         }
-        PlayMakerFSM headResetter = headFollower.GetComponent<PlayMakerFSM>();
-        headResetter.enabled = revert;
+        headResetter = headFollower.GetComponent<PlayMakerFSM>();
+        if (headResetter != null)
+        {
+            headResetter.enabled = revert;
+        }
         headFollower.transform.localPosition = new Vector3(0, 0, 0);
         headFollower.transform.localRotation = new Quaternion(0, 0, 0, 0);
     }
@@ -218,6 +231,7 @@ public class VRCameraManager
     private List<GameObject> gameObjectsToUndo = new List<GameObject>();
     private Dictionary<GameObject, Vector3> pastPositions = new Dictionary<GameObject, Vector3>();
     private Dictionary<GameObject, Vector3> pastScales = new Dictionary<GameObject, Vector3>();
+    private float oldFavorHeight = 0;
 
     private void SavePastPositionAndScale(GameObject gameObject)
     {
@@ -234,6 +248,7 @@ public class VRCameraManager
 
     public void SetupUI()
     {
+        //UIReferences();
         gameObjectsToUndo.Clear();
         vrCamera.SetActive(true);
         SetupHeadTargetFollower(false);
@@ -365,6 +380,7 @@ public class VRCameraManager
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 750, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
 
+        //Specific fix to favor
         currentAdjust = overlay.transform.Find("Favor").gameObject;
         if (currentAdjust == null)
         {
@@ -374,9 +390,9 @@ public class VRCameraManager
         {
             VSVRMod.logger.LogInfo("Favor found");
         }
-        SavePastPositionAndScale(currentAdjust);
-        currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 650, 0);
-        currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
+        SetFloatValue setFloatValue = (SetFloatValue)(currentAdjust.gameObject.GetComponent<PlayMakerFSM>().FsmStates[1].Actions[0]);
+        oldFavorHeight = setFloatValue.floatValue.ToFloat();
+        setFloatValue.floatValue.Value = 1060;
 
         if (leftHand != null && rightHand != null)
         {
@@ -384,11 +400,12 @@ public class VRCameraManager
             rightHand.gameObject.SetActive(true);
         }
 
-        VSVRMod.logger.LogError("Adjusted UI for VR");
+        VSVRMod.logger.LogInfo("Adjusted UI for VR");
     }
 
     private void UndoSetupPositioning()
     {
+        UIReferences();
         for (int i = gameObjectsToUndo.Count - 1; i >= 0; i--)
         {
             GameObject gameObject = gameObjectsToUndo[i];
@@ -399,6 +416,8 @@ public class VRCameraManager
             gameObject.GetComponent<RectTransform>().localScale = pastScales.Get(gameObject);
             gameObject.GetComponent<RectTransform>().anchoredPosition3D = pastPositions.Get(gameObject);
         }
+        SetFloatValue setFloatValue = (SetFloatValue)(overlay.transform.Find("Favor").gameObject.gameObject.GetComponent<PlayMakerFSM>().FsmStates[1].Actions[0]);
+        setFloatValue.floatValue.Value = oldFavorHeight;
     }
 
     public void RevertUI()

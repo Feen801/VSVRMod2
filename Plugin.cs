@@ -6,6 +6,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.Mono;
 using HarmonyLib;
+using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -85,6 +86,7 @@ public class VSVRMod : BaseUnityPlugin
         if (Equals(scene.name, Constants.SessionScene))
         {
             sessionScene = scene;
+            AddToDebugDisplay();
             InitialSessionSetup();
         }
         else
@@ -99,18 +101,35 @@ public class VSVRMod : BaseUnityPlugin
 
     public void InitialSessionSetup()
     {
+        if (vrCameraManager != null)
+        {
+            controllerHeadset.OnWorn -= vrCameraManager.SetupUI;
+            controllerHeadset.OnRemoved -= vrCameraManager.RevertUI;
+        }
+        if (uiContainer != null)
+        {
+            vrGestureRecognizer.Nodded -= uiContainer.basicUIManager.headMovementTracker.Nod;
+            vrGestureRecognizer.HeadShaken -= uiContainer.basicUIManager.headMovementTracker.Headshake;
+        }
+        logger.LogInfo("Starting session setup");
         vrCameraManager = new(sessionScene);
+        logger.LogInfo("Session setup: created camera manager");
         uiContainer = new(sessionScene);
+        logger.LogInfo("Session setup: created ui container");
         VSVRAssets.ApplyUIShader();
+        logger.LogInfo("Session setup: applied ui shaders");
 
         vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
         vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
+        logger.LogInfo("Session setup: setup gestures");
 
         controllerHeadset.OnWorn += vrCameraManager.SetupUI;
         controllerHeadset.OnRemoved += vrCameraManager.RevertUI;
+        logger.LogInfo("Session setup: OnWorn and OnRemoved");
         if (!VRConfig.taskGradient.Value)
         {
             vrCameraManager.DisableTaskGradient();
+            logger.LogInfo("Session setup: Disabled task gradients");
         }
         inSession = true;
     }
@@ -146,6 +165,10 @@ public class VSVRMod : BaseUnityPlugin
 
     void AddToDebugDisplay()
     {
+        if (GameObject.Find("VR Mod Version") != null)
+        {
+            return;
+        }
         string fullString = Constants.VersionStringPrefix + " " + Constants.CurrentVersionString;
         GameObject version = GameObjectHelper.GetGameObjectCheckFound("DebugCanvas/Version");
         GameObject VRModversion = Instantiate(version);
