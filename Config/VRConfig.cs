@@ -14,6 +14,7 @@ public class VRConfig
     //Controls settings
     public static ConfigEntry<bool> useHeadMovement;
     public static ConfigEntry<bool> automaticScreenSwap;
+    public static ConfigEntry<bool> visibleControllers;
 
     //Camera settings
     public static ConfigEntry<float> vrCameraScale;
@@ -37,6 +38,7 @@ public class VRConfig
 
         useHeadMovement = VSVRMod.config.Bind("Controls", "Use Head Movement", true, "Enable or disable the ability to press buttons by nodding or shaking your head.");
         automaticScreenSwap = VSVRMod.config.Bind("Controls", "Automatic Screen Swap", true, "Automatically swap the game output to your monitor when your headset is removed. Only works on Oculus and WMR headsets.");
+        visibleControllers = VSVRMod.config.Bind("Controls", "Visible Controllers", true, "Places a particle effect and L/R indicatiors where your VR controllers are. Makes it easier to find them if you set them down.");
 
         vrCameraScale = VSVRMod.config.Bind("Camera", "VR Camera Scale", 1f, "Scale of the VR camera. A value of 0.5 would make the camera half size, making everything else appear twice as large.");
         fixCameraHeight = VSVRMod.config.Bind("Camera", "Fix Camera Height", false, "Makes the VR camera respect the actual distance from your head to the floor, instead of being scene dependent. Not recommended.");

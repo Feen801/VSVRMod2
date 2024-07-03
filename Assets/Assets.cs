@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +11,8 @@ public class VSVRAssets
     static AssetBundle vsvrAssets;
     static Shader uiShader;
     static Shader textShader;
+    public static GameObject leftHandFlame;
+    public static GameObject rightHandFlame;
 
     public static void LoadAssets()
     {
@@ -30,15 +34,32 @@ public class VSVRAssets
         {
             VSVRMod.logger.LogError("Failed to load VR text Shader " + "TMP_SDF");
         }
+
+        leftHandFlame = vsvrAssets.LoadAsset<GameObject>("LeftHand");
+        if (leftHandFlame == null)
+        {
+            VSVRMod.logger.LogError("Failed to load hand flame " + "LeftHand");
+        }
+
+        rightHandFlame = vsvrAssets.LoadAsset<GameObject>("RightHand");
+        if (rightHandFlame == null)
+        {
+            VSVRMod.logger.LogError("Failed to load hand flame " + "RightHand");
+        }
     }
 
     public static void ApplyUIShader()
     {
         //Prevent tattoos from rendering under the floor?
         GameObject tattoos = GameObjectHelper.GetGameObjectCheckFound("TattooContainer");
+        GameObject sceneContainer = GameObjectHelper.GetGameObjectCheckFound("Root/SceneContainer");
         if (tattoos == null)
         {
             VSVRMod.logger.LogError("Could not find TattooContainer for NOT applying UI shader");
+        }
+        if (sceneContainer == null)
+        {
+            VSVRMod.logger.LogError("Could not find SceneContainer for NOT applying UI shader");
         }
         Transform basicTattoos = tattoos.transform.Find("SkinRendering/Basic");
         Image imagex = basicTattoos.GetComponent<Image>();
@@ -84,7 +105,18 @@ public class VSVRAssets
                 image.material = UnityEngine.Object.Instantiate(image.material);
             }
         }
-
+        //Exclude spinning wheel from UI depth fix
+        string[] wheelParts = { "Image (3)", "Reward", "Pleasure", "Punishment", "PleasurePunishment", "RewardPunishment"};
+        foreach (string wheelPart in wheelParts)
+        {
+            Transform wheel = sceneContainer.transform.Find("SpecialAnimations/Animate_SpinWheel/Objects/Wheel of Fortune/Wheel/SpinWheelWheel/Canvas/WheelCanvas/" + wheelPart);
+            if (wheel == null)
+            {
+                VSVRMod.logger.LogError("Could not find spin wheel for NOT applying UI shader");
+            }
+            imagex = wheel.GetComponent<Image>();
+            imagex.material = UnityEngine.Object.Instantiate(imagex.material);
+        }
 
         GameObject eventManager = GameObjectHelper.GetGameObjectCheckFound("EventManager");
         if (eventManager == null)
