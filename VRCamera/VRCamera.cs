@@ -125,6 +125,8 @@ public class VRCameraManager
         rotConstraint.rotationOffset = Vector3.zero;
         rotConstraint.constraintActive = true;
 
+        vrCamera.SetActive(false);
+
         VSVRMod.logger.LogInfo("Constrained VR camera rotation.");
     }
 
@@ -300,18 +302,6 @@ public class VRCameraManager
         SavePastPositionAndScale(currentAdjust);
         currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 1000, 0);
         currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(1f, 1f, 1f);
-
-        /*        currentAdjust = ui.transform.Find("EventManager/ToyChecklist").gameObject;
-                if (currentAdjust == null)
-                {
-                    VSVRMod.logger.LogError("ToyChecklist not found");
-                }
-                else
-                {
-                    VSVRMod.logger.LogInfo("ToyChecklist found");
-                }
-                currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 480, 0);
-                currentAdjust.GetComponent<RectTransform>().localScale = new Vector3(0.2f, 0.2f, 0.2f);*/
 
         currentAdjust = ui.transform.Find("EventManager/TradeOfferUI").gameObject;
         if (currentAdjust == null)
