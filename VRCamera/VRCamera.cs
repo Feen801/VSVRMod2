@@ -7,6 +7,7 @@ using UnityEngine.SpatialTracking;
 using UnityEngine.UI;
 using UnityEngine.UIElements.Collections;
 using HutongGames.PlayMaker.Actions;
+using UnityEngine.XR.Management;
 
 namespace VSVRMod2;
 public class VRCameraManager
@@ -205,12 +206,12 @@ public class VRCameraManager
     private bool uiInVR = false;
     public void ToggleUIVR()
     {
+        VSVRMod.logger.LogMessage("slash indeed pressed on: " + uiInVR);
         if (uiInVR)
         {
             RevertUI();
         }
-        else
-        {
+        else {
             SetupUI();
         }
     }

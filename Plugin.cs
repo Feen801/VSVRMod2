@@ -54,6 +54,8 @@ public class VSVRMod : BaseUnityPlugin
 
         ShortcutHelper.CreateShortcut();
 
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
         string[] args = System.Environment.GetCommandLineArgs();
         if (args.Contains<string>("-novr")) {
             logger.LogWarning("VR disabled!");
@@ -61,13 +63,13 @@ public class VSVRMod : BaseUnityPlugin
             return;
         }
 
+        Application.runInBackground = true;
+
         Controller.EnableControllerProfiles();
         InitializeXRRuntime();
         StartDisplay();
 
         InputDevices.deviceConnected += Controller.DeviceConnect;
-
-        SceneManager.sceneLoaded += OnSceneLoaded;
 
         VSVRAssets.LoadAssets();
 
@@ -78,6 +80,7 @@ public class VSVRMod : BaseUnityPlugin
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        AddToDebugDisplay(noVR);
         if (noVR)
         {
             return;
@@ -85,17 +88,14 @@ public class VSVRMod : BaseUnityPlugin
         Logger.LogInfo("A scene was loaded: " + scene.name);
         if (Equals(scene.name, Constants.SessionScene))
         {
+            XRGeneralSettings.Instance.Manager.StartSubsystems();
             sessionScene = scene;
-            AddToDebugDisplay();
             InitialSessionSetup();
         }
         else
         {
             inSession = false;
-        }
-        if (Equals(scene.name, Constants.MenuScene))
-        {
-            AddToDebugDisplay();
+            XRGeneralSettings.Instance.Manager.StopSubsystems();
         }
     }
 
@@ -140,7 +140,6 @@ public class VSVRMod : BaseUnityPlugin
         {
             return;
         }
-        Keyboard.HandleKeyboardInput();
         if (inSession)
         {
             if (VRConfig.useHeadMovement.Value)
@@ -151,7 +150,6 @@ public class VSVRMod : BaseUnityPlugin
             {
                 controllerHeadset.Update();
             }
-            Keyboard.HandleKeyboardInputSession(vrCameraManager);
             uiContainer.Interact();
             vrCameraManager.CameraControls();
             vrCameraManager.CenterCameraIfFar();
@@ -163,20 +161,34 @@ public class VSVRMod : BaseUnityPlugin
         Controller.EndFrame();
     }
 
-    void AddToDebugDisplay()
+    void Update()
+    {
+        Keyboard.HandleKeyboardInput();
+        if (noVR)
+        {
+            return;
+        }
+        if (inSession)
+        {
+            Keyboard.HandleKeyboardInputSession(vrCameraManager);
+        }
+    }
+
+    void AddToDebugDisplay(bool isModDisabled)
     {
         if (GameObject.Find("VR Mod Version") != null)
         {
             return;
         }
-        string fullString = Constants.VersionStringPrefix + " " + Constants.CurrentVersionString;
+        string fullString = Constants.VersionStringPrefix + " " + Constants.CurrentVersionString + (isModDisabled ? "\n(Disabled)" : "");
         GameObject version = GameObjectHelper.GetGameObjectCheckFound("DebugCanvas/Version");
         GameObject VRModversion = Instantiate(version);
         VRModversion.GetComponent<PlayMakerFSM>().enabled = false;
         VRModversion.name = "VR Mod Version";
-        VRModversion.transform.position = version.transform.position + Vector3.down * 20;
+        VRModversion.transform.position = version.transform.position + Vector3.down * 30;
         VRModversion.transform.parent = GameObjectHelper.GetGameObjectCheckFound("DebugCanvas").transform;
         VRModversion.GetComponent<TextMeshProUGUI>().SetText(fullString);
+        logger.LogInfo("Added VR mod version to debug overlay");
     }
 
     /**
