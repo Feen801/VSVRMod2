@@ -206,7 +206,6 @@ public class VRCameraManager
     private bool uiInVR = false;
     public void ToggleUIVR()
     {
-        VSVRMod.logger.LogMessage("slash indeed pressed on: " + uiInVR);
         if (uiInVR)
         {
             RevertUI();

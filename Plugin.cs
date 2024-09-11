@@ -182,6 +182,11 @@ public class VSVRMod : BaseUnityPlugin
         }
         string fullString = Constants.VersionStringPrefix + " " + Constants.CurrentVersionString + (isModDisabled ? "\n(Disabled)" : "");
         GameObject version = GameObjectHelper.GetGameObjectCheckFound("DebugCanvas/Version");
+        if (version == null)
+        {
+            logger.LogInfo("Did not add VR mod version to debug overlay?");
+            return;
+        }
         GameObject VRModversion = Instantiate(version);
         VRModversion.GetComponent<PlayMakerFSM>().enabled = false;
         VRModversion.name = "VR Mod Version";
