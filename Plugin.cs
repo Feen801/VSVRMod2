@@ -211,7 +211,14 @@ public class VSVRMod : BaseUnityPlugin
         ((List<XRLoader>)managerSettings.activeLoaders).Clear();
         ((List<XRLoader>)managerSettings.activeLoaders).Add(xrLoader);
 
-        OpenXRSettings.Instance.renderMode = OpenXRSettings.RenderMode.MultiPass;
+        if (VRConfig.useMultipassRendering.Value)
+        {
+            OpenXRSettings.Instance.renderMode = OpenXRSettings.RenderMode.MultiPass;
+        }
+        else
+        {
+            OpenXRSettings.Instance.renderMode = OpenXRSettings.RenderMode.SinglePassInstanced;
+        }
         OpenXRSettings.Instance.depthSubmissionMode = OpenXRSettings.DepthSubmissionMode.Depth24Bit;
 
         typeof(XRGeneralSettings).GetMethod("InitXRSDK", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(generalSettings, []);
