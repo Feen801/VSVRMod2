@@ -211,7 +211,8 @@ public class VSVRMod : BaseUnityPlugin
         ((List<XRLoader>)managerSettings.activeLoaders).Clear();
         ((List<XRLoader>)managerSettings.activeLoaders).Add(xrLoader);
 
-        if (VRConfig.useMultipassRendering.Value)
+        //SinglePassInstanced does not work with this game, I may try to fix it one day though.
+        if (true)
         {
             OpenXRSettings.Instance.renderMode = OpenXRSettings.RenderMode.MultiPass;
         }
