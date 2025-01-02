@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 
 public class SafewordUIManager : UIManager
 {

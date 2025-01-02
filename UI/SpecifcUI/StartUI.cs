@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 public class StartUIManager
 {
     public StartUIManager()
@@ -13,7 +13,8 @@ public class StartUIManager
         if (Controller.WasAFaceButtonClicked())
         {
             GameObject preparationMenu = GameObject.Find("Pre-Game/MainMenu/Camera Canvas/MenuManager/FinalChecksMenu/SessionReady/ButtonContainer (1)");
-            if (preparationMenu == null || !preparationMenu.activeSelf) {
+            if (preparationMenu == null || !preparationMenu.activeSelf)
+            {
                 VSVRMod.logger.LogWarning("Not in preparation menu, this may be expected.");
             }
             GameObject beginButton = null;
@@ -38,5 +39,5 @@ public class StartUIManager
             }
         }
         return false;
-    } 
+    }
 }

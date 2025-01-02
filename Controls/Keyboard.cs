@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using VSVRMod2.VRCamera;
 
 namespace VSVRMod2;
 
@@ -8,12 +9,12 @@ class Keyboard
     {
         if (Input.GetKeyDown(KeyCode.Comma))
         {
-            vrCameraManager.CenterCamera(true);
+            vrCameraManager.vrcamera.CenterCamera(true);
         }
         
         if (Input.GetKeyDown(KeyCode.Slash))
         {
-            vrCameraManager.ToggleUIVR();
+            VRUI.ToggleUIVR(vrCameraManager.vrcamera);
         }
     }
 

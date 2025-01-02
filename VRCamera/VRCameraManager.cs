@@ -5,7 +5,7 @@ using VSVRMod2.VRCamera;
 namespace VSVRMod2;
 public class VRCameraManager
 {
-    MoveableVRCamera vrcamera;
+    readonly public MoveableVRCamera vrcamera;
     public VRCameraManager(Scene scene)
     {
         if (scene.isLoaded && Equals(scene.name, Constants.SessionScene))

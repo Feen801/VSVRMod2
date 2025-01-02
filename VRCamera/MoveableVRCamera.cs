@@ -113,7 +113,7 @@ namespace VSVRMod2.VRCamera
             VSVRMod.logger.LogInfo("Rotation constraint setup complete.");
         }
 
-        private void CenterCamera(bool fullReset)
+        public void CenterCamera(bool fullReset)
         {
             if (vrCamera == null || VRConfig.fixCameraHeight.Value)
             {

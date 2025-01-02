@@ -6,7 +6,6 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.Mono;
 using HarmonyLib;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +14,7 @@ using UnityEngine.XR.Management;
 using UnityEngine.XR.OpenXR;
 using VSVRMod2.Helper;
 using VSVRMod2.UI;
+using VSVRMod2.UI.SpecifcUI;
 
 namespace VSVRMod2;
 
