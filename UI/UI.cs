@@ -7,7 +7,7 @@ public abstract class UIManager
 {
     public UIManager(Scene scene)
     {
-        if (!scene.isLoaded || !Equals(scene.name, Constants.SessionScene))
+        if (!scene.isLoaded || !Equals(scene.name, Constants.SessionStartScene))
         {
             throw new ArgumentException("Session scene is incorrect or not yet loaded");
         }

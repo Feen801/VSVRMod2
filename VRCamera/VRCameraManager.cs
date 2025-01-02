@@ -6,9 +6,11 @@ namespace VSVRMod2;
 public class VRCameraManager
 {
     readonly public MoveableVRCamera vrcamera;
+    private ControllerFlame leftHand;
+    private ControllerFlame rightHand;
     public VRCameraManager(Scene scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.SessionScene))
+        if (scene.isLoaded && Equals(scene.name, Constants.SessionStartScene))
         {
             vrcamera = new MoveableVRCamera();
             VRUI.Start(vrcamera);
@@ -20,6 +22,10 @@ public class VRCameraManager
             VSVRMod.controllerHeadset.OnWorn += () => VRUI.SetupUI(vrcamera);
             VSVRMod.controllerHeadset.OnRemoved += () => VRUI.RevertUI(vrcamera);
             VSVRMod.logger.LogInfo("Session setup: OnWorn and OnRemoved");
+
+            leftHand = new(UnityEngine.XR.InputDeviceCharacteristics.Left, vrcamera);
+            rightHand = new(UnityEngine.XR.InputDeviceCharacteristics.Right, vrcamera);
+
         }
         else
         {
@@ -30,6 +36,15 @@ public class VRCameraManager
     public void Update()
     {
         vrcamera.CameraControls();
-        vrcamera.CenterCameraIfFar();
+        /*vrcamera.CenterCameraIfFar();*/
+    }
+
+    bool alreadyCentered = false;
+    public void LateUpdate()
+    {
+        if (!alreadyCentered)
+        {
+            alreadyCentered = vrcamera.CenterCamera(true);
+        }
     }
 }

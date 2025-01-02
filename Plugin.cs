@@ -86,7 +86,7 @@ public class VSVRMod : BaseUnityPlugin
             return;
         }
         Logger.LogInfo("A scene was loaded: " + scene.name);
-        if (Equals(scene.name, Constants.SessionScene))
+        if (Equals(scene.name, Constants.SessionStartScene))
         {
             XRGeneralSettings.Instance.Manager.StartSubsystems();
             sessionScene = scene;
@@ -152,6 +152,14 @@ public class VSVRMod : BaseUnityPlugin
         if (inSession)
         {
             Keyboard.HandleKeyboardInputSession(vrCameraManager);
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (inSession)
+        {
+            vrCameraManager.LateUpdate();
         }
     }
 

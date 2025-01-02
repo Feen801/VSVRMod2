@@ -113,12 +113,17 @@ namespace VSVRMod2.VRCamera
             VSVRMod.logger.LogInfo("Rotation constraint setup complete.");
         }
 
-        public void CenterCamera(bool fullReset)
+        public bool CenterCamera(bool fullReset)
         {
             if (vrCamera == null || VRConfig.fixCameraHeight.Value)
             {
-                return;
+                return false;
             }
+            if (vrCamera.transform.localPosition.sqrMagnitude < 0.01)
+            {
+                return false;
+            }
+            VSVRMod.logger.LogInfo("Trying recenter lpos:" + vrCamera.transform.localPosition + " pos:" + vrCamera.transform.position);
             vrCameraOffset.transform.position = vrCamera.transform.position;
             vrCameraOffset.transform.localPosition = -vrCamera.transform.localPosition;
             if (fullReset)
@@ -126,6 +131,7 @@ namespace VSVRMod2.VRCamera
                 vrCameraDolly.transform.localPosition = Vector3.zero;
             }
             VSVRMod.logger.LogInfo("Camera centered...");
+            return true;
         }
 
         private bool didRecenter = false;

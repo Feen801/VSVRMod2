@@ -12,7 +12,7 @@ class UIContainer
 
     public UIContainer(Scene scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.SessionScene))
+        if (scene.isLoaded && Equals(scene.name, Constants.SessionStartScene))
         {
             priorityUIList.Add(new ScoreboardUIManager(scene));
             priorityUIList.Add(new SafewordUIManager(scene));
