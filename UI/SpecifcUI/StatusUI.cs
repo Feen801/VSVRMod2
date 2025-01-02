@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using System;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 
 public class StatusUIManager : UIManager
 {
@@ -42,7 +42,8 @@ public class StatusUIManager : UIManager
 
     public override bool Interact()
     {
-        if(level1.activeSelf) {
+        if (level1.activeSelf)
+        {
             if (Controller.WasAFaceButtonClicked())
             {
                 inFocus = !inFocus;
@@ -52,11 +53,11 @@ public class StatusUIManager : UIManager
                     button.Highlight(false);
                 }
             }
-            if(inFocus && activeButtons.Count > 0)
+            if (inFocus && activeButtons.Count > 0)
             {
                 Vector2 vector2 = Controller.GetMaximalJoystickValue();
                 double y = vector2.y;
-                double sectionSize = 2.0 / (activeButtons.Count);
+                double sectionSize = 2.0 / activeButtons.Count;
                 foreach (VSStatusCancelButton button in activeButtons)
                 {
                     button.Highlight(false);
@@ -78,7 +79,7 @@ public class StatusUIManager : UIManager
         }
         else
         {
-            inFocus = false; 
+            inFocus = false;
             return false;
         }
     }

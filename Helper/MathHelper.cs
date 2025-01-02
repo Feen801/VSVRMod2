@@ -1,9 +1,10 @@
 ﻿using System;
+using UnityEngine;
 
 namespace VSVRMod2;
 
 /**
- * From https://github.com/korinVR/VRGestureRecognizer (Public Domain)
+ * Partially from https://github.com/korinVR/VRGestureRecognizer (Public Domain)
  */
 
 public static class MathHelper
@@ -22,10 +23,17 @@ public static class MathHelper
         return degree;
     }
 
-    private static readonly DateTime Jan1st1970 = new DateTime
-(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     public static long CurrentTimeMillis()
     {
         return (long)(DateTime.UtcNow - Jan1st1970).TotalMilliseconds;
+    }
+
+    private static Vector3 ProjectPointOntoPlane(Vector3 point, Vector3 planeNormal, Vector3 planePoint)
+    {
+        Vector3 vectorToProject = point - planePoint;
+        float distance = Vector3.Dot(vectorToProject, planeNormal) / planeNormal.sqrMagnitude;
+        Vector3 projectedPoint = point - distance * planeNormal;
+        return projectedPoint;
     }
 }

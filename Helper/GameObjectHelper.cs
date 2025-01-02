@@ -26,5 +26,11 @@ public class GameObjectHelper
             VSVRMod.logger.LogError(path + " not found for disabling gradients");
         }
     }
+    public static GameObject CreateChildGameObject(string name, Transform parent)
+    {
+        GameObject child = new GameObject(name);
+        child.transform.SetParent(parent);
+        return child;
+    }
 }
 

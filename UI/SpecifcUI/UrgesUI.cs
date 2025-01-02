@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 internal class UrgesUIManager : UIManager
 {
     private VSGenericButton giveInButton = null;
@@ -19,7 +19,8 @@ internal class UrgesUIManager : UIManager
 
     public override bool Interact()
     {
-        if (actionText.activeSelf) {
+        if (actionText.activeSelf)
+        {
             bool faceButtonClicked = Controller.WasALowerFaceButtonClicked();
             if (giveInButton.components.buttonObject.activeSelf && faceButtonClicked)
             {

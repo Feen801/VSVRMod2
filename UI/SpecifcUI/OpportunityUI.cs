@@ -2,7 +2,7 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 class OpportunityUIManager : UIManager
 {
     private List<VSGenericButton> vsOpportunityButtons = [];
