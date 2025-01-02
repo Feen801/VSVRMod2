@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Animations;
 using UnityEngine.SceneManagement;
-using UnityEngine.SpatialTracking;
-using UnityEngine.UI;
-using UnityEngine.UIElements.Collections;
-using HutongGames.PlayMaker.Actions;
 using VSVRMod2.VRCamera;
 
 namespace VSVRMod2;
@@ -19,6 +12,14 @@ public class VRCameraManager
         {
             vrcamera = new MoveableVRCamera();
             VRUI.Start(vrcamera);
+            if (!VRConfig.taskGradient.Value)
+            {
+                VRUI.DisableTaskGradient();
+                VSVRMod.logger.LogInfo("Session setup: Disabled task gradients");
+            }
+            VSVRMod.controllerHeadset.OnWorn += () => VRUI.SetupUI(vrcamera);
+            VSVRMod.controllerHeadset.OnRemoved += () => VRUI.RevertUI(vrcamera);
+            VSVRMod.logger.LogInfo("Session setup: OnWorn and OnRemoved");
         }
         else
         {

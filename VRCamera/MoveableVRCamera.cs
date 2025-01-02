@@ -113,7 +113,7 @@ namespace VSVRMod2.VRCamera
             VSVRMod.logger.LogInfo("Rotation constraint setup complete.");
         }
 
-        public void CenterCamera(bool fullReset)
+        private void CenterCamera(bool fullReset)
         {
             if (vrCamera == null || VRConfig.fixCameraHeight.Value)
             {
@@ -126,6 +126,24 @@ namespace VSVRMod2.VRCamera
                 vrCameraDolly.transform.localPosition = Vector3.zero;
             }
             VSVRMod.logger.LogInfo("Camera centered...");
+        }
+
+        private bool didRecenter = false;
+
+        public void CenterCameraIfFar()
+        {
+            if (didRecenter)
+            {
+                return;
+            }
+            Vector3 distanceVector = worldCamDefault.transform.position - vrCamera.transform.position;
+            double distance = distanceVector.sqrMagnitude;
+            //VSVRMod.logger.LogWarning(distance);
+            if (distance > 0.1)
+            {
+                didRecenter = true;
+                CenterCamera(false);
+            }
         }
 
         public void SetupHeadTargetFollower(bool revert)
