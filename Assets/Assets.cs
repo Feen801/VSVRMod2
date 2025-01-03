@@ -11,6 +11,7 @@ public class VSVRAssets
     static Shader textShader;
     public static GameObject leftHandFlame;
     public static GameObject rightHandFlame;
+    public static GameObject finalScreen;
     static string[] hypnoObjectNames = ["Hypno", "Hypno/Image", "Hypno/GameObject (1)/Hypno (1)", "Hypno/GameObject (1)/Hypno (1)/Hypno (3)", "Hypno/GameObject (1)/Hypno (1)/Hypno (4)", "Hypno/GameObject/Hypno (2)/Hypno (4)", "Hypno/GameObject/Hypno (2)/Hypno (5)"];
 
     public static void LoadAssets()
@@ -44,6 +45,12 @@ public class VSVRAssets
         if (rightHandFlame == null)
         {
             VSVRMod.logger.LogError("Failed to load hand flame " + "RightHand");
+        }
+
+        finalScreen = vsvrAssets.LoadAsset<GameObject>("FinalScreen");
+        if (finalScreen == null)
+        {
+            VSVRMod.logger.LogError("Failed to load final screen");
         }
     }
 

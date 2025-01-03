@@ -74,13 +74,23 @@ namespace VSVRMod2.VRCamera
         private static void SavePastPositionAndScale(GameObject gameObject)
         {
             gameObjectsToUndo.Add(gameObject);
-            if (!pastPositions.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().anchoredPosition3D))
+            try
             {
-                pastPositions[gameObject] = gameObject.transform.GetComponent<RectTransform>().anchoredPosition3D;
+                if (!pastPositions.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().anchoredPosition3D))
+                {
+                    pastPositions[gameObject] = gameObject.transform.GetComponent<RectTransform>().anchoredPosition3D;
+                }
+                if (!pastScales.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().localScale))
+                {
+                    pastScales[gameObject] = gameObject.transform.GetComponent<RectTransform>().localScale;
+                }
             }
-            if (!pastScales.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().localScale))
+            catch
             {
-                pastScales[gameObject] = gameObject.transform.GetComponent<RectTransform>().localScale;
+                if (!pastScales.TryAdd(gameObject, gameObject.transform.GetComponent<Transform>().localScale))
+                {
+                    pastScales[gameObject] = gameObject.transform.GetComponent<Transform>().localScale;
+                }
             }
         }
         public static void SetupUI(MoveableVRCamera vrcamera)
@@ -205,6 +215,18 @@ namespace VSVRMod2.VRCamera
             currentAdjust.GetComponent<RectTransform>().anchoredPosition3D = new Vector3(0, 750, 0);
             currentAdjust.GetComponent<RectTransform>().localScale = currentAdjust.GetComponent<RectTransform>().localScale * 1.2f;
 
+            currentAdjust = GameObject.Find("ScoreCanvas").transform.Find("Scoreboard").gameObject;
+            if (currentAdjust == null)
+            {
+                VSVRMod.logger.LogError("Scoreboard not found");
+            }
+            else
+            {
+                VSVRMod.logger.LogInfo("Scoreboard found");
+            }
+            SavePastPositionAndScale(currentAdjust);
+            currentAdjust.GetComponent<Transform>().localScale *= 0.5f;
+
             //Specific fix to favor
             currentAdjust = overlay.transform.Find("Favor").gameObject;
             if (currentAdjust == null)
@@ -238,8 +260,15 @@ namespace VSVRMod2.VRCamera
                 {
                     gameObject.transform.localPosition -= new Vector3(0, VRConfig.uiHeightOffset.Value, 0);
                 }
-                gameObject.GetComponent<RectTransform>().localScale = pastScales.Get(gameObject);
-                gameObject.GetComponent<RectTransform>().anchoredPosition3D = pastPositions.Get(gameObject);
+                try
+                {
+                    gameObject.GetComponent<RectTransform>().localScale = pastScales.Get(gameObject);
+                    gameObject.GetComponent<RectTransform>().anchoredPosition3D = pastPositions.Get(gameObject);
+                }
+                catch
+                {
+                    gameObject.GetComponent<Transform>().localScale = pastScales.Get(gameObject);
+                } 
             }
             SetFloatValue setFloatValue = (SetFloatValue)(overlay.transform.Find("Favor").gameObject.gameObject.GetComponent<PlayMakerFSM>().FsmStates[1].Actions[0]);
             setFloatValue.floatValue.Value = oldFavorHeight;

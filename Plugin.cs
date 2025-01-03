@@ -102,13 +102,13 @@ public class VSVRMod : BaseUnityPlugin
     public void InitialSessionSetup()
     {
         logger.LogInfo("Starting session setup");
+        //Do this before the camera manager!
+        VSVRAssets.ApplyUIShader();
+        logger.LogInfo("Session setup: applied ui shaders");
         vrCameraManager = new(sessionScene);
         logger.LogInfo("Session setup: created camera manager");
         uiContainer = new(sessionScene);
         logger.LogInfo("Session setup: created ui container");
-        VSVRAssets.ApplyUIShader();
-        logger.LogInfo("Session setup: applied ui shaders");
-
         vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
         vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
         logger.LogInfo("Session setup: setup gestures");
