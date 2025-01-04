@@ -6,7 +6,6 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.Mono;
 using HarmonyLib;
-using JetBrains.Annotations;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +14,7 @@ using UnityEngine.XR.Management;
 using UnityEngine.XR.OpenXR;
 using VSVRMod2.Helper;
 using VSVRMod2.UI;
+using VSVRMod2.UI.SpecifcUI;
 
 namespace VSVRMod2;
 
@@ -86,7 +86,7 @@ public class VSVRMod : BaseUnityPlugin
             return;
         }
         Logger.LogInfo("A scene was loaded: " + scene.name);
-        if (Equals(scene.name, Constants.SessionScene))
+        if (Equals(scene.name, Constants.SessionStartScene))
         {
             XRGeneralSettings.Instance.Manager.StartSubsystems();
             sessionScene = scene;
@@ -101,36 +101,18 @@ public class VSVRMod : BaseUnityPlugin
 
     public void InitialSessionSetup()
     {
-        if (vrCameraManager != null)
-        {
-            controllerHeadset.OnWorn -= vrCameraManager.SetupUI;
-            controllerHeadset.OnRemoved -= vrCameraManager.RevertUI;
-        }
-        if (uiContainer != null)
-        {
-            vrGestureRecognizer.Nodded -= uiContainer.basicUIManager.headMovementTracker.Nod;
-            vrGestureRecognizer.HeadShaken -= uiContainer.basicUIManager.headMovementTracker.Headshake;
-        }
         logger.LogInfo("Starting session setup");
+        //Do this before the camera manager!
+        VSVRAssets.ApplyUIShader();
+        logger.LogInfo("Session setup: applied ui shaders");
         vrCameraManager = new(sessionScene);
         logger.LogInfo("Session setup: created camera manager");
         uiContainer = new(sessionScene);
         logger.LogInfo("Session setup: created ui container");
-        VSVRAssets.ApplyUIShader();
-        logger.LogInfo("Session setup: applied ui shaders");
-
         vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
         vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
         logger.LogInfo("Session setup: setup gestures");
 
-        controllerHeadset.OnWorn += vrCameraManager.SetupUI;
-        controllerHeadset.OnRemoved += vrCameraManager.RevertUI;
-        logger.LogInfo("Session setup: OnWorn and OnRemoved");
-        if (!VRConfig.taskGradient.Value)
-        {
-            vrCameraManager.DisableTaskGradient();
-            logger.LogInfo("Session setup: Disabled task gradients");
-        }
         inSession = true;
     }
 
@@ -151,8 +133,7 @@ public class VSVRMod : BaseUnityPlugin
                 controllerHeadset.Update();
             }
             uiContainer.Interact();
-            vrCameraManager.CameraControls();
-            vrCameraManager.CenterCameraIfFar();
+            vrCameraManager.Update();
         }
         else
         {
@@ -171,6 +152,14 @@ public class VSVRMod : BaseUnityPlugin
         if (inSession)
         {
             Keyboard.HandleKeyboardInputSession(vrCameraManager);
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (inSession)
+        {
+            vrCameraManager.LateUpdate();
         }
     }
 
@@ -211,7 +200,15 @@ public class VSVRMod : BaseUnityPlugin
         ((List<XRLoader>)managerSettings.activeLoaders).Clear();
         ((List<XRLoader>)managerSettings.activeLoaders).Add(xrLoader);
 
-        OpenXRSettings.Instance.renderMode = OpenXRSettings.RenderMode.MultiPass;
+        //SinglePassInstanced does not work with this game, I may try to fix it one day though.
+        if (true)
+        {
+            OpenXRSettings.Instance.renderMode = OpenXRSettings.RenderMode.MultiPass;
+        }
+        else
+        {
+            OpenXRSettings.Instance.renderMode = OpenXRSettings.RenderMode.SinglePassInstanced;
+        }
         OpenXRSettings.Instance.depthSubmissionMode = OpenXRSettings.DepthSubmissionMode.Depth24Bit;
 
         typeof(XRGeneralSettings).GetMethod("InitXRSDK", BindingFlags.NonPublic | BindingFlags.Instance).Invoke(generalSettings, []);

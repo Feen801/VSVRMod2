@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 
 public class FindomUIManager : UIManager
 {
@@ -87,10 +87,10 @@ public class FindomUIManager : UIManager
                         int currentInt = (int)findomInput.slider.value;
                         currentInt += (int)Math.Round(Math.Sign(x) * findomInputInteractionAccelScale);
                         findomInputInteractionNext = Time.time + findomInputInteractionAccel;
-                        findomInputInteractionAccel = Math.Clamp(findomInputInteractionAccel - (0.1f * (float)magnitude), 0.04f, float.PositiveInfinity);
+                        findomInputInteractionAccel = Math.Clamp(findomInputInteractionAccel - 0.1f * (float)magnitude, 0.04f, float.PositiveInfinity);
                         if (findomInputInteractionAccel <= 0.05f)
                         {
-                            findomInputInteractionAccelScale *= 1 + (0.1f*(float)magnitude);
+                            findomInputInteractionAccelScale *= 1 + 0.1f * (float)magnitude;
                         }
                         currentInt = Math.Clamp(currentInt, (int)findomInput.slider.minValue, (int)findomInput.slider.maxValue);
                         findomInput.slider.value = currentInt;

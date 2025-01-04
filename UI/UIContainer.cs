@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using VSVRMod2.UI.SpecifcUI;
 
 namespace VSVRMod2.UI;
 class UIContainer
@@ -11,7 +12,7 @@ class UIContainer
 
     public UIContainer(Scene scene)
     {
-        if (scene.isLoaded && Equals(scene.name, Constants.SessionScene))
+        if (scene.isLoaded && Equals(scene.name, Constants.SessionStartScene))
         {
             priorityUIList.Add(new ScoreboardUIManager(scene));
             priorityUIList.Add(new SafewordUIManager(scene));

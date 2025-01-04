@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 
 public class IntInputUIMManager : UIManager
 {
@@ -43,15 +43,15 @@ public class IntInputUIMManager : UIManager
             double x = vector2.x;
             double y = vector2.y;
             double magnitude = Controller.GetMaximalJoystickMagnitude();
-            if (y > -0.1 && magnitude > 0.05)
+            if (y > 0.2 && magnitude > 0.05)
             {
                 if (intInputInteractionNext < Time.time)
                 {
                     string current = intInput.text.text;
                     int.TryParse(current, out int currentInt);
-                    currentInt += (int)Math.Sign(x);
+                    currentInt += Math.Sign(x);
                     intInputInteractionNext = Time.time + intInputInteractionAccel;
-                    intInputInteractionAccel = Math.Clamp(intInputInteractionAccel - (0.8f * (float)magnitude), 0.04f, float.PositiveInfinity);
+                    intInputInteractionAccel = Math.Clamp(intInputInteractionAccel - 0.8f * (float)magnitude, 0.04f, float.PositiveInfinity);
                     intInput.text.text = currentInt.ToString();
                 }
                 return true;

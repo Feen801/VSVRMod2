@@ -1,7 +1,7 @@
 ﻿using UnityEngine.SceneManagement;
 using UnityEngine;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 public class ScoreboardUIManager : UIManager
 {
     private struct Scoreboard
@@ -27,6 +27,8 @@ public class ScoreboardUIManager : UIManager
         }
         if (Controller.WasAFaceButtonClicked() || Controller.WasAStickClicked() || Controller.WasATriggerClicked())
         {
+            GameObject finalScreen = GameObject.Instantiate(VSVRAssets.finalScreen);
+            finalScreen.transform.SetParent(scoreboard.representative.transform, false);
             scoreboard.mainMenu.Click();
         }
         return true;

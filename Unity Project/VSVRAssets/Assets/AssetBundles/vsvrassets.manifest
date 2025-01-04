@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 4010909393
+CRC: 1503060880
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: db08c4df920a7401b9bda6c0f49b3fe2
+    Hash: 2a2d515c27639c96d5e06e30ba6cc53d
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 664015c9f0186dea1c880ca979c81705
+    Hash: 1dd4eb985e7f15ec46f8d973c0fe73be
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: db08c4df920a7401b9bda6c0f49b3fe2
+    Hash: 2a2d515c27639c96d5e06e30ba6cc53d
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -27,9 +27,13 @@ ClassTypes:
 - Class: 114
   Script: {fileID: 11500000, guid: 5a2a9c34df4095f47b9ca8f975175f5b, type: 3}
 - Class: 114
+  Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
   Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 - Class: 128
@@ -37,6 +41,8 @@ ClassTypes:
 - Class: 198
   Script: {instanceID: 0}
 - Class: 199
+  Script: {instanceID: 0}
+- Class: 222
   Script: {instanceID: 0}
 - Class: 224
   Script: {instanceID: 0}
@@ -81,6 +87,7 @@ Assets:
 - Assets/Materials/ParticleMaterial.mat
 - Assets/Prefabs/LeftHand.prefab
 - Assets/Prefabs/RightHand.prefab
+- Assets/Prefabs/FinalScreen.prefab
 - Assets/Shaders/BillboardText.shader
 - Assets/Shaders/TMP_SDF.shader
 Dependencies: []

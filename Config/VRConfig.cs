@@ -20,6 +20,7 @@ public class VRConfig
     public static ConfigEntry<float> vrCameraScale;
     public static ConfigEntry<bool> fixCameraHeight;
     public static ConfigEntry<bool> fixCameraAngle;
+    public static ConfigEntry<bool> useMultipassRendering;
 
     //Greenscreen settings
     public static ConfigEntry<bool> greenscreenBackground;
@@ -43,10 +44,12 @@ public class VRConfig
         vrCameraScale = VSVRMod.config.Bind("Camera", "VR Camera Scale", 1f, "Scale of the VR camera. A value of 0.5 would make the camera half size, making everything else appear twice as large.");
         fixCameraHeight = VSVRMod.config.Bind("Camera", "Fix Camera Height", false, "Makes the VR camera respect the actual distance from your head to the floor, instead of being scene dependent. Not recommended.");
         fixCameraAngle = VSVRMod.config.Bind("Camera", "Fix Camera Rotation", false, "Makes the VR camera respect the actual rotation of your head relative to the floor, instead of being scene dependent. Not recommended.");
+        // Single pass does NOT work
+        // useMultipassRendering = VSVRMod.config.Bind("Camera", "Use Multipass Rendering", false, "Multipass rendering is slower, but more compatable with shaders and other effects. Turn this on if you encounter graphical bugs.");
 
         greenscreenBackground = VSVRMod.config.Bind("Greenscreen", "Use Greenscreen Background", false, "If true, the session background will be set to the greenscreen color background.\n" +
             "IMPORTANT: For this to have an effect, turn off the ingame environment in Options -> General -> Graphics Settings -> No Background.\n" +
-            "If you enable this setting, you should probably also enable \"Fix Camera Height\" and \"Fix Camera Angle\" in this config.\n" +
+            "If you enable this setting, you should probably also enable \"Fix Camera Height,\" \"Fix Camera Angle,\" and disable \"Task Gradient\" in this config.\n" +
             "I don't really recommend using full passthrough, as many poses will look very strange.");
         greenscreenColor = VSVRMod.config.Bind("Greenscreen", "Greenscreen Color", Color.blue, "Color of the greenscreen in RGBA format. Default is R:00 G:00 B:FF A:FF for full opacity blue.");
         greenscreenUI = VSVRMod.config.Bind("Greenscreen", "UI Greenscreen", false, "Enables a toggleable greenscreen that covers everything except the UI, making it possible to find things without removing your headset.");

@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 public class BasicUIManager : UIManager
 {
     private List<VSChoiceButton> vsChoiceButtons = [];
@@ -91,7 +91,7 @@ public class BasicUIManager : UIManager
                 button.Click();
             }
         }
-        if(good.components.buttonObject.activeSelf)
+        if (good.components.buttonObject.activeSelf)
         {
             VSVRMod.logger.LogInfo("Trying to click: " + good.name);
             good.Click();

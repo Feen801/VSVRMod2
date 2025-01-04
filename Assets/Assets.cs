@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using System.IO;
+﻿using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -13,6 +11,8 @@ public class VSVRAssets
     static Shader textShader;
     public static GameObject leftHandFlame;
     public static GameObject rightHandFlame;
+    public static GameObject finalScreen;
+    static string[] hypnoObjectNames = ["Hypno", "Hypno/Image", "Hypno/GameObject (1)/Hypno (1)", "Hypno/GameObject (1)/Hypno (1)/Hypno (3)", "Hypno/GameObject (1)/Hypno (1)/Hypno (4)", "Hypno/GameObject/Hypno (2)/Hypno (4)", "Hypno/GameObject/Hypno (2)/Hypno (5)"];
 
     public static void LoadAssets()
     {
@@ -46,11 +46,17 @@ public class VSVRAssets
         {
             VSVRMod.logger.LogError("Failed to load hand flame " + "RightHand");
         }
+
+        finalScreen = vsvrAssets.LoadAsset<GameObject>("FinalScreen");
+        if (finalScreen == null)
+        {
+            VSVRMod.logger.LogError("Failed to load final screen");
+        }
     }
 
     public static void ApplyUIShader()
     {
-        //Prevent tattoos from rendering under the floor?
+        //Prevent tattoos from rendering under the floor
         GameObject tattoos = GameObjectHelper.GetGameObjectCheckFound("TattooContainer");
         GameObject sceneContainer = GameObjectHelper.GetGameObjectCheckFound("Root/SceneContainer");
         if (tattoos == null)
@@ -67,7 +73,7 @@ public class VSVRAssets
         foreach (Transform t in basicTattoos)
         {
             Image image = t.GetComponent<Image>();
-            if(image != null)
+            if (image != null)
             {
                 image.material = UnityEngine.Object.Instantiate(image.material);
             }
@@ -105,6 +111,22 @@ public class VSVRAssets
                 image.material = UnityEngine.Object.Instantiate(image.material);
             }
         }
+        //Prevent hypno eye renderer from rendering under the floor
+        GameObject hypnoTexRendererGO = GameObjectHelper.FindDisabledRootObjectInScene(Constants.SessionScene, "EyeTexRendering");
+        if (hypnoTexRendererGO == null)
+        {
+            VSVRMod.logger.LogError("Failed to find EyeTexRendering");
+        }
+        foreach (string hypnoObjectName in hypnoObjectNames) {
+            Transform hypnoTexRenderer = hypnoTexRendererGO.transform.Find(hypnoObjectName);
+            if (hypnoTexRenderer == null)
+            {
+                VSVRMod.logger.LogError("Failed to find " + hypnoObjectName);
+            }
+            imagex = hypnoTexRenderer.GetComponent<Image>();
+            imagex.material = UnityEngine.Object.Instantiate(imagex.material);
+        }
+
         //Exclude spinning wheel from UI depth fix
         string[] wheelParts = { "Image (3)", "Reward", "Pleasure", "Punishment", "PleasurePunishment", "RewardPunishment"};
         foreach (string wheelPart in wheelParts)

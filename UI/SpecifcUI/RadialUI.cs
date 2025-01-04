@@ -2,7 +2,7 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
 
-namespace VSVRMod2.UI;
+namespace VSVRMod2.UI.SpecifcUI;
 
 public class RadialUIManager : UIManager
 {
@@ -145,7 +145,7 @@ public class RadialUIManager : UIManager
 
         if (currentRadialLevel != VSRadialButton.RadialLevel.None)
         {
-            if(stickMagnitude > 0.3)
+            if (stickMagnitude > 0.3)
             {
                 List<VSRadialButton> candidateButtons = [];
                 foreach (VSRadialButton button in vsRadialButtons)
@@ -203,15 +203,15 @@ public class RadialUIManager : UIManager
                 }
             }
         }
-        else if(popupArousalMeter.activeSelf)
+        else if (popupArousalMeter.activeSelf)
         {
             if (stickMagnitude > 0.3)
             {
-                if(stickValueX > 0)
+                if (stickValueX > 0)
                 {
                     plusPopup.Highlight(true);
                     minusPopup.Highlight(false);
-                    if(triggerClick)
+                    if (triggerClick)
                     {
                         plusPopup.Click();
                     }
@@ -220,7 +220,7 @@ public class RadialUIManager : UIManager
                 {
                     plusPopup.Highlight(false);
                     minusPopup.Highlight(true);
-                    if(triggerClick)
+                    if (triggerClick)
                     {
                         minusPopup.Click();
                     }
