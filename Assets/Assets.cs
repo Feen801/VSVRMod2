@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,9 @@ public class VSVRAssets
     public static GameObject leftHandFlame;
     public static GameObject rightHandFlame;
     public static GameObject finalScreen;
+    public static Dictionary<string, GameObject> promptIcons = new();
     static string[] hypnoObjectNames = ["Hypno", "Hypno/Image", "Hypno/GameObject (1)/Hypno (1)", "Hypno/GameObject (1)/Hypno (1)/Hypno (3)", "Hypno/GameObject (1)/Hypno (1)/Hypno (4)", "Hypno/GameObject/Hypno (2)/Hypno (4)", "Hypno/GameObject/Hypno (2)/Hypno (5)"];
+    static string[] iconNames = ["BottomPress", "Click", "Grip", "Horizontal", "Left", "Right", "TopPress", "Trigger", "Up", "UpLeft", "UpRight", "UpUpLeft", "UpUpRight", "Vertical"];
 
     public static void LoadAssets()
     {
@@ -52,6 +55,21 @@ public class VSVRAssets
         {
             VSVRMod.logger.LogError("Failed to load final screen");
         }
+
+        LoadPromptIcons();
+    }
+
+    private static void LoadPromptIcons()
+    {
+        foreach (string iconName in iconNames)
+        {
+            LoadPromptIcon(iconName);
+        }
+    }
+
+    private static void LoadPromptIcon(string name) {
+        GameObject go = vsvrAssets.LoadAsset<GameObject>(name);
+        promptIcons.Add(name, go);
     }
 
     public static void ApplyUIShader()
