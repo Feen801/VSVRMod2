@@ -58,5 +58,22 @@ public class GameObjectHelper
         // Return null if not found
         return null;
     }
+
+    public static void SetParentAndMaintainScaleForUI(Transform child, Transform newParent)
+    {
+        // Change the parent
+        child.SetParent(newParent, false);
+
+        child.rotation = Quaternion.identity;
+
+        // Restore the global scale
+        // 0.0006 is a secret magic number, im not telling you why
+        // Just kidding its the scale of the GeneralCanvas
+        child.localScale = new Vector3(
+            0.0006f / newParent.lossyScale.x,
+            0.0006f / newParent.lossyScale.y,
+            0.0006f / newParent.lossyScale.z
+        );
+    }
 }
 

@@ -30,18 +30,28 @@ public class StakesUIManager : UIManager
             "/Collider",
             "/Borders/DarkBorder"
             );
+        stakesMenu.top.SetTriggerIconLocation(460, 0);
         stakesMenu.middle = new(eventManager.Find("StakesUI"),
             "Stakes Middle",
             "BG2",
             "/Collider",
             "/Borders/DarkBorder"
             );
+        stakesMenu.middle.SetTriggerIconLocation(460, 0);
         stakesMenu.bottom = new(eventManager.Find("StakesUI"),
             "Stakes Bottom",
             "BG3",
             "/Collider",
             "/Borders/DarkBorder"
             );
+        stakesMenu.bottom.SetTriggerIconLocation(460, 0);
+
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            GameObject verticalJoystick = GameObject.Instantiate(VSVRAssets.promptIcons["Vertical"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(verticalJoystick.transform, stakesMenu.representative.transform);
+            verticalJoystick.transform.localPosition = new Vector3(0, 10);
+        }
         VSVRMod.logger.LogInfo("Setup StakesUI");
     }
 

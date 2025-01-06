@@ -52,30 +52,50 @@ public class RadialUIManager : UIManager
         //so much fun doing all these
         circle = new VSGenericButton(center, "Radial Circle", "Circle", "/Collider", "/Collider/ButtonReact");
 
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            GameObject pressDown = GameObject.Instantiate(VSVRAssets.promptIcons["Click"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(pressDown.transform, circle.components.buttonObject.transform);
+            pressDown.transform.localPosition = new Vector3(0, -200);
+        }
+
         level2Arrow = new VSGenericButton(center, "Level 2 Arrow", "Level1/OtherButtons/Grow", "/Collider", "/Collider/ButtonReact");
 
         VSRadialButton tribute = new(center, "Tribute", "Level1/OtherButtons/TributeBG", 1, 60, 120, VSRadialButton.RadialLevel.Both);
+        tribute.SetIcon("Up");
 
         VSRadialButton mercy = new(center, "Mercy", "Level1/OtherButtons/MercyBG", 1, 120, 180, VSRadialButton.RadialLevel.Level1);
+        mercy.SetIcon("UpLeft");
 
         //Good and Edge both appear at the same location, but not at the same time
         VSRadialButton edge = new(center, "Edge", "Level1/OtherButtons/EdgeBG", 0.9, 60, 120, VSRadialButton.RadialLevel.Level1);
+        edge.SetIcon("Up");
         VSRadialButton good = new(center, "Good", "Level1/OtherButtons/KeepGoingBG", 0.9, 60, 120, VSRadialButton.RadialLevel.Level1);
+        good.SetIcon("Up");
 
         VSRadialButton taunt = new(center, "Taunt", "Level1/OtherButtons/TauntBG", 1, 0, 60, VSRadialButton.RadialLevel.Level1);
+        taunt.SetIcon("UpRight");
 
         VSRadialButton hideui = new(center, "Hide UI", "Level2/GameObject/Hide UI", 1, 135, 180, VSRadialButton.RadialLevel.Level2);
+        hideui.SetIcon("UpLeft");
 
         //Super extra special button has collider named "Collider (1)" instead of just "Collider"
         VSRadialButton timeout = new(center, "Timeout", "Level2/GameObject/Time Out", "/Collider (1)", "/Collider (1)/ButtonReact", 0.9, 90, 135, VSRadialButton.RadialLevel.Level2);
+        timeout.SetIcon("UpUpLeft");
 
         VSRadialButton safeword = new(center, "Safeword", "Level2/GameObject (1)/Safe Word", 0.9, 45, 90, VSRadialButton.RadialLevel.Level2);
+        safeword.SetIcon("UpUpRight");
 
         VSRadialButton oops = new(center, "Oops", "Level2/GameObject (1)/Oops", 1, 0, 45, VSRadialButton.RadialLevel.Level2);
+        oops.SetIcon("UpRight");
 
         VSRadialButton plus = new(center, "Plus", "Level1/ArousalMeter/Overlays/Plus", 1, 270, 360, VSRadialButton.RadialLevel.Both);
+        plus.SetIcon("DownRight");
+        plus.SetTriggerIconLocation(0, 1000);
 
         VSRadialButton minus = new(center, "Minus", "Level1/ArousalMeter/Overlays/Minus", 1, 180, 270, VSRadialButton.RadialLevel.Both);
+        minus.SetIcon("DownLeft");
+        minus.SetTriggerIconLocation(0, 3425);
 
         vsRadialButtons.Add(tribute);
         vsRadialButtons.Add(mercy);
@@ -96,7 +116,12 @@ public class RadialUIManager : UIManager
         popupArousalMeter = popupArousalMeterTransform.gameObject;
 
         plusPopup = new(popupArousalMeterTransform, "PlusPopup", "Overlays/Plus", 1, 270, 360, VSRadialButton.RadialLevel.Both);
+        plusPopup.SetIcon("Left");
+        plusPopup.SetTriggerIconLocation(0, 3425);
+
         minusPopup = new(popupArousalMeterTransform, "MinusPopup", "Overlays/Minus", 1, 180, 270, VSRadialButton.RadialLevel.Both);
+        minusPopup.SetIcon("Right");
+        minusPopup.SetTriggerIconLocation(0, 1000);
 
         VSVRMod.logger.LogInfo("Finished setting up PopupArousal buttons");
     }

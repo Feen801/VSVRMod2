@@ -15,11 +15,27 @@ class OpportunityUIManager : UIManager
         VSGenericButton opportunityEntice = new(parent, "Entice", "Buttons/OpportunityEntice");
         VSGenericButton opportunityPraise = new(parent, "Praise", "Buttons/OpportunityPraise");
 
+        opportunityProvoke.RemoveTriggerIcon();
+        opportunityTaunt.RemoveTriggerIcon();
+        opportunityEntice.RemoveTriggerIcon();
+        opportunityPraise.RemoveTriggerIcon();
+
         vsOpportunityButtons.Add(opportunityProvoke);
         vsOpportunityButtons.Add(opportunityTaunt);
         vsOpportunityButtons.Add(opportunityEntice);
         vsOpportunityButtons.Add(opportunityPraise);
 
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            foreach (VSGenericButton button in vsOpportunityButtons)
+            {
+                opportunityProvoke.RemoveTriggerIcon();
+                GameObject buttonIcon = GameObject.Instantiate(VSVRAssets.promptIcons["BottomPress"]);
+                GameObjectHelper.SetParentAndMaintainScaleForUI(buttonIcon.transform, button.components.buttonObject.transform);
+                buttonIcon.transform.localPosition = new Vector3(200, 0);
+            }
+        }
+        
         VSVRMod.logger.LogInfo("Finished setting up opportunity buttons");
     }
 

@@ -6,6 +6,7 @@ namespace VSVRMod2;
 public class VRConfig
 {
     //UI settings
+    public static ConfigEntry<bool> showButtonPrompts;
     public static ConfigEntry<float> uiDistance;
     public static ConfigEntry<bool> taskGradient;
     public static ConfigEntry<float> uiScale;
@@ -29,6 +30,7 @@ public class VRConfig
 
     public static void SetupConfig()
     {
+        showButtonPrompts = VSVRMod.config.Bind("UI", "Show Button Prompts", true, "Show images beside various UI elements demonstrating how to interact with them using VR controllers.");
         uiDistance = VSVRMod.config.Bind("UI", "UI Distance", 0.5f, "How far away the UI appears from your face in meters.\n" +
             "The relative size will not change, i.e. if you make it closer to you it will also become smaller such that it takes up the same FOV.");
         taskGradient = VSVRMod.config.Bind("UI", "Task Gradient", true, "Enable or disable the semitransparent gradient behind the task text. May not work in all circumstances.");

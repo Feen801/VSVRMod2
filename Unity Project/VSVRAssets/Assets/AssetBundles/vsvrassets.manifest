@@ -1,15 +1,15 @@
 ManifestFileVersion: 0
-CRC: 952231804
+CRC: 2947618650
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: cb98f936ef483ec82b51f7237f935f9e
+    Hash: 92dee883e56b946c487604b9890c5bd9
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fcc2a1f6b74c82253d2491c941aeffd5
+    Hash: c9b9a5463c8c3de38a95f00699006a5a
   IncrementalBuildHash:
     serializedVersion: 2
-    Hash: cb98f936ef483ec82b51f7237f935f9e
+    Hash: 92dee883e56b946c487604b9890c5bd9
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -25,9 +25,9 @@ ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
 - Class: 114
-  Script: {fileID: 11500000, guid: 5a2a9c34df4095f47b9ca8f975175f5b, type: 3}
-- Class: 114
   Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5a2a9c34df4095f47b9ca8f975175f5b, type: 3}
 - Class: 114
   Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
 - Class: 114
@@ -84,10 +84,13 @@ SerializeReferenceClassIdentifiers:
 - AssemblyName: UnityEngine.UI
   ClassName: UnityEngine.UI.MaskableGraphic/CullStateChangedEvent
 Assets:
+- Assets/Prefabs/Prompts/ArrowRight.prefab
 - Assets/Shaders/UIIgnoreDepth.shader
+- Assets/Prefabs/Prompts/ArrowLeft.prefab
 - Assets/Shaders/Particle.shader
 - Assets/Prefabs/Prompts/Grip.prefab
 - Assets/Materials/ParticleMaterial.mat
+- Assets/Prefabs/Prompts/DownRight.prefab
 - Assets/Prefabs/LeftHand.prefab
 - Assets/Prefabs/Prompts/TopPress.prefab
 - Assets/Prefabs/Prompts/BottomPress.prefab
@@ -99,8 +102,9 @@ Assets:
 - Assets/Prefabs/Prompts/Vertical.prefab
 - Assets/Prefabs/Prompts/Up.prefab
 - Assets/Prefabs/Prompts/Right.prefab
-- Assets/Prefabs/Prompts/Trigger.prefab
+- Assets/Prefabs/Prompts/DownLeft.prefab
 - Assets/Shaders/BillboardText.shader
+- Assets/Prefabs/Prompts/Trigger.prefab
 - Assets/Prefabs/Prompts/Left.prefab
 - Assets/Prefabs/Prompts/UpRight.prefab
 - Assets/Prefabs/Prompts/Horizontal Angled.prefab

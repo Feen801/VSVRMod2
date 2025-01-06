@@ -19,6 +19,12 @@ public class ChoiceUIManager : UIManager
 
         //ChoiceUI-------------------
         choiceMenu.representative = eventManager.Find("ChoiceUI").gameObject;
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            GameObject joystick = GameObject.Instantiate(VSVRAssets.promptIcons["Horizontal Angled"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(joystick.transform, choiceMenu.representative.transform);
+            joystick.transform.localPosition = new Vector3(0, 0);
+        }
         if (choiceMenu.representative == null)
         {
             VSVRMod.logger.LogError("ChoiceUI had null representative");
@@ -29,18 +35,21 @@ public class ChoiceUIManager : UIManager
             "/DoneBG/DoneText/Collider",
             "/DoneBG/DoneText/Collider/ButtonPressReact1"
             );
+        choiceMenu.favorite.SetTriggerIconLocation(0, -100);
         choiceMenu.left = new(eventManager.Find("ChoiceUI"),
             "Choice Left",
             "Choice1",
             "/Collider",
             "/Image (1)/Borders/DarkBorder"
             );
+        choiceMenu.left.SetTriggerIconLocation(0, 335);
         choiceMenu.right = new(eventManager.Find("ChoiceUI"),
             "Choice Right",
             "Choice2",
             "/Collider",
             "/Image (1)/Borders/DarkBorder"
             );
+        choiceMenu.right.SetTriggerIconLocation(0, 335);
         VSVRMod.logger.LogInfo("Setup ChoiceUI");
     }
 

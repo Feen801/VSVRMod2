@@ -12,6 +12,10 @@ public class StatusUIManager : UIManager
 
     private GameObject parentToButtons;
     private GameObject level1;
+    private GameObject statuses2;
+
+    private GameObject leftArrow;
+    private GameObject rightArrow;
 
     bool inFocus;
 
@@ -19,10 +23,14 @@ public class StatusUIManager : UIManager
     {
         inFocus = false;
         parentToButtons = GameObjectHelper.GetGameObjectCheckFound("OverlayCanvas/YourStatusMenuManager/Statuses2/ModifiersTextRepository");
+        statuses2 = GameObjectHelper.GetGameObjectCheckFound("OverlayCanvas/YourStatusMenuManager");
 
         foreach (Transform button in parentToButtons.transform)
         {
-            vsStatusButtons.Add(new VSStatusCancelButton(parentToButtons.transform, button.name, button.name));
+            VSStatusCancelButton statusCancelButton = new(parentToButtons.transform, button.name, button.name);
+            statusCancelButton.SetTriggerIconLocation(-50, 0);
+            statusCancelButton.components.triggerIcon.SetActive(false);
+            vsStatusButtons.Add(statusCancelButton);
         }
 
         GameObject centerGameObject = GameObject.Find("NewButtons/Center");
@@ -38,6 +46,32 @@ public class StatusUIManager : UIManager
             VSVRMod.logger.LogError("level1Transform not found.");
         }
         level1 = center.Find("Level1").gameObject;
+
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            GameObject faceButton = GameObject.Instantiate(VSVRAssets.promptIcons["BottomPress"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(faceButton.transform, statuses2.transform);
+            faceButton.transform.localPosition = new Vector3(300, -200);
+            faceButton.transform.localScale = Vector3.one;
+
+            leftArrow = GameObject.Instantiate(VSVRAssets.promptIcons["ArrowLeft"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(leftArrow.transform, faceButton.transform);
+            leftArrow.transform.localPosition = new Vector3(-50, 0);
+            leftArrow.transform.localScale = Vector3.one;
+
+            rightArrow = GameObject.Instantiate(VSVRAssets.promptIcons["ArrowRight"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(rightArrow.transform, faceButton.transform);
+            rightArrow.transform.localPosition = new Vector3(50, 0);
+            rightArrow.transform.localScale = Vector3.one;
+
+            leftArrow.SetActive(true);
+            rightArrow.SetActive(false);
+
+            GameObject verticalJoystick = GameObject.Instantiate(VSVRAssets.promptIcons["Vertical"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(verticalJoystick.transform, statuses2.transform);
+            verticalJoystick.transform.localScale = Vector3.one;
+            verticalJoystick.transform.localPosition = new Vector3(-475, -250);
+        }
     }
 
     public override bool Interact()
@@ -47,6 +81,11 @@ public class StatusUIManager : UIManager
             if (Controller.WasAFaceButtonClicked())
             {
                 inFocus = !inFocus;
+                if (VRConfig.showButtonPrompts.Value)
+                {
+                    leftArrow.SetActive(!inFocus);
+                    rightArrow.SetActive(inFocus);
+                }
                 CheckActiveButtons();
                 foreach (VSStatusCancelButton button in activeButtons)
                 {
@@ -68,12 +107,17 @@ public class StatusUIManager : UIManager
                     theButton.Highlight(true);
                     if (Controller.WasATriggerClicked())
                     {
-                        VSVRMod.logger.LogError(theButton.name + "clicked somehow?");
                         theButton.Click();
                         inFocus = false;
                     }
                     return true;
                 }
+            }
+            else if (activeButtons.Count <= 0)
+            {
+                inFocus = false;
+                leftArrow.SetActive(!inFocus);
+                rightArrow.SetActive(inFocus);
             }
             return false;
         }

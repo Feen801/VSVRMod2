@@ -8,6 +8,8 @@ namespace VSVRMod2.UI.SpecifcUI;
 
 public class FindomUIManager : UIManager
 {
+    GameObject horizontalJoystick;
+    GameObject verticalJoystick;
     private struct FindomInput
     {
         public GameObject representative;
@@ -24,6 +26,13 @@ public class FindomUIManager : UIManager
 
         //Tribute Menu
         findomInput.representative = overlayCanvas.Find("TributeMenu").gameObject;
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            verticalJoystick = GameObject.Instantiate(VSVRAssets.promptIcons["Vertical"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(verticalJoystick.transform, findomInput.representative.transform);
+            verticalJoystick.transform.localPosition = new Vector3(-450, -250);
+            verticalJoystick.transform.localScale = Vector3.one * 2;
+        }
         if (findomInput.representative == null)
         {
             VSVRMod.logger.LogError("Tribute Menu had null representative");
@@ -35,6 +44,18 @@ public class FindomUIManager : UIManager
         if (findomInput.sliderObject == null)
         {
             VSVRMod.logger.LogError("Tribute Menu had null slider object");
+        }
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            GameObject click = GameObject.Instantiate(VSVRAssets.promptIcons["Click"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(click.transform, findomInput.sliderObject.transform);
+            click.transform.localPosition = new Vector3(-285, 5);
+            click.transform.localScale = Vector3.one;
+            horizontalJoystick = GameObject.Instantiate(VSVRAssets.promptIcons["Horizontal"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(horizontalJoystick.transform, findomInput.sliderObject.transform);
+            horizontalJoystick.transform.localPosition = new Vector3(20, -35);
+            horizontalJoystick.transform.localScale = Vector3.one;
+            horizontalJoystick.SetActive(false);
         }
         findomInput.slider = findomInput.sliderObject.GetComponent<Slider>();
         if (findomInput.slider == null)
@@ -76,6 +97,11 @@ public class FindomUIManager : UIManager
             if (Controller.WasAStickClicked())
             {
                 findomInputInteractState = !findomInputInteractState;
+                if (VRConfig.showButtonPrompts.Value)
+                {
+                    verticalJoystick.SetActive(!findomInputInteractState);
+                    horizontalJoystick.SetActive(findomInputInteractState);
+                }
                 return true;
             }
             if (findomInputInteractState)

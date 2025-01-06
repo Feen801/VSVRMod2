@@ -15,7 +15,7 @@ public class VSVRAssets
     public static GameObject finalScreen;
     public static Dictionary<string, GameObject> promptIcons = new();
     static string[] hypnoObjectNames = ["Hypno", "Hypno/Image", "Hypno/GameObject (1)/Hypno (1)", "Hypno/GameObject (1)/Hypno (1)/Hypno (3)", "Hypno/GameObject (1)/Hypno (1)/Hypno (4)", "Hypno/GameObject/Hypno (2)/Hypno (4)", "Hypno/GameObject/Hypno (2)/Hypno (5)"];
-    static string[] iconNames = ["BottomPress", "Click", "Grip", "Horizontal", "Left", "Right", "TopPress", "Trigger", "Up", "UpLeft", "UpRight", "UpUpLeft", "UpUpRight", "Vertical"];
+    static string[] iconNames = ["BottomPress", "Click", "Grip", "Horizontal", "Horizontal Angled", "Left", "Right", "TopPress", "Trigger", "Up", "UpLeft", "UpRight", "UpUpLeft", "UpUpRight", "Vertical", "DownRight", "DownLeft", "ArrowRight", "ArrowLeft"];
 
     public static void LoadAssets()
     {
