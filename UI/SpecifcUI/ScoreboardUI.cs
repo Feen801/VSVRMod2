@@ -17,6 +17,13 @@ public class ScoreboardUIManager : UIManager
         scoreboard.representative = scoreCanvas.Find("Scoreboard").gameObject;
         scoreboard.mainMenu = new(scoreCanvas, "Main Menu", "Scoreboard/Finish/Button");
         VSVRMod.logger.LogInfo("Setup Scoreboard");
+
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            GameObject trigger = GameObject.Instantiate(VSVRAssets.promptIcons["Trigger"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(trigger.transform, scoreboard.mainMenu.button.transform);
+            trigger.transform.localPosition = new Vector3(0, -100);
+        }
     }
 
     public override bool Interact()

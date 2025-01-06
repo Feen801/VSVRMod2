@@ -27,6 +27,7 @@ public class BasicUIManager : UIManager
             VSChoiceButton positiveChoiceButton = new(positiveButtonParent.transform, positiveButton.name, positiveButton.name, VSChoiceButton.ButtonType.Positive);
             VSVRMod.logger.LogInfo("Found pos choice button: " + positiveChoiceButton.name);
             vsChoiceButtons.Add(positiveChoiceButton);
+            positiveChoiceButton.SetTriggerIconLocation(0, 100);
         }
 
         foreach (Transform negativeButton in negativeButtonParent.transform)
@@ -34,6 +35,7 @@ public class BasicUIManager : UIManager
             VSChoiceButton negativeChoiceButton = new(negativeButtonParent.transform, negativeButton.name, negativeButton.name, VSChoiceButton.ButtonType.Negative);
             VSVRMod.logger.LogInfo("Found neg choice button: " + negativeChoiceButton.name);
             vsChoiceButtons.Add(negativeChoiceButton);
+            negativeChoiceButton.SetTriggerIconLocation(0, 100);
         }
 
         VSVRMod.logger.LogInfo("Finished setting up basic buttons");

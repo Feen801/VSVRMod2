@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 namespace VSVRMod2;
@@ -9,6 +10,7 @@ public struct VSButtonComponents
     public PlayMakerFSM buttonFsm;
     public GameObject buttonObject;
     public GameObject highlight;
+    public GameObject triggerIcon;
 }
 
 public interface VSButton
@@ -61,7 +63,26 @@ public class VSGenericButton : VSButton
         }
         this.components.buttonObject = buttonObject.gameObject;
         this.components.highlight = highlight.gameObject;
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            this.components.triggerIcon = GameObject.Instantiate(VSVRAssets.promptIcons["Trigger"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(this.components.triggerIcon.transform, this.components.highlight.transform);
+            this.components.triggerIcon.transform.SetAsLastSibling();
+        }
         VSVRMod.logger.LogInfo("Verified button: " + this.name);
+    }
+
+    public void RemoveTriggerIcon()
+    {
+        this.components.triggerIcon.SetActive(false);
+    }
+
+    public void SetTriggerIconLocation(float x, float y)
+    {
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            this.components.triggerIcon.transform.localPosition = new Vector3(x, y, 0);
+        }
     }
 
     public void Click()
@@ -88,6 +109,24 @@ public class VSChoiceButton : VSGenericButton
     public VSChoiceButton(Transform knownParent, string name, string path, string colliderPath, string highlightPath, ButtonType buttonType) : base(knownParent, name, path, colliderPath, highlightPath)
     {
         this.type = buttonType;
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            GameObject joystick = null;
+            if (this.type == ButtonType.Positive)
+            {
+                joystick = GameObject.Instantiate(VSVRAssets.promptIcons["Left"]);
+            }
+            else if (this.type == ButtonType.Negative)
+            {
+                joystick = GameObject.Instantiate(VSVRAssets.promptIcons["Right"]);
+            }
+            if (joystick != null)
+            {
+                GameObjectHelper.SetParentAndMaintainScaleForUI(joystick.transform, this.components.buttonObject.transform);
+                joystick.transform.SetAsLastSibling();
+                joystick.transform.localPosition = new Vector3(0, -55, 0);
+            }
+        }
     }
 
     public VSChoiceButton(Transform knownParent, string name, string path, ButtonType buttonType) : this(knownParent, name, path, colliderPath, highlightPath, buttonType)
@@ -100,6 +139,19 @@ public class VSRadialButton : VSGenericButton
 {
     public static new string colliderPath = "/Collider";
     public static new string highlightPath = "/Collider/ButtonReact";
+
+    public enum RadialLevel
+    {
+        None = 0x00,
+        Both = 0xFF,
+        Level1 = 0x0F,
+        Level2 = 0xF0
+    }
+
+    public double minDegrees;
+    public double maxDegrees;
+    public double maxMagnitude = 1;
+    public RadialLevel radialLevel;
 
     public VSRadialButton(Transform knownParent, string name, string path, string colliderPath, string highlightPath, double maxMagnitude, double minDegrees, double maxDegrees, RadialLevel radialLevel) : base(knownParent, name, path, colliderPath, highlightPath)
     {
@@ -114,24 +166,32 @@ public class VSRadialButton : VSGenericButton
 
     }
 
-    public double minDegrees;
-    public double maxDegrees;
-    public double maxMagnitude = 1;
-
-    public enum RadialLevel
-    {
-        None = 0x00,
-        Both = 0xFF,
-        Level1 = 0x0F,
-        Level2 = 0xF0
-    }
-
     public bool IsOnRadialLevel(RadialLevel radialLevel)
     {
         return (this.radialLevel & radialLevel) != 0x00;
     }
 
-    public RadialLevel radialLevel;
+    public void SetIcon(string icon)
+    {
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            GameObject joystick = null;
+            try
+            {
+                joystick = GameObject.Instantiate(VSVRAssets.promptIcons[icon]);
+            }
+            finally
+            {
+                if (joystick != null)
+                {
+                    GameObjectHelper.SetParentAndMaintainScaleForUI(joystick.transform, this.components.buttonObject.transform);
+                    joystick.transform.SetAsLastSibling();
+                    joystick.transform.localPosition = new Vector3(0, -180, 0);
+                    this.SetTriggerIconLocation(0, 225);
+                }
+            }
+        }
+    }
 }
 
 public class VSFindomButton : VSButton
@@ -141,9 +201,11 @@ public class VSFindomButton : VSButton
     public Button button;
     public GameObject buttonObject;
     public Image highlight;
+    private GameObject triggerIcon;
 
     public void Highlight(bool status)
     {
+        triggerIcon.SetActive(status);
         highlight.color = status ? Color.white : darkGrey;
     }
 
@@ -166,6 +228,16 @@ public class VSFindomButton : VSButton
         {
             VSVRMod.logger.LogError(this.name + " had null image");
         }
+
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            this.triggerIcon = GameObject.Instantiate(VSVRAssets.promptIcons["Trigger"]);
+            GameObjectHelper.SetParentAndMaintainScaleForUI(this.triggerIcon.transform, this.highlight.transform);
+            this.triggerIcon.transform.SetAsLastSibling();
+            this.triggerIcon.transform.localScale = new Vector3(1.2f, 1, 1);
+            this.triggerIcon.transform.localPosition = new Vector3(-90, 0);
+            triggerIcon.SetActive(false);
+        }
         VSVRMod.logger.LogInfo("Verified findom button: " + this.name);
     }
 
@@ -182,6 +254,7 @@ public class VSStatusCancelButton : VSGenericButton
 
     new public void Highlight(bool status)
     {
+        this.components.triggerIcon.SetActive(status);
         highlight.color = status ? Color.white : defaultColor;
     }
 
