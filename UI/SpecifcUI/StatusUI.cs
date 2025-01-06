@@ -116,8 +116,11 @@ public class StatusUIManager : UIManager
             else if (activeButtons.Count <= 0)
             {
                 inFocus = false;
-                leftArrow.SetActive(!inFocus);
-                rightArrow.SetActive(inFocus);
+                if (VRConfig.showButtonPrompts.Value)
+                {
+                    leftArrow.SetActive(!inFocus);
+                    rightArrow.SetActive(inFocus);
+                }
             }
             return false;
         }
