@@ -29,7 +29,10 @@ public class StatusUIManager : UIManager
         {
             VSStatusCancelButton statusCancelButton = new(parentToButtons.transform, button.name, button.name);
             statusCancelButton.SetTriggerIconLocation(-50, 0);
-            statusCancelButton.components.triggerIcon.SetActive(false);
+            if (VRConfig.showButtonPrompts.Value)
+            {
+                statusCancelButton.components.triggerIcon.SetActive(false);
+            }
             vsStatusButtons.Add(statusCancelButton);
         }
 
