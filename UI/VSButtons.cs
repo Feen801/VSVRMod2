@@ -74,7 +74,10 @@ public class VSGenericButton : VSButton
 
     public void RemoveTriggerIcon()
     {
-        this.components.triggerIcon.SetActive(false);
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            this.components.triggerIcon.SetActive(false);
+        }
     }
 
     public void SetTriggerIconLocation(float x, float y)
@@ -205,7 +208,10 @@ public class VSFindomButton : VSButton
 
     public void Highlight(bool status)
     {
-        triggerIcon.SetActive(status);
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            triggerIcon.SetActive(status);
+        }
         highlight.color = status ? Color.white : darkGrey;
     }
 
@@ -254,7 +260,10 @@ public class VSStatusCancelButton : VSGenericButton
 
     new public void Highlight(bool status)
     {
-        this.components.triggerIcon.SetActive(status);
+        if (VRConfig.showButtonPrompts.Value)
+        {
+            this.components.triggerIcon.SetActive(status);
+        }
         highlight.color = status ? Color.white : defaultColor;
     }
 
