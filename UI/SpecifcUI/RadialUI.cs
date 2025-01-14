@@ -116,12 +116,12 @@ public class RadialUIManager : UIManager
         popupArousalMeter = popupArousalMeterTransform.gameObject;
 
         plusPopup = new(popupArousalMeterTransform, "PlusPopup", "Overlays/Plus", 1, 270, 360, VSRadialButton.RadialLevel.Both);
-        plusPopup.SetIcon("Left");
-        plusPopup.SetTriggerIconLocation(0, 3425);
+        plusPopup.SetIcon("Right");
+        plusPopup.SetTriggerIconLocation(0, 1000);
 
         minusPopup = new(popupArousalMeterTransform, "MinusPopup", "Overlays/Minus", 1, 180, 270, VSRadialButton.RadialLevel.Both);
-        minusPopup.SetIcon("Right");
-        minusPopup.SetTriggerIconLocation(0, 1000);
+        minusPopup.SetIcon("Left");
+        minusPopup.SetTriggerIconLocation(0, 3425);
 
         VSVRMod.logger.LogInfo("Finished setting up PopupArousal buttons");
     }
