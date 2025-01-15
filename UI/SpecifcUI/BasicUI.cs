@@ -49,6 +49,7 @@ public class BasicUIManager : UIManager
         }
         Transform center = centerGameObject.transform;
         good = new(center, "Good", "Level1/OtherButtons/KeepGoingBG", 1, 0, 360, VSRadialButton.RadialLevel.Both);
+        good.RemoveTriggerIcon();
     }
 
     public override bool Interact()
