@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using BepInEx.Unity.Mono;
+using Discord;
 using HarmonyLib;
 using TMPro;
 using UnityEngine;
@@ -40,6 +42,8 @@ public class VSVRMod : BaseUnityPlugin
 
     private static Scene sessionScene;
 
+    Discord.Discord discord;
+
     private void Awake()
     {
         instance = this;
@@ -55,6 +59,20 @@ public class VSVRMod : BaseUnityPlugin
         ShortcutHelper.CreateShortcut();
 
         SceneManager.sceneLoaded += OnSceneLoaded;
+
+        logger.LogInfo("Preparing DRP");
+        try
+        {
+            discord = new Discord.Discord(1354562094170640455, (UInt64)Discord.CreateFlags.Default);
+            logger.LogInfo("Discord initialized successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError($"Failed to initialize Discord: {ex.Message}");
+            return; // Stop execution if Discord fails to initialize
+        }
+        logger.LogInfo("About to update");
+        UpdateActivity();
 
         string[] args = System.Environment.GetCommandLineArgs();
         if (args.Contains<string>("-novr")) {
@@ -83,6 +101,16 @@ public class VSVRMod : BaseUnityPlugin
         AddToDebugDisplay(noVR);
         if (noVR)
         {
+            if (Equals(scene.name, Constants.SessionStartScene))
+            {
+                inSession = true;
+                startTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            }
+            else
+            {
+                inSession = false;
+                startTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+            }
             return;
         }
         Logger.LogInfo("A scene was loaded: " + scene.name);
@@ -91,11 +119,13 @@ public class VSVRMod : BaseUnityPlugin
             XRGeneralSettings.Instance.Manager.StartSubsystems();
             sessionScene = scene;
             InitialSessionSetup();
+            startTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         }
         else
         {
             inSession = false;
             XRGeneralSettings.Instance.Manager.StopSubsystems();
+            startTime = DateTimeOffset.Now.ToUnixTimeSeconds();
         }
     }
 
@@ -118,6 +148,8 @@ public class VSVRMod : BaseUnityPlugin
 
     void FixedUpdate()
     {
+        discord.RunCallbacks();
+
         if (noVR)
         {
             return;
@@ -142,8 +174,16 @@ public class VSVRMod : BaseUnityPlugin
         Controller.EndFrame();
     }
 
+    float DRPupdateCounter = 0;
+
     void Update()
     {
+        DRPupdateCounter += Time.deltaTime;
+        if (DRPupdateCounter >= 5)
+        {
+            DRPupdateCounter = 0;
+            UpdateActivity();
+        }
         Keyboard.HandleKeyboardInput();
         if (noVR)
         {
@@ -238,5 +278,73 @@ public class VSVRMod : BaseUnityPlugin
         logger.LogInfo("Started XR Display subsystem, welcome to VR!");
 
         return true;
+    }
+
+    long startTime = DateTimeOffset.Now.ToUnixTimeSeconds();
+
+    void UpdateActivity()
+    {
+        logger.LogInfo("Updating activity...");
+
+        var _Title = "";
+        var _Info = "";
+
+        if (!inSession)
+        {
+            _Title = "Main Menu";
+            _Info = "";
+        }
+        else
+        {
+            if (noVR)
+            {
+                _Title = "In a Session";
+            }
+            else
+            {
+                _Title = "In a VR Session";
+            }
+
+            _Info = "Succubus Mood: " + PlayMakerGlobals.Instance.Variables.StringVariables[88].Value;
+            GameObject go = GameObjectHelper.GetGameObjectCheckFound("ArousalVisualRepresentation");
+            PlayMakerFSM fsm = go.GetComponent<PlayMakerFSM>();
+            float arousal = fsm.FsmVariables.FloatVariables[0].Value;
+            var arousalstars = "";
+            if (arousal < 1.1)
+            {
+                arousalstars = "*";
+            }
+            else if (arousal < 1.2)
+            {
+                arousalstars = "**";
+            }
+            else if (arousal < 1.4)
+            {
+                arousalstars = "***";
+            }
+            else
+            {
+                arousalstars = "****";
+            }
+            _Info += " | Arousal: " + arousalstars;
+        }
+        
+
+        var activityManager = discord.GetActivityManager();
+        var activity = new Discord.Activity
+        {
+            State = _Title,
+            Details = _Info,
+            Instance = true,
+            Timestamps =
+            {
+                Start = startTime,
+            },
+        };
+
+        activityManager.UpdateActivity(activity, result =>
+        {
+            logger.LogInfo($"Update Activity Result: {result}");
+        });
     }
 }
