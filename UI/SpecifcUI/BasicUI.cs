@@ -148,6 +148,8 @@ public class BasicUIManager : UIManager
             {
                 VSVRMod.logger.LogInfo("Full Nod");
                 basicUIManager.PostiveAction();
+                nods = 0;
+                lastNodTime += 500;
             }
         }
         public void Headshake()
@@ -168,6 +170,8 @@ public class BasicUIManager : UIManager
             {
                 VSVRMod.logger.LogInfo("Full Headshake");
                 basicUIManager.NegativeAction();
+                headshakes = 0;
+                lastHeadshakeTime += 500;
             }
         }
     }
