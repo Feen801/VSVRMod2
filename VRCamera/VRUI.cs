@@ -274,26 +274,34 @@ namespace VSVRMod2.VRCamera
         {
             Transform cam = vrcamera.vrCamera.transform;
             Transform parent = vrcamera.vrCameraParent.transform;
-
             float distance = VRConfig.uiDistance.Value;
             float posSmooth = VRConfig.uiPosSmoothing.Value;
             float rotSmooth = VRConfig.uiRotSmoothing.Value;
-
             Vector3 targetLocalPos =
                 parent.InverseTransformPoint(cam.position + cam.forward * distance);
-
             Quaternion targetLocalRot =
                 Quaternion.Inverse(parent.rotation) * cam.rotation;
-
             if (!initialized)
             {
                 uiLocalPos = targetLocalPos;
                 overlayLocalPos = targetLocalPos;
                 uiLocalRot = targetLocalRot;
                 overlayLocalRot = targetLocalRot;
-
                 ApplyWorldTransforms(parent);
                 initialized = true;
+                return;
+            }
+
+            float teleportThreshold = distance * 2f;
+            if (Vector3.Distance(uiLocalPos, targetLocalPos) > teleportThreshold)
+            {
+                uiLocalPos = targetLocalPos;
+                overlayLocalPos = targetLocalPos;
+                uiLocalRot = targetLocalRot;
+                overlayLocalRot = targetLocalRot;
+                uiVel = Vector3.zero;
+                overlayVel = Vector3.zero;
+                ApplyWorldTransforms(parent);
                 return;
             }
 
@@ -303,26 +311,22 @@ namespace VSVRMod2.VRCamera
                 ref uiVel,
                 posSmooth
             );
-
             uiLocalRot = Quaternion.Slerp(
                 uiLocalRot,
                 targetLocalRot,
                 1f - Mathf.Exp(-rotSmooth * Time.deltaTime)
             );
-
             overlayLocalPos = Vector3.SmoothDamp(
                 overlayLocalPos,
                 targetLocalPos,
                 ref overlayVel,
                 posSmooth * 1.25f
             );
-
             overlayLocalRot = Quaternion.Slerp(
                 overlayLocalRot,
                 targetLocalRot,
                 1f - Mathf.Exp(-rotSmooth * 0.8f * Time.deltaTime)
             );
-
             ApplyWorldTransforms(parent);
         }
 
