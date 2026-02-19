@@ -27,6 +27,7 @@
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Unity.Mono" Version="6.0.0-be.*" IncludeAssets="compile" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.*" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
 	<PackageReference Include="UnityEngine.Modules" Version="2023.3.0-alpha.18" IncludeAssets="compile" />
   </ItemGroup>
 
@@ -36,7 +37,10 @@
 
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>Libs\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>D:\VS48R1 PCFULL\Virtual Succubus_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.Zip.Unity">
+      <HintPath>Libs\Managed\Ionic.Zip.Unity.dll</HintPath>
     </Reference>
     <Reference Include="PlayMaker">
       <HintPath>Libs\Managed\PlayMaker.dll</HintPath>

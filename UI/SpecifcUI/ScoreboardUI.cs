@@ -18,7 +18,7 @@ public class ScoreboardUIManager : UIManager
         scoreboard.mainMenu = new(scoreCanvas, "Main Menu", "Scoreboard/Finish/Button");
         VSVRMod.logger.LogInfo("Setup Scoreboard");
 
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             GameObject trigger = GameObject.Instantiate(VSVRAssets.promptIcons["Trigger"]);
             GameObjectHelper.SetParentAndMaintainScaleForUI(trigger.transform, scoreboard.mainMenu.button.transform);

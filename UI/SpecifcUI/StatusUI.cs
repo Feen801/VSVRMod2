@@ -29,7 +29,7 @@ public class StatusUIManager : UIManager
         {
             VSStatusCancelButton statusCancelButton = new(parentToButtons.transform, button.name, button.name);
             statusCancelButton.SetTriggerIconLocation(-50, 0);
-            if (VRConfig.showButtonPrompts.Value)
+            if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
             {
                 statusCancelButton.components.triggerIcon.SetActive(false);
             }
@@ -50,7 +50,7 @@ public class StatusUIManager : UIManager
         }
         level1 = center.Find("Level1").gameObject;
 
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             GameObject faceButton = GameObject.Instantiate(VSVRAssets.promptIcons["BottomPress"]);
             GameObjectHelper.SetParentAndMaintainScaleForUI(faceButton.transform, statuses2.transform);
@@ -84,7 +84,7 @@ public class StatusUIManager : UIManager
             if (Controller.WasAFaceButtonClicked())
             {
                 inFocus = !inFocus;
-                if (VRConfig.showButtonPrompts.Value)
+                if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
                 {
                     leftArrow.SetActive(!inFocus);
                     rightArrow.SetActive(inFocus);
@@ -119,7 +119,7 @@ public class StatusUIManager : UIManager
             else if (activeButtons.Count <= 0)
             {
                 inFocus = false;
-                if (VRConfig.showButtonPrompts.Value)
+                if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
                 {
                     leftArrow.SetActive(!inFocus);
                     rightArrow.SetActive(inFocus);

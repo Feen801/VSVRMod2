@@ -52,13 +52,19 @@ namespace VSVRMod2.VRCamera
         private void ConfigureVRCamera()
         {
             VSVRMod.logger.LogInfo("Creating and configuring VR camera...");
+
             vrCamera = new GameObject("VRCamera");
-            vrCamera.AddComponent<Camera>().nearClipPlane = 0.01f;
-            vrCamera.AddComponent<TrackedPoseDriver>().UseRelativeTransform = true;
+            var vrCam = vrCamera.AddComponent<Camera>();
+            vrCam.nearClipPlane = 0.01f;
+
+            var tpd = vrCamera.AddComponent<TrackedPoseDriver>();
+            tpd.UseRelativeTransform = true;
 
             float cameraScale = VRConfig.vrCameraScale.Value;
-            vrCameraOffset.transform.localScale = new Vector3(cameraScale, cameraScale, cameraScale);
-            vrCamera.transform.SetParent(vrCameraOffset.transform);
+            vrCameraOffset.transform.localScale =
+                new Vector3(cameraScale, cameraScale, cameraScale);
+
+            vrCamera.transform.SetParent(vrCameraOffset.transform, false);
 
             VSVRMod.logger.LogInfo("VR camera configuration complete.");
         }

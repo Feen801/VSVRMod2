@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
@@ -63,7 +64,7 @@ public class VSGenericButton : VSButton
         }
         this.components.buttonObject = buttonObject.gameObject;
         this.components.highlight = highlight.gameObject;
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             this.components.triggerIcon = GameObject.Instantiate(VSVRAssets.promptIcons["Trigger"]);
             GameObjectHelper.SetParentAndMaintainScaleForUI(this.components.triggerIcon.transform, this.components.highlight.transform);
@@ -74,7 +75,7 @@ public class VSGenericButton : VSButton
 
     public void RemoveTriggerIcon()
     {
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             this.components.triggerIcon.SetActive(false);
         }
@@ -82,7 +83,7 @@ public class VSGenericButton : VSButton
 
     public void SetTriggerIconLocation(float x, float y)
     {
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             this.components.triggerIcon.transform.localPosition = new Vector3(x, y, 0);
         }
@@ -109,10 +110,28 @@ public class VSChoiceButton : VSGenericButton
 
     public ButtonType type;
 
+    public string[] speechText;
+
     public VSChoiceButton(Transform knownParent, string name, string path, string colliderPath, string highlightPath, ButtonType buttonType) : base(knownParent, name, path, colliderPath, highlightPath)
     {
         this.type = buttonType;
-        if (VRConfig.showButtonPrompts.Value)
+
+        Transform doneTextTransform = knownParent.Find(path + "/DoneBG/DoneText");
+        if (doneTextTransform == null)
+        {
+            VSVRMod.logger.LogError($"Could not find '{path}/DoneBG//DoneText' under {knownParent.name}");
+            return;
+        }
+
+        var tmp = doneTextTransform.GetComponentInChildren<TextMeshProUGUI>();
+        if (tmp == null)
+        {
+            VSVRMod.logger.LogError($"No TextMeshProUGUI found under '{path}/DoneBG/DoneText'");
+            return;
+        }
+
+        this.speechText = StringHelper.GetWords(tmp.text);
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             GameObject joystick = null;
             if (this.type == ButtonType.Positive)
@@ -176,7 +195,7 @@ public class VSRadialButton : VSGenericButton
 
     public void SetIcon(string icon)
     {
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             GameObject joystick = null;
             try
@@ -208,7 +227,7 @@ public class VSFindomButton : VSButton
 
     public void Highlight(bool status)
     {
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             triggerIcon.SetActive(status);
         }
@@ -235,7 +254,7 @@ public class VSFindomButton : VSButton
             VSVRMod.logger.LogError(this.name + " had null image");
         }
 
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             this.triggerIcon = GameObject.Instantiate(VSVRAssets.promptIcons["Trigger"]);
             GameObjectHelper.SetParentAndMaintainScaleForUI(this.triggerIcon.transform, this.highlight.transform);
@@ -260,7 +279,7 @@ public class VSStatusCancelButton : VSGenericButton
 
     new public void Highlight(bool status)
     {
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             this.components.triggerIcon.SetActive(status);
         }
