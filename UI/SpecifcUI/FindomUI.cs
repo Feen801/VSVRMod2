@@ -26,7 +26,7 @@ public class FindomUIManager : UIManager
 
         //Tribute Menu
         findomInput.representative = overlayCanvas.Find("TributeMenu").gameObject;
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             verticalJoystick = GameObject.Instantiate(VSVRAssets.promptIcons["Vertical"]);
             GameObjectHelper.SetParentAndMaintainScaleForUI(verticalJoystick.transform, findomInput.representative.transform);
@@ -45,7 +45,7 @@ public class FindomUIManager : UIManager
         {
             VSVRMod.logger.LogError("Tribute Menu had null slider object");
         }
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             GameObject click = GameObject.Instantiate(VSVRAssets.promptIcons["Click"]);
             GameObjectHelper.SetParentAndMaintainScaleForUI(click.transform, findomInput.sliderObject.transform);
@@ -97,7 +97,7 @@ public class FindomUIManager : UIManager
             if (Controller.WasAStickClicked())
             {
                 findomInputInteractState = !findomInputInteractState;
-                if (VRConfig.showButtonPrompts.Value)
+                if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
                 {
                     verticalJoystick.SetActive(!findomInputInteractState);
                     horizontalJoystick.SetActive(findomInputInteractState);

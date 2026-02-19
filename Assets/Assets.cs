@@ -190,6 +190,6 @@ public class VSVRAssets
 
         GameObject head = GameObjectHelper.GetGameObjectCheckFound("GirlCharacter/Root/J_Bip_C_Hips/J_Bip_C_Spine/J_Bip_C_Chest/J_Bip_C_UpperChest/J_Bip_C_Neck/J_Bip_C_Head");
         GameObject hypnoSpin = head.transform.Find("HypnoSpin").gameObject;
-        hypnoSpin.GetComponent<Canvas>().sortingOrder = Int16.MaxValue;
+        hypnoSpin.GetComponent<Canvas>().sortingOrder = 398;
     }
 }

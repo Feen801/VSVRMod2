@@ -46,7 +46,7 @@ public class SafewordUIManager : UIManager
             );
         safewordMenu.endSession.SetTriggerIconLocation(0, 100);
 
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             GameObject joystick1 = GameObject.Instantiate(VSVRAssets.promptIcons["UpLeft"]);
             GameObjectHelper.SetParentAndMaintainScaleForUI(joystick1.transform, safewordMenu.goEasy.components.buttonObject.transform);

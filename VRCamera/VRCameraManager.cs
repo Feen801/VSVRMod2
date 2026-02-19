@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using VSVRMod2.VRCamera;
 
@@ -36,7 +37,6 @@ public class VRCameraManager
     public void Update()
     {
         vrcamera.CameraControls();
-        /*vrcamera.CenterCameraIfFar();*/
     }
 
     bool alreadyCentered = false;
@@ -46,5 +46,10 @@ public class VRCameraManager
         {
             alreadyCentered = vrcamera.CenterCamera(true);
         }
+    }
+
+    public void OnPreRender()
+    {
+        VRUI.OnPreRender(vrcamera);
     }
 }

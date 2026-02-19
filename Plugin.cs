@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
@@ -15,6 +16,7 @@ using UnityEngine.XR.OpenXR;
 using VSVRMod2.Helper;
 using VSVRMod2.UI;
 using VSVRMod2.UI.SpecifcUI;
+using Newtonsoft.Json;
 
 namespace VSVRMod2;
 
@@ -23,7 +25,7 @@ namespace VSVRMod2;
 public class VSVRMod : BaseUnityPlugin
 #pragma warning restore BepInEx002 // Classes with BepInPlugin attribute must inherit from BaseUnityPlugin
 {
-    public bool inSession = false;
+    public volatile bool inSession = false;
     private static readonly VRGestureRecognizer vrGestureRecognizer = new();
     public static ManualLogSource logger;
     public static ConfigFile config;
@@ -34,13 +36,18 @@ public class VSVRMod : BaseUnityPlugin
 
     public static readonly Controller.Headset controllerHeadset = new();
 
-    private static bool noVR = false;
+    public static bool noVR = false;
 
     public static VSVRMod instance;
 
     private static Scene sessionScene;
 
-    private void Awake()
+    private VoiceProcessor voiceProcessor;
+    public static VoskSpeechRecognizer speechRecognizer;
+
+    private bool voskLoaded = false;
+
+    async private void Awake()
     {
         instance = this;
         // Plugin startup logic
@@ -52,6 +59,49 @@ public class VSVRMod : BaseUnityPlugin
 
         VRConfig.SetupConfig();
 
+        if (VRConfig.enableSpeechRecognition.Value)
+        {
+            voiceProcessor = new VoiceProcessor(
+                microphoneIndex: 0,
+                minimumSpeakingSampleValue: 0.03f,
+                silenceTimer: 1.0f,
+                autoDetect: false
+            );
+            speechRecognizer = new VoskSpeechRecognizer(
+                modelPath: "vosk-model-small-en-us-0.15.zip",
+                voiceProcessor: voiceProcessor,
+                keyPhrases: null,
+                maxAlternatives: 3
+            );
+
+            speechRecognizer.OnStatusUpdated += (status) => logger.LogInfo($"VOSK: {status}");
+
+            speechRecognizer.OnTranscriptionResult += (result) =>
+            {
+                try
+                {
+                    if (inSession)
+                    {
+                        var json = JsonConvert.DeserializeObject<TranscriptionResult>(result);
+                        foreach (var alt in json.alternatives)
+                        {
+                            string alttext = alt.text.Trim();
+                            if (alttext.Length > 0)
+                            {
+                                logger.LogMessage("Speech Detected: " + alttext);
+                                if (uiContainer.VoiceInteract(alttext))
+                                    break;
+                            }
+                        }
+                    }
+                }
+                catch (NullReferenceException ex)
+                {
+                    logger.LogError($"Voice Error: {ex.Message}\n{ex.StackTrace}");
+                }
+            };
+        }
+
         ShortcutHelper.CreateShortcut();
 
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -60,27 +110,63 @@ public class VSVRMod : BaseUnityPlugin
         if (args.Contains<string>("-novr")) {
             logger.LogWarning("VR disabled!");
             noVR = true;
-            return;
+        }
+        else
+        {
+            Application.runInBackground = true;
+
+            Controller.EnableControllerProfiles();
+            InitializeXRRuntime();
+            StartDisplay();
+
+            InputDevices.deviceConnected += Controller.DeviceConnect;
+
+            VSVRAssets.LoadAssets();
+
+            beginUiManager = new StartUIManager();
+
+            logger.LogInfo("Reached end of Plugin.Awake()");
         }
 
-        Application.runInBackground = true;
+        if (VRConfig.enableSpeechRecognition.Value) 
+        {
+            await speechRecognizer.InitializeAsync();
+            speechRecognizer.StartRecording();
+            voskLoaded = true;
 
-        Controller.EnableControllerProfiles();
-        InitializeXRRuntime();
-        StartDisplay();
+            logger.LogInfo("Finished loading VOSK");
+        }
+    }
 
-        InputDevices.deviceConnected += Controller.DeviceConnect;
+    void OnDestroy()
+    {
+        CleanupSpeech();
+    }
 
-        VSVRAssets.LoadAssets();
+    void OnEmergencyStop(string detectedText)
+    {
+        Debug.Log("EMERGENCY: " + detectedText);
+    }
 
-        beginUiManager = new StartUIManager();
+    void OnPauseGame(string detectedText)
+    {
+        Debug.Log("Pausing: " + detectedText);
+    }
 
-        logger.LogInfo("Reached end of Plugin.Awake()");
+    void OnOpenMenu(string detectedText)
+    {
+        Debug.Log("Menu: " + detectedText);
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         AddToDebugDisplay(noVR);
+        if (Equals(scene.name, Constants.SessionStartScene))
+        {
+            sessionScene = scene;
+            inSession = true;
+            InitialSessionSetup();
+        }
         if (noVR)
         {
             return;
@@ -88,9 +174,10 @@ public class VSVRMod : BaseUnityPlugin
         Logger.LogInfo("A scene was loaded: " + scene.name);
         if (Equals(scene.name, Constants.SessionStartScene))
         {
-            XRGeneralSettings.Instance.Manager.StartSubsystems();
             sessionScene = scene;
-            InitialSessionSetup();
+            inSession = true;
+            XRGeneralSettings.Instance.Manager.StartSubsystems();
+            InitialSessionSetupVR();
         }
         else
         {
@@ -99,7 +186,7 @@ public class VSVRMod : BaseUnityPlugin
         }
     }
 
-    public void InitialSessionSetup()
+    public void InitialSessionSetupVR()
     {
         logger.LogInfo("Starting session setup");
         //Do this before the camera manager!
@@ -107,17 +194,31 @@ public class VSVRMod : BaseUnityPlugin
         logger.LogInfo("Session setup: applied ui shaders");
         vrCameraManager = new(sessionScene);
         logger.LogInfo("Session setup: created camera manager");
-        uiContainer = new(sessionScene);
-        logger.LogInfo("Session setup: created ui container");
         vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
         vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
         logger.LogInfo("Session setup: setup gestures");
+    }
 
-        inSession = true;
+    public void InitialSessionSetup()
+    {
+        uiContainer = new(sessionScene);
+        logger.LogInfo("Session setup: created ui container");
     }
 
     void FixedUpdate()
     {
+        if (voskLoaded)
+        {
+            try
+            {
+                voiceProcessor?.ProcessAudioFrame();
+                speechRecognizer?.Update();
+            }
+            catch (Exception ex)
+            {
+                logger?.LogError($"Voice processing error: {ex.Message}");
+            }
+        }
         if (noVR)
         {
             return;
@@ -152,16 +253,38 @@ public class VSVRMod : BaseUnityPlugin
         if (inSession)
         {
             Keyboard.HandleKeyboardInputSession(vrCameraManager);
+            vrCameraManager.OnPreRender();
         }
     }
 
     void LateUpdate()
     {
+        if (noVR)
+        {
+            return;
+        }
         if (inSession)
         {
             vrCameraManager.LateUpdate();
         }
     }
+
+    void OnPreRender()
+    {
+        
+    }
+
+    void OnApplicationQuit()
+    {
+        CleanupSpeech();
+    }
+
+    void CleanupSpeech()
+    {
+        if (speechRecognizer != null) speechRecognizer?.Dispose();
+        if (voiceProcessor != null) voiceProcessor?.Dispose();
+    }
+       
 
     void AddToDebugDisplay(bool isModDisabled)
     {
@@ -169,7 +292,7 @@ public class VSVRMod : BaseUnityPlugin
         {
             return;
         }
-        string fullString = Constants.VersionStringPrefix + " " + Constants.CurrentVersionString + (isModDisabled ? "\n(Disabled)" : "");
+        string fullString = Constants.VersionStringPrefix + " " + Constants.CurrentVersionString + (isModDisabled ? "\n(VR Disabled)" : "");
         GameObject version = GameObjectHelper.GetGameObjectCheckFound("DebugCanvas/Version");
         if (version == null)
         {
@@ -239,4 +362,20 @@ public class VSVRMod : BaseUnityPlugin
 
         return true;
     }
+}
+
+[Serializable]
+public class TranscriptionResult
+{
+    [SerializeField]
+    public Alternative[] alternatives;
+}
+
+[Serializable]
+public class Alternative
+{
+    [SerializeField]
+    public float confidence;
+    [SerializeField]
+    public string text;
 }

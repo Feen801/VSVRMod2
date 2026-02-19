@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Michsky.UI.ModernUIPack;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -84,6 +86,43 @@ public class BasicUIManager : UIManager
         return false;
     }
 
+    public bool VoiceInteract(string[] words)
+    {
+        foreach (VSChoiceButton button in vsChoiceButtons)
+        {
+            if (button.components.buttonObject.activeSelf)
+            {
+                if (button.speechText == null)
+                {
+                    VSVRMod.logger.LogError(button.name);
+                }
+
+                if (VRConfig.basicButtonSpeech.Value) {
+                    if (StringHelper.MatchPercent(words, button.speechText) >= 0.5)
+                    {
+                        button.Click();
+                        return true;
+                    }
+                }
+
+                if (VRConfig.yesAndNo.Value)
+                {
+                    if (button.type == VSChoiceButton.ButtonType.Positive && StringHelper.MatchPercent(words, new string[] { "yes" }) >= 1.0)
+                    {
+                        button.Click();
+                        return true;
+                    }
+                    if (button.type == VSChoiceButton.ButtonType.Negative && StringHelper.MatchPercent(words, new string[] { "no" }) >= 1.0)
+                    {
+                        button.Click();
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private void PostiveAction()
     {
         foreach (VSChoiceButton button in vsChoiceButtons)
@@ -144,7 +183,7 @@ public class BasicUIManager : UIManager
             nods++;
             lastNodTime = MathHelper.CurrentTimeMillis();
             VSVRMod.logger.LogInfo("Partial Nod");
-            if (nods >= 2)
+            if (nods >= VRConfig.yesThreshold.Value)
             {
                 VSVRMod.logger.LogInfo("Full Nod");
                 basicUIManager.PostiveAction();
@@ -166,7 +205,7 @@ public class BasicUIManager : UIManager
             headshakes++;
             lastHeadshakeTime = MathHelper.CurrentTimeMillis();
             VSVRMod.logger.LogInfo("Partial Headshake");
-            if (headshakes >= 2)
+            if (headshakes >= VRConfig.noThreshold.Value)
             {
                 VSVRMod.logger.LogInfo("Full Headshake");
                 basicUIManager.NegativeAction();

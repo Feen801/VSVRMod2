@@ -1,8 +1,9 @@
-﻿using HutongGames.PlayMaker.Actions;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UIElements.Collections;
+using HutongGames.PlayMaker.Actions;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements.Collections;
 
 namespace VSVRMod2.VRCamera
 {
@@ -93,6 +94,7 @@ namespace VSVRMod2.VRCamera
                 }
             }
         }
+
         public static void SetupUI(MoveableVRCamera vrcamera)
         {
             //UIReferences();
@@ -247,7 +249,94 @@ namespace VSVRMod2.VRCamera
                 rightHand.gameObject.SetActive(true);
             }
 
+            VSVRMod.instance.StartCoroutine(WorldSpace());
+
             VSVRMod.logger.LogInfo("Adjusted UI for VR");
+        }
+
+        public static IEnumerator WorldSpace()
+        {
+            yield return null;
+
+            uiCanvas.renderMode = RenderMode.WorldSpace;
+            overlayCanvas.renderMode = RenderMode.WorldSpace;
+        }
+
+        private static bool initialized;
+        private static Vector3 uiLocalPos;
+        private static Vector3 overlayLocalPos;
+        private static Quaternion uiLocalRot;
+        private static Quaternion overlayLocalRot;
+        private static Vector3 uiVel;
+        private static Vector3 overlayVel;
+
+        public static void OnPreRender(MoveableVRCamera vrcamera)
+        {
+            Transform cam = vrcamera.vrCamera.transform;
+            Transform parent = vrcamera.vrCameraParent.transform;
+
+            float distance = VRConfig.uiDistance.Value;
+            float posSmooth = VRConfig.uiPosSmoothing.Value;
+            float rotSmooth = VRConfig.uiRotSmoothing.Value;
+
+            Vector3 targetLocalPos =
+                parent.InverseTransformPoint(cam.position + cam.forward * distance);
+
+            Quaternion targetLocalRot =
+                Quaternion.Inverse(parent.rotation) * cam.rotation;
+
+            if (!initialized)
+            {
+                uiLocalPos = targetLocalPos;
+                overlayLocalPos = targetLocalPos;
+                uiLocalRot = targetLocalRot;
+                overlayLocalRot = targetLocalRot;
+
+                ApplyWorldTransforms(parent);
+                initialized = true;
+                return;
+            }
+
+            uiLocalPos = Vector3.SmoothDamp(
+                uiLocalPos,
+                targetLocalPos,
+                ref uiVel,
+                posSmooth
+            );
+
+            uiLocalRot = Quaternion.Slerp(
+                uiLocalRot,
+                targetLocalRot,
+                1f - Mathf.Exp(-rotSmooth * Time.deltaTime)
+            );
+
+            overlayLocalPos = Vector3.SmoothDamp(
+                overlayLocalPos,
+                targetLocalPos,
+                ref overlayVel,
+                posSmooth * 1.25f
+            );
+
+            overlayLocalRot = Quaternion.Slerp(
+                overlayLocalRot,
+                targetLocalRot,
+                1f - Mathf.Exp(-rotSmooth * 0.8f * Time.deltaTime)
+            );
+
+            ApplyWorldTransforms(parent);
+        }
+
+        static void ApplyWorldTransforms(Transform parent)
+        {
+            uiCanvas.transform.position =
+                parent.TransformPoint(uiLocalPos);
+            uiCanvas.transform.rotation =
+                parent.rotation * uiLocalRot;
+
+            overlayCanvas.transform.position =
+                parent.TransformPoint(overlayLocalPos);
+            overlayCanvas.transform.rotation =
+                parent.rotation * overlayLocalRot;
         }
 
         private static void UndoSetupPositioning()

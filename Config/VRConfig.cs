@@ -11,9 +11,13 @@ public class VRConfig
     public static ConfigEntry<bool> taskGradient;
     public static ConfigEntry<float> uiScale;
     public static ConfigEntry<float> uiHeightOffset;
+    public static ConfigEntry<float> uiPosSmoothing;
+    public static ConfigEntry<float> uiRotSmoothing;
 
     //Controls settings
     public static ConfigEntry<bool> useHeadMovement;
+    public static ConfigEntry<int> yesThreshold;
+    public static ConfigEntry<int> noThreshold;
     public static ConfigEntry<bool> automaticScreenSwap;
     public static ConfigEntry<bool> visibleControllers;
 
@@ -28,6 +32,14 @@ public class VRConfig
     public static ConfigEntry<Color> greenscreenColor;
     public static ConfigEntry<bool> greenscreenUI;
 
+    //Voice control settings
+    public static ConfigEntry<bool> enableSpeechRecognition;
+    public static ConfigEntry<bool> basicButtonSpeech;
+    public static ConfigEntry<bool> urgeSpeech;
+    public static ConfigEntry<bool> urgeAnswer;
+    public static ConfigEntry<bool> yesAndNo;
+    public static ConfigEntry<string> safeword;
+
     public static void SetupConfig()
     {
         showButtonPrompts = VSVRMod.config.Bind("UI", "Show Button Prompts", true, "Show images beside various UI elements demonstrating how to interact with them using VR controllers.");
@@ -38,8 +50,12 @@ public class VRConfig
             "\nLowering this could be helpful if some UI elements are difficult to see in your headset due to limited FOV.");
         uiHeightOffset = VSVRMod.config.Bind("UI", "UI Height Offset", 0f, "Vertically moves the UI. 10 units corresponds to about 1 degree in VR." +
             "\nChanging this could be helpful if some UI elements are difficult to see in your headset due to limited FOV.");
+        uiPosSmoothing = VSVRMod.config.Bind("UI", "UI Position Smoothing", 0.08f, "How slowly the UI snaps to the position you are looking. LOWER is snappier.");
+        uiRotSmoothing = VSVRMod.config.Bind("UI", "UI Rotation Smoothing", 10.0f, "How slowly the UI snaps to the rotation you are looking. HIGHER is snappier.");
 
         useHeadMovement = VSVRMod.config.Bind("Controls", "Use Head Movement", true, "Enable or disable the ability to press buttons by nodding or shaking your head.");
+        yesThreshold = VSVRMod.config.Bind("Controls", "Yes Threshold", 2, "How many vertical movements of your head trigger the left option. 2 means up then down (or vice versa)");
+        noThreshold = VSVRMod.config.Bind("Controls", "No Threshold", 3, "How many horizontal movements of your head trigger the right option. 3 is recommended since headshakes are more senestive than nods.");
         automaticScreenSwap = VSVRMod.config.Bind("Controls", "Automatic Screen Swap", true, "Automatically swap the game output to your monitor when your headset is removed. Only works on Oculus and WMR headsets.");
         visibleControllers = VSVRMod.config.Bind("Controls", "Visible Controllers", true, "Places a particle effect and L/R indicatiors where your VR controllers are. Makes it easier to find them if you set them down.");
 
@@ -55,5 +71,12 @@ public class VRConfig
             "I don't really recommend using full passthrough, as many poses will look very strange.");
         greenscreenColor = VSVRMod.config.Bind("Greenscreen", "Greenscreen Color", Color.blue, "Color of the greenscreen in RGBA format. Default is R:00 G:00 B:FF A:FF for full opacity blue.");
         greenscreenUI = VSVRMod.config.Bind("Greenscreen", "UI Greenscreen", false, "Enables a toggleable greenscreen that covers everything except the UI, making it possible to find things without removing your headset.");
+
+        enableSpeechRecognition = VSVRMod.config.Bind("Speech Recongition", "Enable Speech Recongition", false, "Enables local speech reconition with Vosk.");
+        basicButtonSpeech = VSVRMod.config.Bind("Speech Recongition", "Press Buttons With Voice", true, "The words on the two main buttons can be said aloud to press them. Speech recognition must be enabled for this do to anything.");
+        urgeSpeech = VSVRMod.config.Bind("Speech Recongition", "Speak Urges With Voice", true, "Speak urges will automatically be accepted if the given phrase is said. Speech recognition must be enabled for this do to anything.");
+        urgeAnswer = VSVRMod.config.Bind("Speech Recongition", "Urge Give in/Resist With Voice", true, "All urges can be accepted or declined by saying 'give in' or 'resist'. Speech recognition must be enabled for this do to anything.");
+        yesAndNo = VSVRMod.config.Bind("Speech Recongition", "Yes and No", true, "Saying 'yes' and 'no' will always press the left and right buttons, respectively. Speech recognition must be enabled for this do to anything.");
+        safeword = VSVRMod.config.Bind("Speech Recongition", "Safeword", "Red Light", "The phrase that will activate the safeword feature when said. Speech recognition must be enabled for this do to anything.");
     }
 }

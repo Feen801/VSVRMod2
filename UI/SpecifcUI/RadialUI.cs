@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using BepInEx;
 
 namespace VSVRMod2.UI.SpecifcUI;
 
@@ -18,6 +19,7 @@ public class RadialUIManager : UIManager
     private GameObject popupArousalMeter;
     private VSRadialButton plusPopup;
     private VSRadialButton minusPopup;
+    private VSRadialButton safeword;
 
     public RadialUIManager(Scene scene) : base(scene)
     {
@@ -52,7 +54,7 @@ public class RadialUIManager : UIManager
         //so much fun doing all these
         circle = new VSGenericButton(center, "Radial Circle", "Circle", "/Collider", "/Collider/ButtonReact");
 
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             GameObject pressDown = GameObject.Instantiate(VSVRAssets.promptIcons["Click"]);
             GameObjectHelper.SetParentAndMaintainScaleForUI(pressDown.transform, circle.components.buttonObject.transform);
@@ -83,7 +85,7 @@ public class RadialUIManager : UIManager
         VSRadialButton timeout = new(center, "Timeout", "Level2/GameObject/Time Out", "/Collider (1)", "/Collider (1)/ButtonReact", 0.9, 90, 135, VSRadialButton.RadialLevel.Level2);
         timeout.SetIcon("UpUpLeft");
 
-        VSRadialButton safeword = new(center, "Safeword", "Level2/GameObject (1)/Safe Word", 0.9, 45, 90, VSRadialButton.RadialLevel.Level2);
+        safeword = new(center, "Safeword", "Level2/GameObject (1)/Safe Word", 0.9, 45, 90, VSRadialButton.RadialLevel.Level2);
         safeword.SetIcon("UpUpRight");
 
         VSRadialButton oops = new(center, "Oops", "Level2/GameObject (1)/Oops", 1, 0, 45, VSRadialButton.RadialLevel.Level2);
@@ -256,6 +258,16 @@ public class RadialUIManager : UIManager
                 plusPopup.Highlight(false);
                 minusPopup.Highlight(false);
             }
+        }
+        return false;
+    }
+
+    public bool VoiceInteract(string[] words)
+    {
+        if (!VRConfig.safeword.Value.IsNullOrWhiteSpace() && StringHelper.MatchPercent(words, StringHelper.GetWords(VRConfig.safeword.Value.Trim())) >= 1.0) {
+            level2.SetActive(true);
+            safeword.Click();
+            return true;
         }
         return false;
     }

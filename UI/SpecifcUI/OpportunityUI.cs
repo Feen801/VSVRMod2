@@ -25,7 +25,7 @@ class OpportunityUIManager : UIManager
         vsOpportunityButtons.Add(opportunityEntice);
         vsOpportunityButtons.Add(opportunityPraise);
 
-        if (VRConfig.showButtonPrompts.Value)
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
             foreach (VSGenericButton button in vsOpportunityButtons)
             {

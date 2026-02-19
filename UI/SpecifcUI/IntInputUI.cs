@@ -25,7 +25,7 @@ public class IntInputUIMManager : UIManager
             VSVRMod.logger.LogError("Int input had null representative");
         }
 
-        if (VRConfig.showButtonPrompts.Value) {
+        if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR) {
             GameObject joystick = GameObject.Instantiate(VSVRAssets.promptIcons["Horizontal Angled"]);
             GameObjectHelper.SetParentAndMaintainScaleForUI(joystick.transform, intInput.representative.transform);
             joystick.transform.localPosition = new Vector3(0, -55);
