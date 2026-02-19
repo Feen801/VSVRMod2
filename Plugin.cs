@@ -161,14 +161,14 @@ public class VSVRMod : BaseUnityPlugin
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         AddToDebugDisplay(noVR);
-        if (Equals(scene.name, Constants.SessionStartScene))
-        {
-            sessionScene = scene;
-            inSession = true;
-            InitialSessionSetup();
-        }
         if (noVR)
         {
+            if (Equals(scene.name, Constants.SessionStartScene))
+            {
+                sessionScene = scene;
+                inSession = true;
+                InitialSessionSetup();
+            }
             return;
         }
         Logger.LogInfo("A scene was loaded: " + scene.name);
@@ -194,6 +194,8 @@ public class VSVRMod : BaseUnityPlugin
         logger.LogInfo("Session setup: applied ui shaders");
         vrCameraManager = new(sessionScene);
         logger.LogInfo("Session setup: created camera manager");
+        uiContainer = new(sessionScene);
+        logger.LogInfo("Session setup: created ui container");
         vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
         vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
         logger.LogInfo("Session setup: setup gestures");
