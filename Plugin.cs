@@ -17,6 +17,8 @@ using VSVRMod2.Helper;
 using VSVRMod2.UI;
 using VSVRMod2.UI.SpecifcUI;
 using Newtonsoft.Json;
+using HutongGames.PlayMaker;
+using HutongGames.PlayMaker.Actions;
 
 namespace VSVRMod2;
 
@@ -192,10 +194,10 @@ public class VSVRMod : BaseUnityPlugin
         //Do this before the camera manager!
         VSVRAssets.ApplyUIShader();
         logger.LogInfo("Session setup: applied ui shaders");
-        vrCameraManager = new(sessionScene);
-        logger.LogInfo("Session setup: created camera manager");
         uiContainer = new(sessionScene);
         logger.LogInfo("Session setup: created ui container");
+        vrCameraManager = new(sessionScene);
+        logger.LogInfo("Session setup: created camera manager");
         vrGestureRecognizer.Nodded += uiContainer.basicUIManager.headMovementTracker.Nod;
         vrGestureRecognizer.HeadShaken += uiContainer.basicUIManager.headMovementTracker.Headshake;
         logger.LogInfo("Session setup: setup gestures");

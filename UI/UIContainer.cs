@@ -48,6 +48,8 @@ class UIContainer
     public bool VoiceInteract(string transcription)
     {
         string[] wordsSaid = StringHelper.GetWords(transcription);
+        wordsSaid = StringHelper.AddVSSpecificWords(wordsSaid);
+        VSVRMod.logger.LogMessage("Words Parsed: " + wordsSaid);
         bool said = radialUIManager.VoiceInteract(wordsSaid);
         if (!said)
         {

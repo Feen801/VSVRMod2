@@ -40,6 +40,9 @@ public class VRConfig
     public static ConfigEntry<bool> yesAndNo;
     public static ConfigEntry<string> safeword;
 
+    //Gameplay settings
+    public static ConfigEntry<float> urgeSeconds;
+
     public static void SetupConfig()
     {
         showButtonPrompts = VSVRMod.config.Bind("UI", "Show Button Prompts", true, "Show images beside various UI elements demonstrating how to interact with them using VR controllers.");
@@ -78,5 +81,7 @@ public class VRConfig
         urgeAnswer = VSVRMod.config.Bind("Speech Recongition", "Urge Give in/Resist With Voice", true, "All urges can be accepted or declined by saying 'give in' or 'resist'. Speech recognition must be enabled for this do to anything.");
         yesAndNo = VSVRMod.config.Bind("Speech Recongition", "Yes and No", true, "Saying 'yes' and 'no' will always press the left and right buttons, respectively. Speech recognition must be enabled for this do to anything.");
         safeword = VSVRMod.config.Bind("Speech Recongition", "Safeword", "Red Light", "The phrase that will activate the safeword feature when said. Speech recognition must be enabled for this do to anything.");
+
+        urgeSeconds = VSVRMod.config.Bind("Gameplay", "Urge Timeout", 0.0f, "Override time for urges. 0.0 leaves the default times. Set to something like 15.0f if you find it hard to press or say urges on time.");
     }
 }

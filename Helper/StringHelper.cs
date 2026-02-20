@@ -25,4 +25,23 @@ public class StringHelper
         int matches = reference.Count(w => wordSet.Contains(w));
         return reference.Length == 0 ? 0f : (float)matches / reference.Length * 100f;
     }
+
+    private static Dictionary<string, string> vsSpecificWords = new Dictionary<string, string>
+    {
+        { "given", "give in" },
+        { "coming", "cumming" },
+    };
+
+    public static string[] AddVSSpecificWords(string[] words)
+    {
+        var result = new List<string>(words);
+        foreach (var kvp in vsSpecificWords)
+        {
+            if (words.Contains(kvp.Key))
+            {
+                result.Add(kvp.Value);
+            }
+        }
+        return result.ToArray();
+    }
 }
