@@ -1,4 +1,6 @@
-﻿using TMPro;
+﻿using HutongGames.PlayMaker;
+using HutongGames.PlayMaker.Actions;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -19,11 +21,11 @@ internal class UrgesUIManager : UIManager
 
         if(VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            GameObject bottomButton = GameObject.Instantiate(VSVRAssets.promptIcons["BottomPress"]);
+            GameObject bottomButton = VSVRAssets.InstantiatePromptIcon("BottomPress");
             GameObjectHelper.SetParentAndMaintainScaleForUI(bottomButton.transform, giveInButton.components.buttonObject.transform);
             bottomButton.transform.localPosition = new Vector3(-160, 0);
 
-            GameObject topButton = GameObject.Instantiate(VSVRAssets.promptIcons["TopPress"]);
+            GameObject topButton = VSVRAssets.InstantiatePromptIcon("TopPress");
             GameObjectHelper.SetParentAndMaintainScaleForUI(topButton.transform, resistButton.components.buttonObject.transform);
             topButton.transform.localPosition = new Vector3(160, 0);
         }
@@ -32,6 +34,28 @@ internal class UrgesUIManager : UIManager
         actionTextActualText = actionText.transform.Find("Text2").GetComponent<TextMeshProUGUI>();
 
         VSVRMod.logger.LogInfo("Finished setting up urge buttons");
+
+        SetUrgeTimer();
+    }
+
+    public void SetUrgeTimer()
+    {
+        if (VRConfig.urgeSeconds.Value <= 0.0)
+        {
+            return;
+        }
+        FsmState[] states = GameObject.Find("Root/GeneralCanvas/EventManager/Urges").GetComponent<PlayMakerFSM>().FsmStates;
+        foreach (FsmState state in states)
+        {
+            foreach (FsmStateAction action in state.Actions)
+            {
+                if (action is SetFloatValue && ((SetFloatValue)action).floatVariable.Name.Equals("Timer"))
+                {
+                    ((SetFloatValue)action).floatValue.Value += VRConfig.urgeSeconds.Value;
+                }
+            }
+        }
+        VSVRMod.logger.LogInfo("Increased urge timers");
     }
 
     public override bool Interact()
@@ -80,11 +104,6 @@ internal class UrgesUIManager : UIManager
         if (VRConfig.urgeAnswer.Value)
         {
             if (StringHelper.MatchPercent(words, new string[] { "give", "in" }) >= 1.0)
-            {
-                giveInButton.Click();
-                return true;
-            }
-            if (StringHelper.MatchPercent(words, new string[] { "given" }) >= 1.0)
             {
                 giveInButton.Click();
                 return true;

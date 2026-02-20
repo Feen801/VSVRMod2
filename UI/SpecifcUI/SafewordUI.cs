@@ -48,15 +48,15 @@ public class SafewordUIManager : UIManager
 
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            GameObject joystick1 = GameObject.Instantiate(VSVRAssets.promptIcons["UpLeft"]);
+            GameObject joystick1 = VSVRAssets.InstantiatePromptIcon("UpLeft");
             GameObjectHelper.SetParentAndMaintainScaleForUI(joystick1.transform, safewordMenu.goEasy.components.buttonObject.transform);
             joystick1.transform.localPosition = new Vector3(0, -55);
 
-            GameObject joystick2 = GameObject.Instantiate(VSVRAssets.promptIcons["Up"]);
+            GameObject joystick2 = VSVRAssets.InstantiatePromptIcon("Up");
             GameObjectHelper.SetParentAndMaintainScaleForUI(joystick2.transform, safewordMenu.continueSession.components.buttonObject.transform);
             joystick2.transform.localPosition = new Vector3(0, -55);
 
-            GameObject joystick3 = GameObject.Instantiate(VSVRAssets.promptIcons["UpRight"]);
+            GameObject joystick3 = VSVRAssets.InstantiatePromptIcon("UpRight");
             GameObjectHelper.SetParentAndMaintainScaleForUI(joystick3.transform, safewordMenu.endSession.components.buttonObject.transform);
             joystick3.transform.localPosition = new Vector3(0, -55);
         }

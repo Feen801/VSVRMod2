@@ -20,7 +20,7 @@ public class ScoreboardUIManager : UIManager
 
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            GameObject trigger = GameObject.Instantiate(VSVRAssets.promptIcons["Trigger"]);
+            GameObject trigger = VSVRAssets.InstantiatePromptIcon("Trigger");
             GameObjectHelper.SetParentAndMaintainScaleForUI(trigger.transform, scoreboard.mainMenu.button.transform);
             trigger.transform.localPosition = new Vector3(0, -100);
         }

@@ -51,5 +51,6 @@ public class VRCameraManager
     public void OnPreRender()
     {
         VRUI.OnPreRender(vrcamera);
+        VSVRAssets.FixPromtIconRotation();
     }
 }

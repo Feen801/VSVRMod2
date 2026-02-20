@@ -52,17 +52,17 @@ public class StatusUIManager : UIManager
 
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            GameObject faceButton = GameObject.Instantiate(VSVRAssets.promptIcons["BottomPress"]);
+            GameObject faceButton = VSVRAssets.InstantiatePromptIcon("BottomPress");
             GameObjectHelper.SetParentAndMaintainScaleForUI(faceButton.transform, statuses2.transform);
             faceButton.transform.localPosition = new Vector3(300, -200);
             faceButton.transform.localScale = Vector3.one;
 
-            leftArrow = GameObject.Instantiate(VSVRAssets.promptIcons["ArrowLeft"]);
+            leftArrow = VSVRAssets.InstantiatePromptIcon("ArrowLeft");
             GameObjectHelper.SetParentAndMaintainScaleForUI(leftArrow.transform, faceButton.transform);
             leftArrow.transform.localPosition = new Vector3(-50, 0);
             leftArrow.transform.localScale = Vector3.one;
 
-            rightArrow = GameObject.Instantiate(VSVRAssets.promptIcons["ArrowRight"]);
+            rightArrow = VSVRAssets.InstantiatePromptIcon("ArrowRight");
             GameObjectHelper.SetParentAndMaintainScaleForUI(rightArrow.transform, faceButton.transform);
             rightArrow.transform.localPosition = new Vector3(50, 0);
             rightArrow.transform.localScale = Vector3.one;
@@ -70,7 +70,7 @@ public class StatusUIManager : UIManager
             leftArrow.SetActive(true);
             rightArrow.SetActive(false);
 
-            GameObject verticalJoystick = GameObject.Instantiate(VSVRAssets.promptIcons["Vertical"]);
+            GameObject verticalJoystick = VSVRAssets.InstantiatePromptIcon("Vertical");
             GameObjectHelper.SetParentAndMaintainScaleForUI(verticalJoystick.transform, statuses2.transform);
             verticalJoystick.transform.localScale = Vector3.one;
             verticalJoystick.transform.localPosition = new Vector3(-475, -250);

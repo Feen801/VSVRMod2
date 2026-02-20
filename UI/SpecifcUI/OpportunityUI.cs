@@ -30,7 +30,7 @@ class OpportunityUIManager : UIManager
             foreach (VSGenericButton button in vsOpportunityButtons)
             {
                 opportunityProvoke.RemoveTriggerIcon();
-                GameObject buttonIcon = GameObject.Instantiate(VSVRAssets.promptIcons["BottomPress"]);
+                GameObject buttonIcon = VSVRAssets.InstantiatePromptIcon("BottomPress");
                 GameObjectHelper.SetParentAndMaintainScaleForUI(buttonIcon.transform, button.components.buttonObject.transform);
                 buttonIcon.transform.localPosition = new Vector3(200, 0);
             }

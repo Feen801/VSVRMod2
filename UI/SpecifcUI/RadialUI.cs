@@ -56,7 +56,7 @@ public class RadialUIManager : UIManager
 
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            GameObject pressDown = GameObject.Instantiate(VSVRAssets.promptIcons["Click"]);
+            GameObject pressDown = VSVRAssets.InstantiatePromptIcon("Click");
             GameObjectHelper.SetParentAndMaintainScaleForUI(pressDown.transform, circle.components.buttonObject.transform);
             pressDown.transform.localPosition = new Vector3(0, -200);
         }
