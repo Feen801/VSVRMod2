@@ -28,7 +28,7 @@ public class FindomUIManager : UIManager
         findomInput.representative = overlayCanvas.Find("TributeMenu").gameObject;
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            verticalJoystick = GameObject.Instantiate(VSVRAssets.promptIcons["Vertical"]);
+            verticalJoystick = VSVRAssets.InstantiatePromptIcon("Vertical");
             GameObjectHelper.SetParentAndMaintainScaleForUI(verticalJoystick.transform, findomInput.representative.transform);
             verticalJoystick.transform.localPosition = new Vector3(-450, -250);
             verticalJoystick.transform.localScale = Vector3.one * 2;
@@ -47,11 +47,11 @@ public class FindomUIManager : UIManager
         }
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            GameObject click = GameObject.Instantiate(VSVRAssets.promptIcons["Click"]);
+            GameObject click = VSVRAssets.InstantiatePromptIcon("Click");
             GameObjectHelper.SetParentAndMaintainScaleForUI(click.transform, findomInput.sliderObject.transform);
             click.transform.localPosition = new Vector3(-285, 5);
             click.transform.localScale = Vector3.one;
-            horizontalJoystick = GameObject.Instantiate(VSVRAssets.promptIcons["Horizontal"]);
+            horizontalJoystick = VSVRAssets.InstantiatePromptIcon("Horizontal");
             GameObjectHelper.SetParentAndMaintainScaleForUI(horizontalJoystick.transform, findomInput.sliderObject.transform);
             horizontalJoystick.transform.localPosition = new Vector3(20, -35);
             horizontalJoystick.transform.localScale = Vector3.one;

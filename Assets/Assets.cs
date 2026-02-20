@@ -73,6 +73,24 @@ public class VSVRAssets
         promptIcons.Add(name, go);
     }
 
+    private static List<GameObject> promptIconInstances = new List<GameObject>();
+
+    public static GameObject InstantiatePromptIcon(string name)
+    {
+        GameObject icon = GameObject.Instantiate(promptIcons[name]);
+        icon.transform.localRotation = Quaternion.identity;
+        promptIconInstances.Add(icon);
+        return icon;
+    }
+
+    public static void FixPromtIconRotation()
+    {
+        foreach (GameObject go in promptIconInstances)
+        {
+            go.transform.localRotation = Quaternion.identity;
+        }
+    }
+
     public static void ApplyUIShader()
     {
         //Prevent tattoos from rendering under the floor

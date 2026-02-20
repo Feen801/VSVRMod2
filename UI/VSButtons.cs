@@ -66,7 +66,7 @@ public class VSGenericButton : VSButton
         this.components.highlight = highlight.gameObject;
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            this.components.triggerIcon = GameObject.Instantiate(VSVRAssets.promptIcons["Trigger"]);
+            this.components.triggerIcon = VSVRAssets.InstantiatePromptIcon("Trigger");
             GameObjectHelper.SetParentAndMaintainScaleForUI(this.components.triggerIcon.transform, this.components.highlight.transform);
             this.components.triggerIcon.transform.SetAsLastSibling();
         }
@@ -136,11 +136,11 @@ public class VSChoiceButton : VSGenericButton
             GameObject joystick = null;
             if (this.type == ButtonType.Positive)
             {
-                joystick = GameObject.Instantiate(VSVRAssets.promptIcons["Left"]);
+                joystick = VSVRAssets.InstantiatePromptIcon("Left");
             }
             else if (this.type == ButtonType.Negative)
             {
-                joystick = GameObject.Instantiate(VSVRAssets.promptIcons["Right"]);
+                joystick = VSVRAssets.InstantiatePromptIcon("Right");
             }
             if (joystick != null)
             {
@@ -256,7 +256,7 @@ public class VSFindomButton : VSButton
 
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            this.triggerIcon = GameObject.Instantiate(VSVRAssets.promptIcons["Trigger"]);
+            this.triggerIcon = VSVRAssets.InstantiatePromptIcon("Trigger");
             GameObjectHelper.SetParentAndMaintainScaleForUI(this.triggerIcon.transform, this.highlight.transform);
             this.triggerIcon.transform.SetAsLastSibling();
             this.triggerIcon.transform.localScale = new Vector3(1.2f, 1, 1);

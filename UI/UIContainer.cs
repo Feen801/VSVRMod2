@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using UnityEngine.SceneManagement;
 using VSVRMod2.UI.SpecifcUI;
 
@@ -49,7 +50,7 @@ class UIContainer
     {
         string[] wordsSaid = StringHelper.GetWords(transcription);
         wordsSaid = StringHelper.AddVSSpecificWords(wordsSaid);
-        VSVRMod.logger.LogMessage("Words Parsed: " + wordsSaid);
+        VSVRMod.logger.LogMessage("Words Parsed: " + String.Join(",", wordsSaid));
         bool said = radialUIManager.VoiceInteract(wordsSaid);
         if (!said)
         {

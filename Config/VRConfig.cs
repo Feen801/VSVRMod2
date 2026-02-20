@@ -82,6 +82,6 @@ public class VRConfig
         yesAndNo = VSVRMod.config.Bind("Speech Recongition", "Yes and No", true, "Saying 'yes' and 'no' will always press the left and right buttons, respectively. Speech recognition must be enabled for this do to anything.");
         safeword = VSVRMod.config.Bind("Speech Recongition", "Safeword", "Red Light", "The phrase that will activate the safeword feature when said. Speech recognition must be enabled for this do to anything.");
 
-        urgeSeconds = VSVRMod.config.Bind("Gameplay", "Urge Timeout", 0.0f, "Override time for urges. 0.0 leaves the default times. Set to something like 15.0f if you find it hard to press or say urges on time.");
+        urgeSeconds = VSVRMod.config.Bind("Gameplay", "Extra Urge Timeout", 0.0f, "Addional time to accept or reject urges. If you find yourself struggling to say phrases on time with voice control, increasing this should help.");
     }
 }

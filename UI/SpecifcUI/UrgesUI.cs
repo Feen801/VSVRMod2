@@ -21,11 +21,11 @@ internal class UrgesUIManager : UIManager
 
         if(VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            GameObject bottomButton = GameObject.Instantiate(VSVRAssets.promptIcons["BottomPress"]);
+            GameObject bottomButton = VSVRAssets.InstantiatePromptIcon("BottomPress");
             GameObjectHelper.SetParentAndMaintainScaleForUI(bottomButton.transform, giveInButton.components.buttonObject.transform);
             bottomButton.transform.localPosition = new Vector3(-160, 0);
 
-            GameObject topButton = GameObject.Instantiate(VSVRAssets.promptIcons["TopPress"]);
+            GameObject topButton = VSVRAssets.InstantiatePromptIcon("TopPress");
             GameObjectHelper.SetParentAndMaintainScaleForUI(topButton.transform, resistButton.components.buttonObject.transform);
             topButton.transform.localPosition = new Vector3(160, 0);
         }
@@ -51,11 +51,11 @@ internal class UrgesUIManager : UIManager
             {
                 if (action is SetFloatValue && ((SetFloatValue)action).floatVariable.Name.Equals("Timer"))
                 {
-                    ((SetFloatValue)action).floatValue.Value = VRConfig.urgeSeconds.Value;
+                    ((SetFloatValue)action).floatValue.Value += VRConfig.urgeSeconds.Value;
                 }
             }
         }
-        VSVRMod.logger.LogInfo("Set urge timer");
+        VSVRMod.logger.LogInfo("Increased urge timers");
     }
 
     public override bool Interact()

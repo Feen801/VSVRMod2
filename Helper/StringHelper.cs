@@ -26,10 +26,10 @@ public class StringHelper
         return reference.Length == 0 ? 0f : (float)matches / reference.Length * 100f;
     }
 
-    private static Dictionary<string, string> vsSpecificWords = new Dictionary<string, string>
+    private static Dictionary<string, string[]> vsSpecificWords = new Dictionary<string, string[]>
     {
-        { "given", "give in" },
-        { "coming", "cumming" },
+        { "given", new string[] {"give","in"} },
+        { "coming", new string[] {"cumming"} },
     };
 
     public static string[] AddVSSpecificWords(string[] words)
@@ -39,7 +39,7 @@ public class StringHelper
         {
             if (words.Contains(kvp.Key))
             {
-                result.Add(kvp.Value);
+                result.AddRange(kvp.Value);
             }
         }
         return result.ToArray();

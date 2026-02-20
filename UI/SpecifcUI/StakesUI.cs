@@ -48,7 +48,7 @@ public class StakesUIManager : UIManager
 
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            GameObject verticalJoystick = GameObject.Instantiate(VSVRAssets.promptIcons["Vertical"]);
+            GameObject verticalJoystick = VSVRAssets.InstantiatePromptIcon("Vertical");
             GameObjectHelper.SetParentAndMaintainScaleForUI(verticalJoystick.transform, stakesMenu.representative.transform);
             verticalJoystick.transform.localPosition = new Vector3(0, 10);
         }
