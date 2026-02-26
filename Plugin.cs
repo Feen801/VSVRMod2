@@ -191,6 +191,7 @@ public class VSVRMod : BaseUnityPlugin
     public void InitialSessionSetupVR()
     {
         logger.LogInfo("Starting session setup");
+        SessionBugfixes.FixAll();
         //Do this before the camera manager!
         VSVRAssets.ApplyUIShader();
         logger.LogInfo("Session setup: applied ui shaders");
@@ -205,6 +206,8 @@ public class VSVRMod : BaseUnityPlugin
 
     public void InitialSessionSetup()
     {
+        logger.LogInfo("Starting session setup");
+        SessionBugfixes.FixAll();
         uiContainer = new(sessionScene);
         logger.LogInfo("Session setup: created ui container");
     }

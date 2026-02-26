@@ -43,6 +43,9 @@ public class VRConfig
     //Gameplay settings
     public static ConfigEntry<float> urgeSeconds;
 
+    //Bugfixes
+    public static ConfigEntry<bool> fixMissingPreText;
+
     public static void SetupConfig()
     {
         showButtonPrompts = VSVRMod.config.Bind("UI", "Show Button Prompts", true, "Show images beside various UI elements demonstrating how to interact with them using VR controllers.");
@@ -83,5 +86,7 @@ public class VRConfig
         safeword = VSVRMod.config.Bind("Speech Recongition", "Safeword", "Red Light", "The phrase that will activate the safeword feature when said. Speech recognition must be enabled for this do to anything.");
 
         urgeSeconds = VSVRMod.config.Bind("Gameplay", "Extra Urge Timeout", 0.0f, "Addional time to accept or reject urges. If you find yourself struggling to say phrases on time with voice control, increasing this should help.");
+
+        fixMissingPreText = VSVRMod.config.Bind("Base Game Bugfixes", "Fix Missing Pretask Text", true, "Fixes the base game bug where the text that tells you to get something before a task does not show. May break some events, not sure yet. Disable if something else breaks.");
     }
 }

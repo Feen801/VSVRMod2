@@ -21,7 +21,7 @@ public class ChoiceUIManager : UIManager
         choiceMenu.representative = eventManager.Find("ChoiceUI").gameObject;
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR)
         {
-            GameObject joystick = GameObject.Instantiate(VSVRAssets.promptIcons["Horizontal Angled"]);
+            GameObject joystick = VSVRAssets.InstantiatePromptIcon("Horizontal Angled");
             GameObjectHelper.SetParentAndMaintainScaleForUI(joystick.transform, choiceMenu.representative.transform);
             joystick.transform.localPosition = new Vector3(0, 0);
         }
