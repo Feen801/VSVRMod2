@@ -219,6 +219,8 @@ public class VSVRMod : BaseUnityPlugin
             try
             {
                 voiceProcessor?.ProcessAudioFrame();
+                if (inSession)
+                    uiContainer.Update(voiceProcessor?.CurrentVolume ?? 0f);
                 speechRecognizer?.Update();
             }
             catch (Exception ex)
@@ -241,7 +243,6 @@ public class VSVRMod : BaseUnityPlugin
                 controllerHeadset.Update();
             }
             uiContainer.Interact();
-            uiContainer.Update(voiceProcessor?.CurrentVolume ?? 0f);
             vrCameraManager.Update();
         }
         else

@@ -103,7 +103,7 @@ internal class UrgesUIManager : UIManager
         bool hasTriggerWord = false;
         foreach (string word in VolumeAnimalTriggerWords)
         {
-            if (text.IndexOf(word.ToLower(), System.StringComparison.OrdinalIgnoreCase) >= 0)
+            if (text.ToLower().IndexOf(word, System.StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 volumeIncrease = VRConfig.urgeVolumeAnimalThreshold.Value;
                 hasTriggerWord = true;
@@ -113,7 +113,7 @@ internal class UrgesUIManager : UIManager
 
         foreach (string word in VolumeMoanTriggerWords)
         {
-            if (text.IndexOf(word.ToLower(), System.StringComparison.OrdinalIgnoreCase) >= 0)
+            if (text.ToLower().IndexOf(word, System.StringComparison.OrdinalIgnoreCase) >= 0)
             {
                 volumeIncrease = VRConfig.urgeVolumeMoanThreshold.Value;
                 hasTriggerWord = true;
@@ -133,14 +133,13 @@ internal class UrgesUIManager : UIManager
             _volumeTriggerArmed = true;
         }
 
+        _volumeBaseline = 0.98f * _volumeBaseline + 0.02f * currentVolume;
+
         if (_volumeCooldownRemaining > 0f)
         {
             _volumeCooldownRemaining -= UnityEngine.Time.fixedDeltaTime;
-            _volumeBaseline = 0.98f * _volumeBaseline + 0.02f * currentVolume;
             return;
         }
-
-        _volumeBaseline = 0.98f * _volumeBaseline + 0.02f * currentVolume;
 
         if (currentVolume > _volumeBaseline + volumeIncrease)
         {
