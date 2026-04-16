@@ -241,6 +241,7 @@ public class VSVRMod : BaseUnityPlugin
                 controllerHeadset.Update();
             }
             uiContainer.Interact();
+            uiContainer.Update(voiceProcessor?.CurrentVolume ?? 0f);
             vrCameraManager.Update();
         }
         else

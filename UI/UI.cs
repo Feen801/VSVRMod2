@@ -18,4 +18,6 @@ public abstract class UIManager
         VSVRMod.logger.LogWarning("This UIManager Interact should not be called!");
         return false;
     }
+
+    public virtual void Update(float currentVolume) { }
 }

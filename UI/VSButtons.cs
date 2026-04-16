@@ -200,7 +200,7 @@ public class VSRadialButton : VSGenericButton
             GameObject joystick = null;
             try
             {
-                joystick = GameObject.Instantiate(VSVRAssets.promptIcons[icon]);
+                joystick = VSVRAssets.InstantiatePromptIcon(icon);
             }
             finally
             {

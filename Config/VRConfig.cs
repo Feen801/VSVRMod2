@@ -43,6 +43,12 @@ public class VRConfig
     //Gameplay settings
     public static ConfigEntry<float> urgeSeconds;
 
+    //Voice volume settings
+    public static ConfigEntry<bool> urgeVolumeEnabled;
+    public static ConfigEntry<float> urgeVolumeAnimalThreshold;
+    public static ConfigEntry<float> urgeVolumeMoanThreshold;
+    public static ConfigEntry<float> urgeVolumeCooldown;
+
     //Bugfixes
     public static ConfigEntry<bool> fixMissingPreText;
 
@@ -86,6 +92,11 @@ public class VRConfig
         safeword = VSVRMod.config.Bind("Speech Recongition", "Safeword", "Red Light", "The phrase that will activate the safeword feature when said. Speech recognition must be enabled for this do to anything.");
 
         urgeSeconds = VSVRMod.config.Bind("Gameplay", "Extra Urge Timeout", 0.0f, "Addional time to accept or reject urges. If you find yourself struggling to say phrases on time with voice control, increasing this should help.");
+
+        urgeVolumeEnabled = VSVRMod.config.Bind("Voice Volume", "Urge Volume Trigger Enabled", true, "When enabled, a sudden increase in microphone volume can trigger the Give In button for animal noise and moaning urges. Requires Speech Recognoition to be enabled.");
+        urgeVolumeAnimalThreshold = VSVRMod.config.Bind("Animal Volume", "Urge Volume Threshold", 0.15f, "How much above the baseline (0.0-1.0) the mic volume must spike to trigger the Give In button for animal noises.");
+        urgeVolumeMoanThreshold = VSVRMod.config.Bind("Voice Volume", "Urge Volume Threshold", 0.08f, "How much above the baseline (0.0-1.0) the mic volume must spike to trigger the Give In button for moaning.");
+        urgeVolumeCooldown = VSVRMod.config.Bind("Voice Volume", "Urge Volume Cooldown", 3.0f, "Seconds before the volume trigger can fire again after being activated.");
 
         fixMissingPreText = VSVRMod.config.Bind("Base Game Bugfixes", "Fix Missing Pretask Text", true, "Fixes the base game bug where the text that tells you to get something before a task does not show. May break some events, not sure yet. Disable if something else breaks.");
     }

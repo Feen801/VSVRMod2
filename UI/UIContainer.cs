@@ -46,6 +46,12 @@ class UIContainer
         }
     }
 
+    public void Update(float currentVolume)
+    {
+        foreach (UIManager uiManager in priorityUIList)
+            uiManager.Update(currentVolume);
+    }
+
     public bool VoiceInteract(string transcription)
     {
         string[] wordsSaid = StringHelper.GetWords(transcription);

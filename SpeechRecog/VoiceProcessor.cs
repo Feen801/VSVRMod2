@@ -22,6 +22,11 @@ public class VoiceProcessor : IDisposable
     public int SampleRate { get; private set; }
 
     /// <summary>
+    /// Peak volume of the most recently processed audio frame (0.0 - 1.0)
+    /// </summary>
+    public float CurrentVolume { get; private set; }
+
+    /// <summary>
     /// Size of audio frames that are delivered
     /// </summary>
     public int FrameLength { get; private set; }
@@ -252,22 +257,20 @@ public class VoiceProcessor : IDisposable
 
         _startReadPos = endReadPos % _audioClip.samples;
 
+        float maxVolume = 0.0f;
+        for (int i = 0; i < _sampleBuffer.Length; i++)
+        {
+            if (_sampleBuffer[i] > maxVolume)
+                maxVolume = _sampleBuffer[i];
+        }
+        CurrentVolume = maxVolume;
+
         if (_autoDetect == false)
         {
             _transmit = _audioDetected = true;
         }
         else
         {
-            float maxVolume = 0.0f;
-
-            for (int i = 0; i < _sampleBuffer.Length; i++)
-            {
-                if (_sampleBuffer[i] > maxVolume)
-                {
-                    maxVolume = _sampleBuffer[i];
-                }
-            }
-
             if (maxVolume >= _minimumSpeakingSampleValue)
             {
                 _transmit = _audioDetected = true;
