@@ -219,6 +219,8 @@ public class VSVRMod : BaseUnityPlugin
             try
             {
                 voiceProcessor?.ProcessAudioFrame();
+                if (inSession)
+                    uiContainer.Update(voiceProcessor?.CurrentVolume ?? 0f);
                 speechRecognizer?.Update();
             }
             catch (Exception ex)

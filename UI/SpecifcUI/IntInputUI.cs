@@ -26,7 +26,7 @@ public class IntInputUIMManager : UIManager
         }
 
         if (VRConfig.showButtonPrompts.Value && !VSVRMod.noVR) {
-            GameObject joystick = GameObject.Instantiate(VSVRAssets.promptIcons["Horizontal Angled"]);
+            GameObject joystick = VSVRAssets.InstantiatePromptIcon("Horizontal Angled");
             GameObjectHelper.SetParentAndMaintainScaleForUI(joystick.transform, intInput.representative.transform);
             joystick.transform.localPosition = new Vector3(0, -55);
         }

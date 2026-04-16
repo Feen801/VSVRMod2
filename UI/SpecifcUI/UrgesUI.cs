@@ -13,6 +13,13 @@ internal class UrgesUIManager : UIManager
 
     private TextMeshProUGUI actionTextActualText = null;
 
+    private static readonly string[] VolumeAnimalTriggerWords = ["bark", "meow", "squeal"];
+    private static readonly string[] VolumeMoanTriggerWords = ["moan"];
+
+    private float _volumeBaseline = 0f;
+    private float _volumeCooldownRemaining = 0f;
+    private bool _volumeTriggerArmed = false;
+
     public UrgesUIManager(Scene scene) : base(scene)
     {
         Transform parent = GameObject.Find("GeneralCanvas/EventManager").transform;
@@ -66,6 +73,7 @@ internal class UrgesUIManager : UIManager
             if (giveInButton.components.buttonObject.activeSelf && faceButtonClicked)
             {
                 giveInButton.Click();
+                _volumeCooldownRemaining = VRConfig.urgeVolumeCooldown.Value;
                 return true;
             }
             faceButtonClicked = Controller.WasAUpperFaceButtonClicked();
@@ -76,6 +84,69 @@ internal class UrgesUIManager : UIManager
             }
         }
         return false;
+    }
+
+    public override void Update(float currentVolume)
+    {
+        if (!VRConfig.urgeVolumeEnabled.Value)
+            return;
+
+        if (!actionText.activeSelf)
+        {
+            _volumeTriggerArmed = false;
+            return;
+        }
+
+        float volumeIncrease = 1.0f;
+
+        string text = actionTextActualText.text;
+        bool hasTriggerWord = false;
+        foreach (string word in VolumeAnimalTriggerWords)
+        {
+            if (text.ToLower().IndexOf(word, System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                volumeIncrease = VRConfig.urgeVolumeAnimalThreshold.Value;
+                hasTriggerWord = true;
+                break;
+            }
+        }
+
+        foreach (string word in VolumeMoanTriggerWords)
+        {
+            if (text.ToLower().IndexOf(word, System.StringComparison.OrdinalIgnoreCase) >= 0)
+            {
+                volumeIncrease = VRConfig.urgeVolumeMoanThreshold.Value;
+                hasTriggerWord = true;
+                break;
+            }
+        }
+
+        if (!hasTriggerWord)
+        {
+            _volumeTriggerArmed = false;
+            return;
+        }
+
+        if (!_volumeTriggerArmed)
+        {
+            _volumeBaseline = currentVolume;
+            _volumeTriggerArmed = true;
+        }
+
+        _volumeBaseline = 0.98f * _volumeBaseline + 0.02f * currentVolume;
+
+        if (_volumeCooldownRemaining > 0f)
+        {
+            _volumeCooldownRemaining -= UnityEngine.Time.fixedDeltaTime;
+            return;
+        }
+
+        if (currentVolume > _volumeBaseline + volumeIncrease)
+        {
+            giveInButton.Click();
+            _volumeCooldownRemaining = VRConfig.urgeVolumeCooldown.Value;
+            _volumeBaseline = currentVolume;
+        }
     }
 
     public bool VoiceInteract(string[] words)
@@ -96,6 +167,7 @@ internal class UrgesUIManager : UIManager
                 if (StringHelper.MatchPercent(words, currentSayRequestWords) >= 0.4)
                 {
                     giveInButton.Click();
+                    _volumeCooldownRemaining = VRConfig.urgeVolumeCooldown.Value;
                     return true;
                 }
             }
@@ -106,6 +178,7 @@ internal class UrgesUIManager : UIManager
             if (StringHelper.MatchPercent(words, new string[] { "give", "in" }) >= 1.0)
             {
                 giveInButton.Click();
+                _volumeCooldownRemaining = VRConfig.urgeVolumeCooldown.Value;
                 return true;
             }
             if (StringHelper.MatchPercent(words, new string[] { "resist" }) >= 1.0)
