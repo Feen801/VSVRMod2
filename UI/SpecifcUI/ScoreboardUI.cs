@@ -4,6 +4,23 @@ using UnityEngine;
 namespace VSVRMod2.UI.SpecifcUI;
 public class ScoreboardUIManager : UIManager
 {
+    private const float READY_ALPHA_THRESHOLD = 0.95f;
+
+    private static float EffectiveCanvasGroupAlpha(Transform start)
+    {
+        float alpha = 1f;
+        for (Transform t = start; t != null; t = t.parent)
+        {
+            var cg = t.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                alpha *= cg.alpha;
+                if (cg.ignoreParentGroups) break;
+            }
+        }
+        return alpha;
+    }
+
     private struct Scoreboard
     {
         public GameObject representative;
@@ -31,6 +48,15 @@ public class ScoreboardUIManager : UIManager
         if (!scoreboard.representative.activeSelf)
         {
             return false;
+        }
+        var btn = scoreboard.mainMenu.button;
+        if (btn == null || !btn.gameObject.activeInHierarchy || !btn.IsInteractable())
+        {
+            return true;
+        }
+        if (EffectiveCanvasGroupAlpha(btn.transform) < READY_ALPHA_THRESHOLD)
+        {
+            return true;
         }
         if (Controller.WasAFaceButtonClicked() || Controller.WasAStickClicked() || Controller.WasATriggerClicked())
         {

@@ -46,6 +46,7 @@ public class VRCameraManager
         {
             alreadyCentered = vrcamera.CenterCamera(true);
         }
+        vrcamera.UpdateHeadTargetTracking();
     }
 
     public void OnPreRender()

@@ -401,3 +401,10 @@ FodyWeavers.xsd
 TODO.txt
 Assembly-CSharp.dll
 changelog.txt
+/dist/
+payload/installer/changelog.txt
+payload/manual/VSVRMod2.dll
+payload/installer/BepInEx/plugins/VSVRMod2.dll
+Installer/VSVRInstaller/VSVRMOD.zip
+CHANGELOG.md
+.claude

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.SpatialTracking;
+using VRM;
 
 namespace VSVRMod2.VRCamera
 {
@@ -15,7 +16,25 @@ namespace VSVRMod2.VRCamera
         public GameObject vrCameraOffset;
 
         private GameObject headFollower;
-        PlayMakerFSM headResetter;
+        private HeadLookController headLookController;
+
+        private VRMLookAtHead eyeLookAt;
+        private bool eyeLookAtOriginalEnabled;
+        private Transform originalEyeTarget;
+        private PlayMakerFSM lookAtManagerFsm;
+
+        private GameObject headBone;
+        private GameObject leftHandBone;
+        private GameObject rightHandBone;
+        private float headTrackingBlend;
+        private const float HEAD_TRACKING_BASE = 0.2f;
+        private const float HEAD_TRACKING_RAMP_START_DEG = 20f;
+        private const float HEAD_TRACKING_RAMP_END_DEG = 30f;
+        private const float LOOK_AWAY_DEADZONE_DEG = 10f;
+        private const float LOOK_AWAY_FULL_DEG = 25f;
+        private const float HEAD_TRACKING_BLEND_SMOOTHING = 5f;
+        private const float HAND_NEAR_FACE_FULL_M = 0.20f;
+        private const float HAND_NEAR_FACE_FADE_M = 0.32f;
 
         public MoveableVRCamera()
         {
@@ -158,30 +177,108 @@ namespace VSVRMod2.VRCamera
             }
         }
 
+        private float HandNearFaceSuppression(Vector3 headPos)
+        {
+            if (leftHandBone == null) leftHandBone = GameObject.Find("J_Bip_L_Hand");
+            if (rightHandBone == null) rightHandBone = GameObject.Find("J_Bip_R_Hand");
+
+            float minDist = float.PositiveInfinity;
+            if (leftHandBone != null)  minDist = Mathf.Min(minDist, Vector3.Distance(leftHandBone.transform.position,  headPos));
+            if (rightHandBone != null) minDist = Mathf.Min(minDist, Vector3.Distance(rightHandBone.transform.position, headPos));
+            if (float.IsPositiveInfinity(minDist)) return 0f;
+
+            return 1f - Mathf.Clamp01((minDist - HAND_NEAR_FACE_FULL_M) / (HAND_NEAR_FACE_FADE_M - HAND_NEAR_FACE_FULL_M));
+        }
+
         public void SetupHeadTargetFollower(bool revert)
         {
             if (headFollower == null)
             {
-                VSVRMod.logger.LogInfo("what the hell");
-                VSVRMod.logger.LogInfo("how did this become null");
-                VSVRMod.logger.LogInfo("why does this only happen when starting a second one");
                 headFollower = GameObjectHelper.GetGameObjectCheckFound("HeadTargetFollower");
+                if (headFollower == null) return;
             }
+
+            if (!revert && headLookController == null)
+            {
+                headLookController = UnityEngine.Object.FindObjectOfType<HeadLookController>();
+            }
+        }
+
+        public void UpdateHeadTargetTracking()
+        {
+            if (headFollower == null || headLookController == null || vrCamera == null || !vrCamera.activeSelf) return;
+            if (headBone == null)
+            {
+                headBone = GameObject.Find("J_Bip_C_Head");
+                if (headBone == null) return;
+            }
+
+            Vector3 origin = headBone.transform.position;
+            Vector3 fsmTarget = headFollower.transform.position;
+            Vector3 player = vrCamera.transform.position;
+            Vector3 cam = worldCamDefault.transform.position;
+
+            float lookAwayAngle = Vector3.Angle(fsmTarget - origin, cam - origin);
+            float cameraAlignment = 1f - Mathf.Clamp01(
+                (lookAwayAngle - LOOK_AWAY_DEADZONE_DEG) / (LOOK_AWAY_FULL_DEG - LOOK_AWAY_DEADZONE_DEG));
+
+            float playerAngle = Vector3.Angle(cam - origin, player - origin);
+            float rampT = Mathf.Clamp01(
+                (playerAngle - HEAD_TRACKING_RAMP_START_DEG) / (HEAD_TRACKING_RAMP_END_DEG - HEAD_TRACKING_RAMP_START_DEG));
+            float playerOffset = Mathf.Lerp(HEAD_TRACKING_BASE, 1f, rampT);
+
+            float handSuppression = HandNearFaceSuppression(origin);
+            float target = playerOffset * cameraAlignment * (1f - handSuppression);
+            headTrackingBlend = Mathf.Lerp(headTrackingBlend, target, Time.deltaTime * HEAD_TRACKING_BLEND_SMOOTHING);
+
+            if (headTrackingBlend > 0.02f)
+            {
+                headLookController.target = Vector3.Lerp(fsmTarget, player, headTrackingBlend);
+            }
+
+            if (eyeLookAt != null && EyeTrackingPatches.Enabled)
+            {
+                eyeLookAt.Target = vrCamera.transform;
+                eyeLookAt.enabled = true;
+            }
+        }
+
+        public void SetupEyeTracking(bool revert)
+        {
+            if (eyeLookAt == null)
+            {
+                foreach (var lookAt in UnityEngine.Object.FindObjectsOfType<VRMLookAtHead>(true))
+                {
+                    bool hasApplyer = lookAt.GetComponent<VRMLookAtBoneApplyer>() != null;
+                    if (hasApplyer && lookAt.enabled) { eyeLookAt = lookAt; break; }
+                }
+                if (eyeLookAt == null)
+                {
+                    VSVRMod.logger.LogWarning("SetupEyeTracking: no enabled VRMLookAtHead with a BoneApplyer found");
+                    return;
+                }
+                eyeLookAtOriginalEnabled = eyeLookAt.enabled;
+                originalEyeTarget = eyeLookAt.Target;
+                foreach (var fsm in eyeLookAt.GetComponents<PlayMakerFSM>())
+                {
+                    if (fsm.FsmName == "LookAtManager") { lookAtManagerFsm = fsm; break; }
+                }
+            }
+
             if (revert)
             {
-                headFollower.transform.SetParent(worldCamDefault.transform);
+                EyeTrackingPatches.Enabled = false;
+                if (lookAtManagerFsm != null) lookAtManagerFsm.enabled = true;
+                eyeLookAt.Target = originalEyeTarget;
+                eyeLookAt.enabled = eyeLookAtOriginalEnabled;
             }
             else
             {
-                headFollower.transform.SetParent(vrCamera.transform);
+                if (lookAtManagerFsm != null) lookAtManagerFsm.enabled = false;
+                eyeLookAt.Target = vrCamera.transform;
+                eyeLookAt.enabled = true;
+                EyeTrackingPatches.Enabled = true;
             }
-            headResetter = headFollower.GetComponent<PlayMakerFSM>();
-            if (headResetter != null)
-            {
-                headResetter.enabled = revert;
-            }
-            headFollower.transform.localPosition = new Vector3(0, 0, 0);
-            headFollower.transform.localRotation = new Quaternion(0, 0, 0, 0);
         }
 
         private bool shouldCenterCamera = true;
