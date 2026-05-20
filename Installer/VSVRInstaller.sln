@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSVRInstaller", "VSVRInstaller\VSVRInstaller.csproj", "{EAE8005B-1D23-4911-A4B3-E526FCC5EE7C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EAE8005B-1D23-4911-A4B3-E526FCC5EE7C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EAE8005B-1D23-4911-A4B3-E526FCC5EE7C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EAE8005B-1D23-4911-A4B3-E526FCC5EE7C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EAE8005B-1D23-4911-A4B3-E526FCC5EE7C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {90B8A85E-9CAE-493A-A051-FF3DC77273B4}
+	EndGlobalSection
+EndGlobal

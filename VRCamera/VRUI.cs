@@ -77,21 +77,12 @@ namespace VSVRMod2.VRCamera
             gameObjectsToUndo.Add(gameObject);
             try
             {
-                if (!pastPositions.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().anchoredPosition3D))
-                {
-                    pastPositions[gameObject] = gameObject.transform.GetComponent<RectTransform>().anchoredPosition3D;
-                }
-                if (!pastScales.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().localScale))
-                {
-                    pastScales[gameObject] = gameObject.transform.GetComponent<RectTransform>().localScale;
-                }
+                pastPositions.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().anchoredPosition3D);
+                pastScales.TryAdd(gameObject, gameObject.transform.GetComponent<RectTransform>().localScale);
             }
             catch
             {
-                if (!pastScales.TryAdd(gameObject, gameObject.transform.GetComponent<Transform>().localScale))
-                {
-                    pastScales[gameObject] = gameObject.transform.GetComponent<Transform>().localScale;
-                }
+                pastScales.TryAdd(gameObject, gameObject.transform.GetComponent<Transform>().localScale);
             }
         }
 
@@ -101,6 +92,7 @@ namespace VSVRMod2.VRCamera
             gameObjectsToUndo.Clear();
             vrcamera.vrCamera.SetActive(true);
             vrcamera.SetupHeadTargetFollower(false);
+            vrcamera.SetupEyeTracking(false);
             vrcamera.worldCamDefaultCamera.enabled = false;
 
             uiInVR = true;
@@ -374,6 +366,7 @@ namespace VSVRMod2.VRCamera
             vrcamera.worldCamDefaultCamera.enabled = true;
             vrcamera.vrCamera.SetActive(false);
             vrcamera.SetupHeadTargetFollower(true);
+            vrcamera.SetupEyeTracking(true);
 
             uiInVR = false;
             uiCanvas.worldCamera = vrcamera.primaryCamera.GetComponent<Camera>();

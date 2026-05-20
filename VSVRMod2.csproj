@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>VSVRMod2</AssemblyName>
     <Description>VR Mod for Virtual Succubus</Description>
-    <Version>1.9.3</Version>
+    <Version>1.10.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
@@ -21,6 +21,12 @@
     <Compile Remove="Unity Project\**" />
     <EmbeddedResource Remove="Unity Project\**" />
     <None Remove="Unity Project\**" />
+    <Compile Remove="Installer\**" />
+    <EmbeddedResource Remove="Installer\**" />
+    <None Remove="Installer\**" />
+    <Compile Remove="payload\**" />
+    <EmbeddedResource Remove="payload\**" />
+    <None Remove="payload\**" />
   </ItemGroup>
 
   <ItemGroup>
